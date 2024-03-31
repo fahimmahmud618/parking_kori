@@ -1,0 +1,44 @@
+import 'dart:async';
+
+import 'package:cache_manager/cache_manager.dart';
+import 'package:flutter/material.dart';
+import 'package:parking_kori/view/pages/home_page.dart';
+import 'package:parking_kori/view/pages/login_page.dart';
+import 'package:parking_kori/view/styles.dart';
+import 'package:parking_kori/view/widgets/alert_dialog.dart';
+
+class FlashPage extends StatefulWidget {
+  const FlashPage({super.key});
+
+  @override
+  State<FlashPage> createState() => _FlashPageState();
+}
+
+class _FlashPageState extends State<FlashPage> {
+
+  Future initiateChache() async{
+    CacheManagerUtils.conditionalCache(
+        key: "cache",
+        valueType: ValueType.StringValue,
+        actionIfNull: (){
+          myAlertDialog("Info", "No data found, please log in", context);
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
+        },
+        actionIfNotNull: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
+        }
+    );
+  }
+
+  @override
+  void initState() {
+    Timer(Duration(seconds: 1),initiateChache);
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(child: Scaffold(
+      body: Center(child: Text("Parking Kori", style: nameTitleStyle(context, myred),)),
+    ));
+  }
+}
