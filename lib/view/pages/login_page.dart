@@ -7,6 +7,7 @@ import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/alert_dialog.dart';
 import 'package:parking_kori/view/widgets/input_with_icon_image.dart';
+import 'package:parking_kori/view/widgets/page_title.dart';
 import 'package:parking_kori/view/widgets/parking_kori_nameplate.dart';
 
 class LoginPage extends StatefulWidget {
@@ -56,6 +57,7 @@ class _LoginPageState extends State<LoginPage> {
               Image.asset(carLogo,
 
               ),
+              PageTitle(context, "Log in"),
               InputWIthIconImage(context, userLogo, usernameORmobile, "Username", "Username or Mobile number", false),
               SizedBox(height: 30,),
               InputWIthIconImage(context, passLogo, password, "Password", "Password", true),
