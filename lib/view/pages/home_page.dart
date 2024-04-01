@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/pages/add_vehicle.dart';
+import 'package:parking_kori/view/pages/dashboard.dart';
 import 'package:parking_kori/view/pages/park_log.dart';
 import 'package:parking_kori/view/pages/park_out_page.dart';
+import 'package:parking_kori/view/pages/profile.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/parking_info_card.dart';
@@ -36,6 +38,12 @@ class _HomePageState extends State<HomePage> {
   void go_to_park_log(){
     Navigator.push(context, MaterialPageRoute(builder: (context)=>ParkLog()));
   }
+  void go_to_dashboard(){
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>DashBoardPage()));
+  }
+  void go_to_profile(){
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage()));
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
@@ -61,7 +69,9 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: 40,),
             ActionButton(context, "Park Out", go_to_park_out),
-            ActionButton(context, "Park log", go_to_park_log)
+            ActionButton(context, "Park log", go_to_park_log),
+            ActionButton(context, "Dashboard", go_to_dashboard),
+            ActionButton(context, "Profile", go_to_profile)
           ],
         )
       ),

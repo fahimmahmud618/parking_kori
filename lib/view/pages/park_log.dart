@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:parking_kori/model/booking.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
+import 'package:parking_kori/view/widgets/back_button.dart';
 import 'package:parking_kori/view/widgets/page_title.dart';
 import 'package:parking_kori/view/widgets/park_log_history_card.dart';
 
@@ -18,6 +19,9 @@ class _ParkLogState extends State<ParkLog> {
   late List<Booking> presentBookings;
   bool isParkedInSelected = true;
 
+  void go_back(){
+    Navigator.pop(context);
+  }
   @override
   void initState() {
     bookings = [
@@ -40,55 +44,60 @@ class _ParkLogState extends State<ParkLog> {
           body: SingleChildScrollView(
             child: Column(
               children: [
-                AppBarWidget(context),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: get_screenWidth(context)*0.1),
-                  child: Column(
-                    children: [
-                      PageTitle(context," Park Log"),
-                      Container(
-                        margin: EdgeInsets.only(bottom: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            InkWell(
-                              onTap: (){ setState(() {
-                                isParkedInSelected=true;
-                              });},
-                              child: Container(
-                                alignment: Alignment.center,
-                                constraints: BoxConstraints(minWidth: get_screenWidth(context)*0.35),
-                                padding: EdgeInsets.all(get_screenWidth(context)*0.02),
-                                decoration: isParkedInSelected? selectedBox(context):unselectedBox(context),
-                                child: Text("Parked In",
-                                style: isParkedInSelected? boldTextStyle(context, myWhite):boldTextStyle(context, myBlack),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(get_screenWidth(context) * 0.1, get_screenWidth(context) * 0.1, 0, 0),
+                  child: BackOption(context, go_back),
+                ),
+                Center(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: get_screenWidth(context)*0.1),
+                    child: Column(
+                      children: [
+                        PageTitle(context," Park Log"),
+                        Container(
+                          margin: EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              InkWell(
+                                onTap: (){ setState(() {
+                                  isParkedInSelected=true;
+                                });},
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  constraints: BoxConstraints(minWidth: get_screenWidth(context)*0.35),
+                                  padding: EdgeInsets.all(get_screenWidth(context)*0.02),
+                                  decoration: isParkedInSelected? selectedBox(context):unselectedBox(context),
+                                  child: Text("Parked In",
+                                  style: isParkedInSelected? boldTextStyle(context, myWhite):boldTextStyle(context, myBlack),
+                                  ),
                                 ),
                               ),
-                            ),
-                            InkWell(
-                              onTap: (){ setState(() {
-                                isParkedInSelected=false;
-                              });},
-                              child: Container(
-                                alignment: Alignment.center,
-                                constraints: BoxConstraints(minWidth: get_screenWidth(context)*0.35),
-                                padding: EdgeInsets.all(get_screenWidth(context)*0.02),
-                                decoration: !isParkedInSelected? selectedBox(context):unselectedBox(context),
-                                child: Text("Parked Out",
-                                  style: !isParkedInSelected? boldTextStyle(context, myWhite):boldTextStyle(context, myBlack),
+                              InkWell(
+                                onTap: (){ setState(() {
+                                  isParkedInSelected=false;
+                                });},
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  constraints: BoxConstraints(minWidth: get_screenWidth(context)*0.35),
+                                  padding: EdgeInsets.all(get_screenWidth(context)*0.02),
+                                  decoration: !isParkedInSelected? selectedBox(context):unselectedBox(context),
+                                  child: Text("Parked Out",
+                                    style: !isParkedInSelected? boldTextStyle(context, myWhite):boldTextStyle(context, myBlack),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      Column(
-                        children: isParkedInSelected
-                            ? notPresentBookings.map((e) => ParkLogHistoryCard(context, e)).toList()
-                            : presentBookings.map((e) => ParkLogHistoryCard(context, e)).toList(),
-                      )
+                        Column(
+                          children: isParkedInSelected
+                              ? notPresentBookings.map((e) => ParkLogHistoryCard(context, e)).toList()
+                              : presentBookings.map((e) => ParkLogHistoryCard(context, e)).toList(),
+                        )
 
-                    ],
+                      ],
+                    ),
                   ),
                 ),
 
