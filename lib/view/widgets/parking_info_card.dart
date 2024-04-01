@@ -3,6 +3,7 @@ import 'package:parking_kori/view/styles.dart';
 
 Widget ParkingInfoCard(BuildContext context, String icon, String vehicleType, int presentCount, int capacity, action){
   return InkWell(
+    onTap: action,
     child: Container(
       width: get_screenWidth(context)*0.3,
       margin: EdgeInsets.only(top: 20),

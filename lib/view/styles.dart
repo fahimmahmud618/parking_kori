@@ -9,6 +9,7 @@ double get_screenWidth(BuildContext context){
   return MediaQuery.of(context).size.width;
 }
 
+// Color myred = Color(0xFF1AB000);
 Color myred = Color(0xFFD20062);
 Color mypinkRed = Color(0xFFD6589F);
 Color mylightblue = Color(0xFFC4E4FF);
