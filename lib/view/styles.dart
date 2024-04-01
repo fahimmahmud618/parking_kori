@@ -51,3 +51,22 @@ TextStyle hintTextStyle (BuildContext context, Color color) {
       fontWeight: FontWeight.bold
   );
 }
+
+BoxDecoration selectedBox(BuildContext context){
+  return BoxDecoration(
+    color: myred,
+      border: Border.all(
+        color: myBlack,
+        width: 1.0,
+      )
+  );
+}
+BoxDecoration unselectedBox(BuildContext context){
+  return BoxDecoration(
+    color: myWhite,
+    border: Border.all(
+      color: myBlack,
+      width: 1.0,
+    )
+  );
+}
