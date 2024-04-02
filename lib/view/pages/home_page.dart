@@ -18,6 +18,26 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  late int currentCarNumber;
+  late int carCapacity;
+  late int currentBikeNumber;
+  late int bikeCapacity;
+  late int currentCycleNumber;
+  late int cycleCapacity;
+  late int currentCNGNumber;
+  late int cngCapacity;
+
+  void load_data(){
+    //TODO: Fetch from api, Dummy data here
+    currentCarNumber=12;
+    carCapacity=20;
+    currentBikeNumber=19;
+    bikeCapacity=25;
+    currentCycleNumber=15;
+    cycleCapacity=20;
+    currentCNGNumber=10;
+    cngCapacity=15;
+  }
   void add_car(){
     Navigator.push(context, MaterialPageRoute(builder: (context)=>AddVehicle(vehicleType: "car")));
   }
@@ -35,7 +55,11 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(context, MaterialPageRoute(builder: (context)=>ParkOut()));
   }
 
-
+  @override
+  void initState() {
+    load_data();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
@@ -46,21 +70,21 @@ class _HomePageState extends State<HomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ParkingInfoCard(context, carLogo, "Car", 18, 100,add_car ),
+                ParkingInfoCard(context, carLogo, "Car", currentCarNumber, carCapacity,add_car ),
                 SizedBox(width: 20,),
-                ParkingInfoCard(context, bikeLogo, "Bike", 20, 30, add_bike),
+                ParkingInfoCard(context, bikeLogo, "Bike", currentBikeNumber, bikeCapacity, add_bike),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ParkingInfoCard(context, cycleLogo, "Cycle", 18, 60, add_cycle),
+                ParkingInfoCard(context, cycleLogo, "Cycle", currentCycleNumber, cycleCapacity, add_cycle),
                 SizedBox(width: 20,),
-                ParkingInfoCard(context, cngLogo, "CNG", 25, 50, add_cng),
+                ParkingInfoCard(context, cngLogo, "CNG", currentCNGNumber, cngCapacity, add_cng),
               ],
             ),
             SizedBox(height: 40,),
-            ActionButton(context, "Park Out", go_to_park_out),
+            ActionButton2(context, "Park Out", go_to_park_out),
 
           ],
         )

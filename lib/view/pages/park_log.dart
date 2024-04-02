@@ -19,9 +19,8 @@ class _ParkLogState extends State<ParkLog> {
   late List<Booking> presentBookings;
   bool isParkedInSelected = true;
 
-
-  @override
-  void initState() {
+  void load_data(){
+    //TODO: Fetch from api, Dummy data here
     bookings = [
       new Booking("1", "Car", "1134", "11:34 am", "2:04 pm", false),
       new Booking("2", "Car", "1034", "10:34 am", "2:04 pm", true),
@@ -33,6 +32,10 @@ class _ParkLogState extends State<ParkLog> {
 
     notPresentBookings = bookings.where((booking) => !booking.isPresent).toList();
     presentBookings = bookings.where((booking) => booking.isPresent).toList();
+  }
+  @override
+  void initState() {
+    load_data();
     super.initState();
   }
   @override
