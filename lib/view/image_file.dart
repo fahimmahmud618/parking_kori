@@ -4,4 +4,6 @@ String carLogo= "asset/image/icons8-sedan-100.png";
 String bikeLogo= "asset/image/icons8-motorcycle-100.png";
 String cycleLogo= "asset/image/cycle.png";
 String cngLogo= "asset/image/icons8-auto-rickshaw-100 (1).png";
+String pkLogonamed= "asset/image/pklogo.png";
+String pkLogo= "asset/image/PK_logo_icon.png";
 

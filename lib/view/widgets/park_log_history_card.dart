@@ -4,7 +4,7 @@ import 'package:parking_kori/view/styles.dart';
 
 Widget ParkLogHistoryCard(BuildContext context, Booking booking) {
   return Container(
-    padding: EdgeInsets.all(get_screenWidth(context)*0.02),
+    padding: EdgeInsets.all(get_screenWidth(context)*0.03),
     margin: EdgeInsets.only(bottom: get_screenWidth(context)*0.02),
     decoration: BoxDecoration(
       color: myred,
@@ -22,6 +22,7 @@ Widget ParkLogHistoryCard(BuildContext context, Booking booking) {
                   "${booking.vehicle_type} : ${booking.registration_number}",
                   style: boldTextStyle(context, myWhite),
                 ),
+                SizedBox(height: 5,),
                 Text(
                   "In time: ${booking.in_time}",
                   style: normalTextStyle(context, myBlack),
@@ -37,7 +38,7 @@ Widget ParkLogHistoryCard(BuildContext context, Booking booking) {
                       ),
               ],
             )),
-        Expanded(flex: 1, child: Icon(Icons.delete))
+        Expanded(flex: 1, child: Icon(Icons.delete, color: myWhite,))
       ],
     ),
   );

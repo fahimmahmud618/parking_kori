@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cache_manager/cache_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/pages/home_page.dart';
 import 'package:parking_kori/view/pages/login_page.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
@@ -33,13 +34,14 @@ class _FlashPageState extends State<FlashPage> {
 
   @override
   void initState() {
-    Timer(Duration(seconds: 1),initiateChache);
+    Timer(Duration(seconds: 2),initiateChache);
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
-      body: Center(child: Text("Parking Kori", style: nameTitleStyle(context, myred),)),
+      body: Center(child: Image.asset(pkLogonamed, width: get_screenWidth(context)*0.45,)
+      ),
     ));
   }
 }

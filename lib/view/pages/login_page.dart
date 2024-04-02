@@ -54,8 +54,8 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // ParkingKoriNameplate(context),
-              Image.asset(carLogo,
-
+              Image.asset(pkLogo,
+                width: get_screenWidth(context)*0.3,
               ),
               PageTitle(context, "Log in"),
               InputWIthIconImage(context, userLogo, usernameORmobile, "Username", "Username or Mobile number", false),
