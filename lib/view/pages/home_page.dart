@@ -35,15 +35,7 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(context, MaterialPageRoute(builder: (context)=>ParkOut()));
   }
 
-  void go_to_park_log(){
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>ParkLog()));
-  }
-  void go_to_dashboard(){
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>DashBoardPage()));
-  }
-  void go_to_profile(){
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage()));
-  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
@@ -69,9 +61,7 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: 40,),
             ActionButton(context, "Park Out", go_to_park_out),
-            ActionButton(context, "Park log", go_to_park_log),
-            ActionButton(context, "Dashboard", go_to_dashboard),
-            ActionButton(context, "Profile", go_to_profile)
+
           ],
         )
       ),

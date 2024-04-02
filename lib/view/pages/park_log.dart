@@ -42,11 +42,11 @@ class _ParkLogState extends State<ParkLog> {
           body: SingleChildScrollView(
             child: Column(
               children: [
+                AppBarWidget(context, "Park Log"),
                 Container(
                   padding: EdgeInsets.all( get_screenWidth(context)*0.1),
                   child: Column(
                     children: [
-                      PageTitle(context," Park Log"),
                       Container(
                         margin: EdgeInsets.only(bottom: 10),
                         child: Row(

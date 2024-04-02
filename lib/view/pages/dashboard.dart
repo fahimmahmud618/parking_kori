@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parking_kori/view/styles.dart';
+import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/back_button.dart';
 import 'package:parking_kori/view/widgets/dashboard_info_card.dart';
 import 'package:parking_kori/view/widgets/page_title.dart';
@@ -35,12 +36,12 @@ class _DashBoardPageState extends State<DashBoardPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          AppBarWidget(context, "Dashboard"),
           Container(
             padding: EdgeInsets.all( get_screenWidth(context) * 0.1),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                PageTitle(context, "Dashboard"),
                 DashboardInfoCard(context, "Parked In tickets", park_in_titckets.toString()),
                 DashboardInfoCard(context, "Parked Out tickets", park_out_titckets.toString()),
                 DashboardInfoCard(context, "Total Income", total_income.toString()),
