@@ -8,4 +8,6 @@ class Booking{
 
   Booking(this.booking_id, this.vehicle_type, this.registration_number,
       this.in_time, this.out_time, this.isPresent);
+
+  
 }

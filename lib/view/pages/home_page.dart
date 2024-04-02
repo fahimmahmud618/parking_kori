@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/pages/add_vehicle.dart';
-import 'package:parking_kori/view/pages/dashboard.dart';
-import 'package:parking_kori/view/pages/park_log.dart';
 import 'package:parking_kori/view/pages/park_out_page.dart';
-import 'package:parking_kori/view/pages/profile.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/parking_info_card.dart';
@@ -17,27 +17,71 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late int currentCarNumber = 0;
+  late int carCapacity = 0;
+  late int currentBikeNumber = 0;
+  late int bikeCapacity = 0;
+  late int currentCycleNumber = 0;
+  late int cycleCapacity = 0;
+  late int currentCNGNumber = 0;
+  late int cngCapacity = 0;
 
-  late int currentCarNumber;
-  late int carCapacity;
-  late int currentBikeNumber;
-  late int bikeCapacity;
-  late int currentCycleNumber;
-  late int cycleCapacity;
-  late int currentCNGNumber;
-  late int cngCapacity;
-
-  void load_data(){
-    //TODO: Fetch from api, Dummy data here
-    currentCarNumber=12;
-    carCapacity=20;
-    currentBikeNumber=19;
-    bikeCapacity=25;
-    currentCycleNumber=15;
-    cycleCapacity=20;
-    currentCNGNumber=10;
-    cngCapacity=15;
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
   }
+
+  Future<void> fetchData() async {
+    // Fetch data for car
+    await fetchVehicleData('car', '1');
+
+    // Fetch data for bike
+    await fetchVehicleData('bike', '2');
+
+    // Fetch data for cycle
+    await fetchVehicleData('cycle', '3');
+
+    // Fetch data for CNG
+    await fetchVehicleData('CNG', '4');
+  }
+
+  Future<void> fetchVehicleData(String vehicleType, String vehicleTypeId) async {
+    final response = await http.get(Uri.parse(
+        'https://parking-kori.rpu.solutions/api/v1/get/vehicle-types'));
+        final test = await http.get(Uri.parse(
+        'https://parking-kori.rpu.solutions/api/v1/get/vehicle-types/vehicle_type_id=1'));
+        // print("TESTING");
+        print(test.toString());
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        switch (vehicleType) {
+          case 'car':
+            currentCarNumber = data['current_number'];
+            carCapacity = data['capacity'];
+            break;
+          case 'bike':
+            currentBikeNumber = data['current_number'];
+            bikeCapacity = data['capacity'];
+            break;
+          case 'cycle':
+            currentCycleNumber = data['current_number'];
+            cycleCapacity = data['capacity'];
+            break;
+          case 'CNG':
+            currentCNGNumber = data['current_number'];
+            cngCapacity = data['capacity'];
+            break;
+          default:
+            break;
+        }
+      });
+    } else {
+      throw Exception('Failed to load data for $vehicleType');
+    }
+  }
+
   void add_car(){
     Navigator.push(context, MaterialPageRoute(builder: (context)=>AddVehicle(vehicleType: "car")));
   }
@@ -55,11 +99,6 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(context, MaterialPageRoute(builder: (context)=>ParkOut()));
   }
 
-  @override
-  void initState() {
-    load_data();
-    super.initState();
-  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
