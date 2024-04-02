@@ -17,15 +17,13 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> fetchDataFromCache() async {
     try {
       currentUser = await ReadCache.getString(key: "cache") ;
-      currentUser = getUserNameFromChache(caesarCipherDecode(currentUser,2));
+      setState(() {
+        currentUser = getUserNameFromChache(caesarCipherDecode(currentUser,2));
+      });
 
     } catch (e) {
       print("Error fetching data: $e");
     }
-  }
-
-  void go_back(){
-    Navigator.pop(context);
   }
 
   @override
@@ -39,22 +37,14 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Padding(
-            padding: EdgeInsets.fromLTRB(get_screenWidth(context) * 0.1, get_screenWidth(context) * 0.1, 0, 0),
-            child: BackOption(context, go_back),
-          ),
-          Expanded(
-            child: Center(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: get_screenWidth(context) * 0.1),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    PageTitle(context, "Dashboard"),
-                    Text("Hi, $currentUser", style: nameTitleStyle(context, myred),)
-                  ],
-                ),
-              ),
+          Container(
+            padding: EdgeInsets.all( get_screenWidth(context) * 0.1),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                PageTitle(context, "Dashboard"),
+                Text("Hi, $currentUser", style: nameTitleStyle(context, myred),)
+              ],
             ),
           ),
         ],

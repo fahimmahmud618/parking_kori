@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:parking_kori/view/pages/flash_page.dart';
 import 'package:parking_kori/view/styles.dart';
 
-Widget AppBarWidget(BuildContext context) {
+Widget AppBarWidget(BuildContext context, String title) {
   return Container(
     padding: EdgeInsets.fromLTRB(20, 10, 10, 10),
     color: myred,
@@ -11,7 +11,7 @@ Widget AppBarWidget(BuildContext context) {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "Parking Kori",
+          title,
           style: nameTitleStyle(context, myWhite),
         ),
         TextButton.icon(

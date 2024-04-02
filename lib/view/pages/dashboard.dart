@@ -28,35 +28,25 @@ class _DashBoardPageState extends State<DashBoardPage> {
 
     super.initState();
   }
-  void go_back(){
-    Navigator.pop(context);
-  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Padding(
-            padding: EdgeInsets.fromLTRB(get_screenWidth(context) * 0.1, get_screenWidth(context) * 0.1, 0, 0),
-            child: BackOption(context, go_back),
-          ),
-          Expanded(
-            child: Center(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: get_screenWidth(context) * 0.1),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    PageTitle(context, "Dashboard"),
-                    DashboardInfoCard(context, "Parked In tickets", park_in_titckets.toString()),
-                    DashboardInfoCard(context, "Parked Out tickets", park_out_titckets.toString()),
-                    DashboardInfoCard(context, "Total Income", total_income.toString()),
-                    DashboardInfoCard(context, "Unpaid Titckets", unpaid_tickets.toString()),
-                    DashboardInfoCard(context, "Earning to be Billed", earning_tobe_billed.toString()),
-                  ],
-                ),
-              ),
+          Container(
+            padding: EdgeInsets.all( get_screenWidth(context) * 0.1),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                PageTitle(context, "Dashboard"),
+                DashboardInfoCard(context, "Parked In tickets", park_in_titckets.toString()),
+                DashboardInfoCard(context, "Parked Out tickets", park_out_titckets.toString()),
+                DashboardInfoCard(context, "Total Income", total_income.toString()),
+                DashboardInfoCard(context, "Unpaid Titckets", unpaid_tickets.toString()),
+                DashboardInfoCard(context, "Earning to be Billed", earning_tobe_billed.toString()),
+              ],
             ),
           ),
         ],

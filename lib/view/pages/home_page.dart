@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            AppBarWidget(context),
+            AppBarWidget(context, "Home"),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -75,6 +75,7 @@ class _HomePageState extends State<HomePage> {
           ],
         )
       ),
+
     ));
   }
 }

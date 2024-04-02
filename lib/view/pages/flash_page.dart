@@ -4,6 +4,7 @@ import 'package:cache_manager/cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:parking_kori/view/pages/home_page.dart';
 import 'package:parking_kori/view/pages/login_page.dart';
+import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/alert_dialog.dart';
 
@@ -25,7 +26,7 @@ class _FlashPageState extends State<FlashPage> {
           Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
         },
         actionIfNotNull: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>MainPage()));
         }
     );
   }
