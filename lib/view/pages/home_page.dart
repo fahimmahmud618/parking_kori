@@ -25,6 +25,10 @@ class _HomePageState extends State<HomePage> {
   late int cycleCapacity = 0;
   late int currentCNGNumber = 0;
   late int cngCapacity = 0;
+  late int currentpickupNumber = 0;
+  late int pickupCapacity = 0;
+  late int currentothersNumber = 0;
+  late int othersCapacity = 0;
 
   @override
   void initState() {
@@ -73,6 +77,17 @@ class _HomePageState extends State<HomePage> {
             currentCNGNumber = data['current_number'];
             cngCapacity = data['capacity'];
             break;
+
+            case 'pickup':
+            currentCNGNumber = data['current_number'];
+            cngCapacity = data['capacity'];
+            break;
+
+            case 'others':
+            currentCNGNumber = data['current_number'];
+            cngCapacity = data['capacity'];
+            break;
+
           default:
             break;
         }
@@ -93,6 +108,14 @@ class _HomePageState extends State<HomePage> {
   }
   void add_cng(){
     Navigator.push(context, MaterialPageRoute(builder: (context)=>AddVehicle(vehicleType: "cng")));
+  }
+
+  void add_pickup(){
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddVehicle(vehicleType: "pickup")));
+  }
+
+  void add_others(){
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddVehicle(vehicleType: "others")));
   }
 
   void go_to_park_out(){
@@ -120,6 +143,14 @@ class _HomePageState extends State<HomePage> {
                 ParkingInfoCard(context, cycleLogo, "Cycle", currentCycleNumber, cycleCapacity, add_cycle),
                 SizedBox(width: 20,),
                 ParkingInfoCard(context, cngLogo, "CNG", currentCNGNumber, cngCapacity, add_cng),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ParkingInfoCard(context, pickupLogo, "Pickup", currentpickupNumber, pickupCapacity, add_cycle),
+                SizedBox(width: 20,),
+                ParkingInfoCard(context, othersLogo, "Others", currentothersNumber, othersCapacity, add_cng),
               ],
             ),
             SizedBox(height: 40,),

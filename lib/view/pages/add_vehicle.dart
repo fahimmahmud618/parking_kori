@@ -96,7 +96,7 @@ class _AddVehicleState extends State<AddVehicle> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     PageTitle(context, "Add Vehicle"),
-                    InputWIthIconImage(context, userLogo, registrationnumber, "Registration Number", "Write the registration number of vehicle", false),
+                    InputWIthIconImage(context, editLogo, registrationnumber, "Registration Number", "Write the registration number of vehicle", false),
                     ActionButton(context, "Generate QR and PrintOut", generate_qr_and_print),
                     isQRGenerated ? Container(
                       height: 80,

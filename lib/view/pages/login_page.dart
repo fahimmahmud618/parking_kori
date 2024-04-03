@@ -72,37 +72,44 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Center(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: get_screenWidth(context) * 0.1),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(pkLogo, width: get_screenWidth(context) * 0.3),
-                PageTitle(context, "Log in"),
-               InputWIthIconImage(
-                  context,
-                  userLogo,
-                  usernameController,
-                  "Username",
-                  "Username or Mobile number",
-                  false,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: get_screenWidth(context) * 0.1),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(pkLogo, width: get_screenWidth(context) * 0.3),
+                      PageTitle(context, "Log in"),
+                     InputWIthIconImage(
+                        context,
+                        userLogo,
+                        usernameController,
+                        "Username",
+                        "Username or Mobile number",
+                        false,
+                      ),
+                      SizedBox(height: 30),
+                      InputWIthIconImage(
+                        context,
+                        passLogo,
+                        passwordController,
+                        "Password",
+                        "Password",
+                        true,
+                      ),
+                      SizedBox(height: 20),
+                      ActionButton(context, "Login", checkCredential),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 30),
-                InputWIthIconImage(
-                  context,
-                  passLogo,
-                  passwordController,
-                  "Password",
-                  "Password",
-                  true,
-                ),
-                SizedBox(height: 20),
-                ActionButton(context, "Login", checkCredential),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
