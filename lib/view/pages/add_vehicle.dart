@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parking_kori/sunmi.dart';
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
@@ -27,6 +28,8 @@ class _AddVehicleState extends State<AddVehicle> {
       isQRGenerated=true;
     });
     //TODO: Print machanism here
+    Sunmi printer = Sunmi();
+    printer.printReceipt(booking_num);
   }
 
   void go_back(){
@@ -58,7 +61,7 @@ class _AddVehicleState extends State<AddVehicle> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     PageTitle(context, "Add Vehicle"),
-                    InputWIthIconImage(context, userLogo, registrationnumber, "Registration Number", "Write the registration number of vehicle", false),
+                    InputWIthIconImage(context, editLogo, registrationnumber, "Registration Number", "Write the registration number of vehicle", false),
                     ActionButton(context, "Generate QR and PrintOut", generate_qr_and_print),
                     isQRGenerated ? Container(
                       height: 80,

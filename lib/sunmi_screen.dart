@@ -13,7 +13,7 @@ class _SunmiScreenState extends State<SunmiScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sunmi Flutter Demo'),
+        title: const Text('Payment Reciept'),
       ),
       body: Container(
         height: double.infinity,
@@ -22,7 +22,7 @@ class _SunmiScreenState extends State<SunmiScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Center(
-              child: Text('Sunmi pos printer'),
+              child: Text('Developed by: Parking Kori'),
             ),
             const SizedBox(
               height: 10,
@@ -30,7 +30,7 @@ class _SunmiScreenState extends State<SunmiScreen> {
             ElevatedButton(
               onPressed: () {
                 Sunmi printer = Sunmi();
-                printer.printReceipt();
+                printer.printReceipt("test");
               },
               child: const Text('Print'),
             ),

@@ -29,7 +29,9 @@ class _HomePageState extends State<HomePage> {
    int pickUpCapacity = 0;
    int currentTruckNumber = 0;
    int truckCapacity = 0;
-   final String authToken = "1|I96d9BXq3vZUP8ZKtV81aZnxFoEzVs08HFIm0gx1939fb826";
+   int currentothersNumber = 0;
+    int othersCapacity = 0;
+   final String authToken = "8|fQgXnTLbUem7bYwc0xV6IsvOYaEkCjZZDxEdBTvW5cbf90d0";
 
   @override
   void initState() {
@@ -82,6 +84,17 @@ class _HomePageState extends State<HomePage> {
             currentCNGNumber = data['current_number'];
             cngCapacity = data['capacity'];
             break;
+
+            case 'pickup':
+            currentCNGNumber = data['current_number'];
+            cngCapacity = data['capacity'];
+            break;
+
+            case 'others':
+            currentCNGNumber = data['current_number'];
+            cngCapacity = data['capacity'];
+            break;
+
           default:
             break;
         }
@@ -104,12 +117,21 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(context, MaterialPageRoute(builder: (context)=>AddVehicle(vehicleType: "cng")));
   }
 
+  void add_pickup(){
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddVehicle(vehicleType: "pickup")));
+  }
+
+  void add_others(){
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddVehicle(vehicleType: "others")));
+  }
+
   void go_to_park_out(){
     Navigator.push(context, MaterialPageRoute(builder: (context)=>ParkOut()));
   }
 
   @override
   Widget build(BuildContext context) {
+    
     return SafeArea(child: Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -129,6 +151,14 @@ class _HomePageState extends State<HomePage> {
                 ParkingInfoCard(context, cycleLogo, "Cycle", currentCycleNumber, cycleCapacity, add_cycle),
                 SizedBox(width: 20,),
                 ParkingInfoCard(context, cngLogo, "CNG", currentCNGNumber, cngCapacity, add_cng),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ParkingInfoCard(context, pickupLogo, "Pickup", currentPickUpNumber, pickUpCapacity, add_cycle),
+                SizedBox(width: 20,),
+                ParkingInfoCard(context, othersLogo, "Others", currentothersNumber, othersCapacity, add_cng),
               ],
             ),
             SizedBox(height: 40,),
