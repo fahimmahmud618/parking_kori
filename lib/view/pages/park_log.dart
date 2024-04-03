@@ -14,9 +14,9 @@ class ParkLog extends StatefulWidget {
 }
 
 class _ParkLogState extends State<ParkLog> {
-  late List<Booking> bookings;
-  late List<Booking> notPresentBookings;
-  late List<Booking> presentBookings;
+  List<Booking> bookings = [];
+   List<Booking> notPresentBookings = [];
+   List<Booking> presentBookings = [];
   bool isParkedInSelected = true;
 
   void load_data() {
