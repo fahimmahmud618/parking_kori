@@ -1,9 +1,7 @@
 import 'dart:async';
-
 import 'package:cache_manager/cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:parking_kori/view/image_file.dart';
-import 'package:parking_kori/view/pages/home_page.dart';
 import 'package:parking_kori/view/pages/login_page.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/styles.dart';
