@@ -3,7 +3,6 @@ import 'package:cache_manager/core/write_cache_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:parking_kori/cache_handler.dart';
-import 'package:parking_kori/view/pages/home_page.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/alert_dialog.dart';
@@ -11,7 +10,6 @@ import 'package:parking_kori/view/widgets/input_with_icon_image.dart';
 import 'package:parking_kori/view/widgets/page_title.dart';
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/styles.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -70,10 +68,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> saveToken(String token) async {
-    SharedPreferences globalPrefs = await SharedPreferences.getInstance();
-    await globalPrefs.setString('token', token);
-  }
+
   void saveCache(String username, String password, String token) {
     final cacheValue = caesarCipherEncode(makeCache(username, password), 2);
     WriteCache.setString(key: "cache", value: cacheValue);
