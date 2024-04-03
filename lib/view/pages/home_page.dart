@@ -1,3 +1,4 @@
+import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -30,8 +31,8 @@ class _HomePageState extends State<HomePage> {
    int currentTruckNumber = 0;
    int truckCapacity = 0;
    int currentothersNumber = 0;
-    int othersCapacity = 0;
-   final String authToken = "8|fQgXnTLbUem7bYwc0xV6IsvOYaEkCjZZDxEdBTvW5cbf90d0";
+  int othersCapacity = 0;
+   String authToken = "";
 
   @override
   void initState() {
@@ -55,6 +56,7 @@ class _HomePageState extends State<HomePage> {
 
  Future<void> fetchVehicleData(String vehicleType, String vehicleTypeId) async {
    print("Got vehicle types");
+   authToken = await ReadCache.getString(key: "token");
     final response = await http.get(
       Uri.parse('https://parking-kori.rpu.solutions/api/v1/get/vehicle-types'),
       headers: <String, String>{

@@ -10,7 +10,6 @@ import 'package:parking_kori/view/widgets/page_title.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AddVehicle extends StatefulWidget {
   final String vehicleType; // Define a variable to hold the vehicle type
