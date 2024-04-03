@@ -6,7 +6,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.3.1 <4.0.0'
+  sdk: '>=3.2.5 <4.0.0'
 
 
 dependencies:
@@ -18,9 +18,10 @@ dependencies:
   mobile_scanner: ^4.0.1
   pretty_qr_code: ^3.3.0
   flutter_barcode_scanner: ^2.0.0
-  device_info_plus: ^10.0.1
+  device_info_plus: ^9.1.2
   sunmi_printer_plus: ^2.1.2
-  http: ^1.2.1
+  http: ^1.2.0
+  sqflite: ^2.3.2
 
 dev_dependencies:
   flutter_test:
