@@ -7,6 +7,8 @@ import 'package:parking_kori/view/widgets/back_button.dart';
 import 'package:parking_kori/view/widgets/input_with_icon_image.dart';
 import 'package:parking_kori/view/widgets/page_title.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class AddVehicle extends StatefulWidget {
   final String vehicleType; // Define a variable to hold the vehicle type
@@ -36,12 +38,48 @@ class _AddVehicleState extends State<AddVehicle> {
     Navigator.pop(context);
   }
 
-  void send_registration_number_and_get_booking_number(){
-    //TODO send registrationnumber.text and get booking number
-    //Sample data here
-    booking_num = registrationnumber.text+"1aa1";
-  }
 
+  void send_registration_number_and_get_booking_number() async {
+    try {
+      String url = 'https://parking-kori.rpu.solutions/api/v1/new-booking';
+      String registrationNumber = registrationnumber.text;
+
+      // Request body data
+      Map<String, dynamic> requestData = {
+        "vehicle_type": "1",
+        "car_reg": registrationNumber,
+        "agent_id": "2",
+        "location": "1"
+      };
+
+      // Include the bearer token in the request headers
+      String token = "1|I96d9BXq3vZUP8ZKtV81aZnxFoEzVs08HFIm0gx1939fb826";
+
+      // Send POST request to backend with the bearer token in headers
+      http.Response response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(requestData),
+      );
+
+      if (response.statusCode == 200) {
+        String bookingNumber = response.body;
+        // Do something with booking number, maybe save it or show it in UI
+        setState(() {
+          booking_num = bookingNumber;
+        });
+      } else {
+        // Request failed
+        print('Failed to send registration number. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Exception occurred
+      print('Error sending registration number: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
