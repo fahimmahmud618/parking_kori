@@ -32,17 +32,7 @@ class Sunmi {
     return await readFileBytes(iconPath);
   }
 
-  // print text passed as parameter
-  Future<void> printHeadline(String text) async {
-    await SunmiPrinter.lineWrap(2); // creates one line space
-    await SunmiPrinter.printText(text,
-        style: SunmiStyle(
-          fontSize: SunmiFontSize.LG,
-          bold: true,
-          align: SunmiPrintAlign.CENTER,
-        ));
-    await SunmiPrinter.lineWrap(1); // creates one line space
-  }
+
   Future<void> printText(String text) async {
     await SunmiPrinter.lineWrap(1); // creates one line space
     await SunmiPrinter.printText(text,
@@ -60,7 +50,7 @@ class Sunmi {
     await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
     await SunmiPrinter.lineWrap(1); // creates one line space
     await SunmiPrinter.printQRCode(text);
-    await SunmiPrinter.lineWrap(4); // creates one line space
+    // await SunmiPrinter.lineWrap(4); // creates one line space
   }
 
   // print row and 2 columns
@@ -104,7 +94,7 @@ class Sunmi {
   Future<void> printReceipt(String booking_num) async {
     await initialize();
     // await printLogoImage();
-    await printHeadline("PARKING - Entry Receipt");
+    await printText("PARKING - Entry Receipt");
     await printText("Vehicle: Toyota Corolla - 255310");
     await printRowAndColumns(
         column1: "Entry", column2: "Time", column3: "10.30 AM");

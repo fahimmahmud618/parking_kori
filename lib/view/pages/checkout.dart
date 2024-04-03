@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parking_kori/view/pages/home_page.dart';
+import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
@@ -22,16 +23,32 @@ class _CHeckOutPageState extends State<CHeckOutPage> {
 
   void load_data(String bookingNum){
     //TODO: Fetch from api, Dummy data here
+    DateTime currentTime = DateTime.now();
+
     registration_num="2212";
     entry_time="11:43 am";
-    exit_time="12:43 am";
+    exit_time= formatDate(currentTime);
     ticket_num="112-112-223-333";
     payment_amount=150;
   }
 
+  String formatDate(DateTime dateTime) {
+    // Format the time as "hh:mm a" (12-hour format with AM/PM)
+    String formattedTime = '${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')} ${dateTime.hour < 12 ? 'am' : 'pm'}';
+
+    // Adjust hours for 12-hour format
+    if (dateTime.hour == 0) {
+      formattedTime = '12:$formattedTime';
+    } else if (dateTime.hour > 12) {
+      formattedTime = '${dateTime.hour - 12}:$formattedTime';
+    }
+
+    return formattedTime;
+  }
+
   void checkout(){
     //TODO save in db
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>MainPage()));
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:parking_kori/view/pages/dashboard.dart';
 import 'package:parking_kori/view/pages/home_page.dart';
+import 'package:parking_kori/view/pages/login_page.dart';
 import 'package:parking_kori/view/pages/park_log.dart';
 import 'package:parking_kori/view/pages/profile.dart';
 import 'package:parking_kori/view/pages/shift.dart';
@@ -16,6 +17,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int myIndex=0;
   List<Widget> widgetList = const[
+    LoginPage(),
     HomePage(),
     ShiftPage(),
     ParkLog(),
