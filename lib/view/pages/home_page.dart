@@ -17,14 +17,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late int currentCarNumber = 0;
-  late int carCapacity = 0;
-  late int currentBikeNumber = 0;
-  late int bikeCapacity = 0;
-  late int currentCycleNumber = 0;
-  late int cycleCapacity = 0;
-  late int currentCNGNumber = 0;
-  late int cngCapacity = 0;
+   int currentCarNumber = 0;
+   int carCapacity = 0;
+   int currentMotorCycleNumber = 0;
+   int MotorCycleCapacity = 0;
+   int currentCycleNumber = 0;
+   int cycleCapacity = 0;
+   int currentCNGNumber = 0;
+   int cngCapacity = 0;
+   int currentPickUpNumber = 0;
+   int pickUpCapacity = 0;
+   int currentTruckNumber = 0;
+   int truckCapacity = 0;
+   final String authToken = "1|I96d9BXq3vZUP8ZKtV81aZnxFoEzVs08HFIm0gx1939fb826";
 
   @override
   void initState() {
@@ -32,7 +37,7 @@ class _HomePageState extends State<HomePage> {
     fetchData();
   }
 
-  Future<void> fetchData() async {
+   Future<void> fetchData() async {
     // Fetch data for car
     await fetchVehicleData('car', '1');
 
@@ -46,13 +51,17 @@ class _HomePageState extends State<HomePage> {
     await fetchVehicleData('CNG', '4');
   }
 
-  Future<void> fetchVehicleData(String vehicleType, String vehicleTypeId) async {
-    final response = await http.get(Uri.parse(
-        'https://parking-kori.rpu.solutions/api/v1/get/vehicle-types'));
-        final test = await http.get(Uri.parse(
-        'https://parking-kori.rpu.solutions/api/v1/get/vehicle-types/vehicle_type_id=1'));
-        // print("TESTING");
-        print(test.toString());
+ Future<void> fetchVehicleData(String vehicleType, String vehicleTypeId) async {
+   print("Got vehicle types");
+    final response = await http.get(
+      Uri.parse('https://parking-kori.rpu.solutions/api/v1/get/vehicle-types'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $authToken',
+      },
+    );
+   
+    print(response.body);
+
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       setState(() {
@@ -62,8 +71,8 @@ class _HomePageState extends State<HomePage> {
             carCapacity = data['capacity'];
             break;
           case 'bike':
-            currentBikeNumber = data['current_number'];
-            bikeCapacity = data['capacity'];
+            currentMotorCycleNumber = data['current_number'];
+            MotorCycleCapacity = data['capacity'];
             break;
           case 'cycle':
             currentCycleNumber = data['current_number'];
@@ -111,7 +120,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 ParkingInfoCard(context, carLogo, "Car", currentCarNumber, carCapacity,add_car ),
                 SizedBox(width: 20,),
-                ParkingInfoCard(context, bikeLogo, "Bike", currentBikeNumber, bikeCapacity, add_bike),
+                ParkingInfoCard(context, bikeLogo, "Bike", currentMotorCycleNumber, MotorCycleCapacity, add_bike),
               ],
             ),
             Row(
