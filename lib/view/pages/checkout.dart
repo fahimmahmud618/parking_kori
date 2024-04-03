@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parking_kori/view/pages/home_page.dart';
+import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/dashboard_info_card.dart';
@@ -42,6 +43,7 @@ class _CHeckOutPageState extends State<CHeckOutPage> {
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
       body: Container(
+        padding: EdgeInsets.all( get_screenWidth(context) * 0.1),
         child: Column(
           children: [
             AppBarWidget(context, "Checkout"),
