@@ -33,6 +33,16 @@ class Sunmi {
   }
 
   // print text passed as parameter
+  Future<void> printHeadline(String text) async {
+    await SunmiPrinter.lineWrap(2); // creates one line space
+    await SunmiPrinter.printText(text,
+        style: SunmiStyle(
+          fontSize: SunmiFontSize.LG,
+          bold: true,
+          align: SunmiPrintAlign.CENTER,
+        ));
+    await SunmiPrinter.lineWrap(1); // creates one line space
+  }
   Future<void> printText(String text) async {
     await SunmiPrinter.lineWrap(1); // creates one line space
     await SunmiPrinter.printText(text,
@@ -94,12 +104,12 @@ class Sunmi {
   Future<void> printReceipt(String booking_num) async {
     await initialize();
     // await printLogoImage();
-    await printText("PARKING - Entry Receipt");
+    await printHeadline("PARKING - Entry Receipt");
     await printText("Vehicle: Toyota Corolla - 255310");
     await printRowAndColumns(
         column1: "Entry", column2: "Time", column3: "10.30 AM");
-        await printText("Ticket number - 1234");
-    AddVehicle addVehicle = AddVehicle(vehicleType: 'Bike',);
+    await printText("Ticket number - 1234");
+    // AddVehicle addVehicle = AddVehicle(vehicleType: 'Bike',);
     await printQRCode(booking_num);
     //await SunmiPrinter.cut();
     await printText("Developed by: Parking Kori");
