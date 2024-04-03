@@ -1,5 +1,6 @@
 import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/material.dart';
+import 'package:parking_kori/sunmi.dart';
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
@@ -32,6 +33,8 @@ class _AddVehicleState extends State<AddVehicle> {
       isQRGenerated=true;
     });
     //TODO: Print machanism here
+    Sunmi printer = Sunmi();
+    printer.printReceipt(booking_num);
   }
 
   void go_back(){
