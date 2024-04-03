@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:parking_kori/cache_handler.dart';
 import 'package:parking_kori/view/pages/home_page.dart';
+import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/alert_dialog.dart';
 import 'package:parking_kori/view/widgets/input_with_icon_image.dart';
@@ -49,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
         saveCache(username, password);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => MainPage()),
         );
       } else {
         // Login failed, show error message
