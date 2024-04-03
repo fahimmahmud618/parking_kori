@@ -1,3 +1,4 @@
+import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/material.dart';
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/styles.dart';
@@ -8,6 +9,7 @@ import 'package:parking_kori/view/widgets/page_title.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddVehicle extends StatefulWidget {
   final String vehicleType; // Define a variable to hold the vehicle type
@@ -21,6 +23,7 @@ class AddVehicle extends StatefulWidget {
 class _AddVehicleState extends State<AddVehicle> {
   bool isQRGenerated = false;
   String booking_num="";
+  String token='';
   TextEditingController registrationnumber = new TextEditingController();
 
   void generate_qr_and_print(){
@@ -40,6 +43,7 @@ class _AddVehicleState extends State<AddVehicle> {
     try {
       String url = 'https://parking-kori.rpu.solutions/api/v1/new-booking';
       String registrationNumber = registrationnumber.text;
+      token = await ReadCache.getString(key: "token");
 
       // Request body data
       Map<String, dynamic> requestData = {
@@ -48,9 +52,6 @@ class _AddVehicleState extends State<AddVehicle> {
         "agent_id": "2",
         "location": "1"
       };
-
-      // Include the bearer token in the request headers
-      String token = "1|I96d9BXq3vZUP8ZKtV81aZnxFoEzVs08HFIm0gx1939fb826";
 
       // Send POST request to backend with the bearer token in headers
       http.Response response = await http.post(

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:cache_manager/core/write_cache_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:parking_kori/cache_handler.dart';
 import 'package:parking_kori/view/pages/home_page.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
@@ -12,6 +11,7 @@ import 'package:parking_kori/view/widgets/input_with_icon_image.dart';
 import 'package:parking_kori/view/widgets/page_title.dart';
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/styles.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -46,8 +46,15 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (response.statusCode == 200) {
-        // Login successful, save cache and navigate to home page
-        saveCache(username, password);
+        // Parse response JSON
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        String token = responseData['token'];
+
+        // Save token to shared preferences
+        saveCache(username, password, token);
+        // await saveToken(token);
+
+        // Navigate to the home page
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => MainPage()),
@@ -63,9 +70,14 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void saveCache(String username, String password) {
+  Future<void> saveToken(String token) async {
+    SharedPreferences globalPrefs = await SharedPreferences.getInstance();
+    await globalPrefs.setString('token', token);
+  }
+  void saveCache(String username, String password, String token) {
     final cacheValue = caesarCipherEncode(makeCache(username, password), 2);
     WriteCache.setString(key: "cache", value: cacheValue);
+    WriteCache.setString(key: "token", value: token);
   }
 
   @override

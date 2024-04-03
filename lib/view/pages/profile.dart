@@ -13,9 +13,11 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   String currentUser="";
+  String token='';
   Future<void> fetchDataFromCache() async {
     try {
       currentUser = await ReadCache.getString(key: "cache") ;
+      token = await ReadCache.getString(key: "token");
       setState(() {
         currentUser = getUserNameFromChache(caesarCipherDecode(currentUser,2));
       });
