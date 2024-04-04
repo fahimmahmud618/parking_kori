@@ -34,21 +34,23 @@ class _ProfilePageState extends State<ProfilePage> {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          AppBarWidget(context, "Profile"),
-          Container(
-            padding: EdgeInsets.all( get_screenWidth(context) * 0.1),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Hi, $currentUser", style: nameTitleStyle(context, myred),)
-              ],
+    return SafeArea(
+      child: Scaffold(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            AppBarWidget(context, "Profile"),
+            Container(
+              padding: EdgeInsets.all( get_screenWidth(context) * 0.1),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Hi, $currentUser", style: nameTitleStyle(context, myred),)
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

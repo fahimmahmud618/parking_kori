@@ -74,27 +74,31 @@ class _CHeckOutPageState extends State<CHeckOutPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(child: Scaffold(
-      body: Container(
-        padding: EdgeInsets.all( get_screenWidth(context) * 0.1),
-        child: Column(
-          children: [
-            AppBarWidget(context, "Checkout"),
-            Expanded(
-              child: Center(
-                child: Column(
-                  children: [
-                    DashboardInfoCard(context, "Booking Number", registration_num),
-                    DashboardInfoCard(context, "Invoice Number", ticket_num),
-                    DashboardInfoCard(context, "Arrived At", entry_time),
-                    DashboardInfoCard(context, "Exit At", exit_time),
-                    DashboardInfoCard(context, "Payable Amount", payment_amount.toString()),
-                    ActionButton(context, "Checkout", checkout),
-                  ],
+      body: Column(
+        children: [
+          AppBarWidget(context, "Checkout"),
+          Container(
+            padding: EdgeInsets.all( get_screenWidth(context) * 0.1),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      children: [
+                        DashboardInfoCard(context, "Booking Number", registration_num),
+                        DashboardInfoCard(context, "Invoice Number", ticket_num),
+                        DashboardInfoCard(context, "Arrived At", entry_time),
+                        DashboardInfoCard(context, "Exit At", exit_time),
+                        DashboardInfoCard(context, "Payable Amount", payment_amount.toString()),
+                        ActionButton(context, "Checkout", checkout),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     ));
   }
