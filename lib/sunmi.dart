@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
+
 
 import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:parking_kori/view/pages/add_vehicle.dart';
 import 'package:sunmi_printer_plus/enums.dart';
 import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
 import 'package:sunmi_printer_plus/sunmi_style.dart';
@@ -109,6 +112,29 @@ class Sunmi {
     } catch (e) {
       print('Error fetching booking details: $e');
     }
+  }
+ Future<void> printInvoice(String registration_num, String entry_time, String exit_time, String ticket_num, String payment_amount ) async {
+    String authToken = await ReadCache.getString(key: "token");
+    print("Printing function called");
+
+
+          await initialize();
+          // await printLogoImage();
+          await printHeadline(" EkShop");
+          await printText("PARKING Entry Receipt");
+          
+          await printText("Entry: $entry_time");
+          await printText("Exit: $exit_time");
+          await printHeadline("Parking Bill: $payment_amount"); 
+          await printText("Ticket No: $ticket_num");
+          // await printQRCode(num);
+          // await printText("{$vehicleType}: $vehicleRegNumber");
+          await printText("Developed by ParkingKori");
+          await printText("");
+          await closePrinter();
+      
+      // print('Error fetching booking details: $e');
+    
   }
 
   Future<void> closePrinter() async {

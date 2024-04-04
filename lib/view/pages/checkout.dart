@@ -1,9 +1,8 @@
-// ignore_for_file: non_constant_identifier_names, unused_local_variable
-
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:parking_kori/sunmi.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
@@ -12,7 +11,7 @@ import 'package:parking_kori/view/widgets/dashboard_info_card.dart';
 import 'package:cache_manager/core/read_cache_service.dart';
 
 class CheckOutPage extends StatefulWidget {
-  const CheckOutPage({super.key, required this.booking_num});
+  const CheckOutPage({Key? key, required this.booking_num}) : super(key: key);
   final String booking_num;
 
   @override
@@ -20,26 +19,23 @@ class CheckOutPage extends StatefulWidget {
 }
 
 class _CheckOutPageState extends State<CheckOutPage> {
-   String registration_num = '';
-   String entry_time= '';
-   String exit_time = '';
-   String ticket_num = '';
-   String payment_amount = '';
+  String registration_num = '';
+  String entry_time = '';
+  String exit_time = '';
+  String ticket_num = '';
+  String payment_amount = '';
 
-     Future<void> load_data(String bookingNum) async {
+  Future<void> load_data(String bookingNum) async {
     try {
       String url = 'https://parking-kori.rpu.solutions/api/v1/park-out';
       String token = await ReadCache.getString(key: "token");
 
-      // HttpClient with badCertificateCallback to bypass SSL certificate verification
-      final client = HttpClient();
-      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      // Override the validateCertificate method to bypass SSL certificate validation
+      HttpOverrides.global = MyHttpOverrides();
 
       Map<String, dynamic> requestData = {
         "booking_number": bookingNum,
       };
-
-      // print(jsonEncode(requestData));
 
       http.Response response = await http.post(
         Uri.parse(url),
@@ -50,7 +46,6 @@ class _CheckOutPageState extends State<CheckOutPage> {
         body: jsonEncode(requestData),
       );
       if (response.statusCode == 200) {
-        print("200 paisee....................................................");
         Map<String, dynamic> responseData = jsonDecode(response.body);
         setState(() {
           registration_num = responseData['data']['booking_number'];
@@ -58,21 +53,24 @@ class _CheckOutPageState extends State<CheckOutPage> {
           exit_time = responseData['data']['park_out_time'];
           ticket_num = responseData['data']['invoice_number'];
           payment_amount = responseData['data']['sub_total'].toString();
-          // print(registration_num + entry_time + exit_time + payment_amount);
         });
       } else {
-        // Request failed
         print('Failed to CHECKOUT. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      // Exception occurred
       print('Error sending CHECKOUT request: $e');
     }
   }
 
   void checkout() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => MainPage()));
+    Sunmi printer = Sunmi();
+    printer.printInvoice(registration_num,entry_time,exit_time,ticket_num,payment_amount);
+    print(registration_num);
+    print("-----------------------");
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => MainPage()),
+    );
   }
 
   @override
@@ -90,7 +88,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
             children: [
               AppBarWidget(context, "Checkout"),
               Container(
-                padding: EdgeInsets.all(get_screenWidth(context)*0.05),
+                padding: EdgeInsets.all(get_screenWidth(context) * 0.05),
                 child: Expanded(
                   child: Center(
                     child: Column(
@@ -113,5 +111,14 @@ class _CheckOutPageState extends State<CheckOutPage> {
         ),
       ),
     );
+  }
+}
+
+// Custom HttpOverrides class to bypass SSL certificate validation
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }
