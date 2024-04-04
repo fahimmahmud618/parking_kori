@@ -7,6 +7,7 @@ Widget AppBarWidget(BuildContext context, String title) {
   return Container(
     padding: EdgeInsets.fromLTRB(20, 10, 10, 10),
     color: myred,
+
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

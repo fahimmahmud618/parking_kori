@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/pages/add_vehicle.dart';
 import 'package:parking_kori/view/pages/park_out_page.dart';
+import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/parking_info_card.dart';
@@ -179,45 +180,38 @@ class _HomePageState extends State<HomePage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              AppBarWidget(context, "Home"),
+              AppBarWidget(context, "Parking"),
+              SizedBox(
+                height: get_screenWidth(context)*0.05,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ParkingInfoCard(context, carLogo, "Car", currentCarNumber,
                       carCapacity, add_car),
-                  SizedBox(
-                    width: 20,
-                  ),
                   ParkingInfoCard(context, bikeLogo, "Bike",
                       currentMotorCycleNumber, MotorCycleCapacity, add_bike),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
                   ParkingInfoCard(context, cycleLogo, "Cycle", currentCycleNumber,
                       cycleCapacity, add_cycle),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  ParkingInfoCard(context, cngLogo, "CNG", currentCNGNumber,
-                      cngCapacity, add_cng),
                 ],
               ),
+              SizedBox(height: get_screenWidth(context)*0.03,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+
+                  ParkingInfoCard(context, cngLogo, "CNG", currentCNGNumber,
+                      cngCapacity, add_cng),
                   ParkingInfoCard(context, pickupLogo, "Pickup",
                       currentPickUpNumber, pickUpCapacity, add_pickup),
-                  SizedBox(
-                    width: 20,
-                  ),
                   ParkingInfoCard(context, othersLogo, "Others",
                       currentothersNumber, othersCapacity, add_others),
                 ],
+
               ),
+
               SizedBox(
-                height: 40,
+                height: get_screenWidth(context)*0.05,
               ),
               ActionButton2(context, "Park Out", go_to_park_out),
             ],

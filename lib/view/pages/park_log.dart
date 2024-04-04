@@ -37,13 +37,7 @@ class _ParkLogState extends State<ParkLog> {
       throw Exception('Failed to load data park log');
     }
 
-    //****** asumme kortesi je sob data bookings array te chole eseche setstate er maddhome *********
-    setState(() {
-      notPresentBookings =
-          bookings.where((element) => !element.isPresent).toList();
-      presentBookings =
-          bookings.where((element) => element.isPresent).toList();
-    });
+   
   }
 
   @override

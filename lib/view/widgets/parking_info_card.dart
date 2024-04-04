@@ -53,7 +53,7 @@ Widget ParkingInfoCard(BuildContext context, String icon, String vehicleType,
           ),
           Text(
             vehicleType,
-            style: boldTextStyle(context, myBlack),
+            style: boldTextStyle(context, myred),
           ),
           Text(
             "$presentCount/$capacity",

@@ -104,6 +104,9 @@ class _AddVehicleState extends State<AddVehicle> {
                   get_screenWidth(context) * 0.1, 0, 0),
               child: BackOption(context, go_back),
             ),
+            SizedBox(
+              height: get_screenWidth(context)*0.05,
+            ),
             Center(
               child: Container(
                 padding: EdgeInsets.symmetric(

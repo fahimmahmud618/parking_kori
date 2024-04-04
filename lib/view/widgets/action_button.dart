@@ -32,15 +32,14 @@ Widget ActionButton2(BuildContext context, String text, action){
     margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
     padding: EdgeInsets.fromLTRB(2, 16, 2, 16),
     decoration: BoxDecoration(
-        color: myred,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.black.withOpacity(0.5))
+        border: Border.all(color: myred,width: 3)
     ),
     child: TextButton(
       onPressed: action,
       child: Text(
         text,
-        style: nameTitleStyle(context, myWhite),
+        style: nameTitleStyle(context, myBlack),
       ),
     ),
   );

@@ -17,9 +17,9 @@ class _MainPageState extends State<MainPage> {
   int myIndex=0;
   List<Widget> widgetList = const[
     HomePage(),
-    ShiftPage(),
+    //ShiftPage(),
     ParkLog(),
-    DashBoardPage(),
+    //DashBoardPage(),
     ProfilePage(),
   ];
   @override
@@ -44,9 +44,9 @@ class _MainPageState extends State<MainPage> {
         type: BottomNavigationBarType.fixed,
         items: [
           BottomNavigationBarItem(label: "Parking", icon: Icon(Icons.directions_bike, ), backgroundColor: myred),
-          BottomNavigationBarItem(label: "Shift", icon: Icon(Icons.dataset_outlined), backgroundColor: myred),
+        //  BottomNavigationBarItem(label: "Shift", icon: Icon(Icons.dataset_outlined), backgroundColor: myred),
           BottomNavigationBarItem(label: "Park log", icon: Icon(Icons.history)),
-          BottomNavigationBarItem(label: "Dashboard", icon: Icon(Icons.dashboard)),
+        //  BottomNavigationBarItem(label: "Dashboard", icon: Icon(Icons.dashboard)),
           BottomNavigationBarItem(label: "Profile", icon: Icon(Icons.person)),
         ],
       ),
