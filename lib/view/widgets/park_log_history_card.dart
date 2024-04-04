@@ -29,11 +29,12 @@ Widget ParkLogHistoryCard(BuildContext context, Booking booking) {
                 ),
                 booking.isPresent
                     ? Text(
-                        "Out time: ${booking.out_time}",
+                        "Present",
                         style: normalTextStyle(context, myBlack),
                       )
                     : Text(
-                        "Present",
+                        "Out time: ${booking.out_time}",
+                      
                         style: boldTextStyle(context, myBlack),
                       ),
               ],

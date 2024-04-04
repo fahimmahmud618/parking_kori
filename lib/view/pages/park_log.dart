@@ -40,9 +40,10 @@ class _ParkLogState extends State<ParkLog> {
         String registrationNumber = bookingData['vehicle_reg_number'];
         String inTime = bookingData['park_in_time'];
         String outTime = "";
-        bool isPresent = bookingData['status'] == 'pending';
+        bool isPresent = true;
 
-        presentBookings.add(Booking(
+        setState(() {
+          presentBookings.add(Booking(
           booking_id: bookingId,
           vehicle_type: vehicleType,
           registration_number: registrationNumber,
@@ -50,6 +51,8 @@ class _ParkLogState extends State<ParkLog> {
           out_time: outTime,
           isPresent: isPresent,
         ));
+        });
+        
       }
 
       // Print the present bookings
@@ -71,8 +74,8 @@ class _ParkLogState extends State<ParkLog> {
       },
     );
 
-    if (responseParkin.statusCode == 200) {
-      Map<String, dynamic> responseData = json.decode(responseParkin.body);
+    if (responseParkOut.statusCode == 200) {
+      Map<String, dynamic> responseData = json.decode(responseParkOut.body);
       List<dynamic> bookingsData = responseData['booking'];
       for (var bookingData in bookingsData) {
         String bookingId = bookingData['id'].toString();
@@ -80,9 +83,10 @@ class _ParkLogState extends State<ParkLog> {
         String registrationNumber = bookingData['vehicle_reg_number'];
         String inTime = bookingData['park_in_time'];
         String outTime =  bookingData['park_out_time'];
-        bool isPresent = bookingData['status'] == 'pending';
+        bool isPresent = false;
 
-        presentBookings.add(Booking(
+        setState(() {
+          notPresentBookings.add(Booking(
           booking_id: bookingId,
           vehicle_type: vehicleType,
           registration_number: registrationNumber,
@@ -90,10 +94,12 @@ class _ParkLogState extends State<ParkLog> {
           out_time: outTime,
           isPresent: isPresent,
         ));
+        });
+        
       }
 
       // Print the present bookings
-      for (var booking in presentBookings) {
+      for (var booking in notPresentBookings) {
         print('Booking ID: ${booking.booking_id}');
         print('Vehicle Type: ${booking.vehicle_type}');
         print('Is Present: ${booking.isPresent}');
@@ -178,10 +184,10 @@ class _ParkLogState extends State<ParkLog> {
                   ),
                   Column(
                     children: isParkedInSelected
-                        ? notPresentBookings
+                        ? presentBookings
                             .map((e) => ParkLogHistoryCard(context, e))
                             .toList()
-                        : presentBookings
+                        : notPresentBookings
                             .map((e) => ParkLogHistoryCard(context, e))
                             .toList(),
                   )
