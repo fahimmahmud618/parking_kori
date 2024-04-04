@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names, unused_local_variable
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
@@ -19,21 +20,23 @@ class CheckOutPage extends StatefulWidget {
 }
 
 class _CheckOutPageState extends State<CheckOutPage> {
-  String registration_num = '';
-  String entry_time = '';
-  String exit_time = '';
-  String ticket_num = '';
-  String payment_amount = '';
+   String registration_num = '';
+   String entry_time= '';
+   String exit_time = '';
+   String ticket_num = '';
+   String payment_amount = '';
 
-  void load_data(String bookingNum) async {
-    print("kireeeee----------------------------------------");
+     Future<void> load_data(String bookingNum) async {
     try {
       String url = 'https://parking-kori.rpu.solutions/api/v1/park-out';
       String token = await ReadCache.getString(key: "token");
-      print(bookingNum);
+
+      // HttpClient with badCertificateCallback to bypass SSL certificate verification
+      final client = HttpClient();
+      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
 
       Map<String, dynamic> requestData = {
-        "booking_number": bookingNum,
+        "booking_num": bookingNum,
       };
 
       // print(jsonEncode(requestData));
