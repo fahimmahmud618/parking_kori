@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names, unused_local_variable
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
@@ -25,30 +26,34 @@ class _CheckOutPageState extends State<CheckOutPage> {
    String ticket_num = '';
    double payment_amount = 0;
 
-  void load_data(String bookingNum) async {
+     Future<void> load_data(String bookingNum) async {
     try {
       String url = 'https://parking-kori.rpu.solutions/api/v1/park-out';
       String token = await ReadCache.getString(key: "token");
+
+      // HttpClient with badCertificateCallback to bypass SSL certificate verification
+      final client = HttpClient();
+      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
 
       Map<String, dynamic> requestData = {
         "booking_num": bookingNum,
       };
 
-      http.Response response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(requestData),
-      );
+      final request = await client.postUrl(Uri.parse(url));
+      request.headers.set('Content-Type', 'application/json');
+      request.headers.set('Authorization', 'Bearer $token');
+      request.write(jsonEncode(requestData));
+
+      final response = await request.close();
       if (response.statusCode == 200) {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
-        String registration_num = responseData['data']['booking_number'];
-        String entry_time = responseData['data']['park_in_time'];
-        String exit_time = responseData['data']['park_out_time'];
-        String ticket_num = responseData['data']['invoice_number'];
-        String payment_amount = responseData['data']['sub_total'];
+        Map<String, dynamic> responseData = jsonDecode(await response.transform(utf8.decoder).join());
+        setState(() {
+          registration_num = responseData['data']['booking_number'];
+          entry_time = responseData['data']['park_in_time'];
+          exit_time = responseData['data']['park_out_time'];
+          ticket_num = responseData['data']['invoice_number'];
+          payment_amount = responseData['data']['sub_total'];
+        });
       } else {
         // Request failed
         print('Failed to CHECKOUT. Status code: ${response.statusCode}');
