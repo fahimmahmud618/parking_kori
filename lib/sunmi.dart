@@ -1,12 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-
 import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 
-import 'package:parking_kori/view/pages/add_vehicle.dart';
 import 'package:sunmi_printer_plus/enums.dart';
 import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
 import 'package:sunmi_printer_plus/sunmi_style.dart';
@@ -27,7 +24,8 @@ class Sunmi {
 
   Future<Uint8List> readFileBytes(String path) async {
     ByteData fileData = await rootBundle.load(path);
-    Uint8List fileUnit8List = fileData.buffer.asUint8List(fileData.offsetInBytes, fileData.lengthInBytes);
+    Uint8List fileUnit8List = fileData.buffer
+        .asUint8List(fileData.offsetInBytes, fileData.lengthInBytes);
     return fileUnit8List;
   }
 
@@ -37,20 +35,23 @@ class Sunmi {
 
   Future<void> printText(String text) async {
     await SunmiPrinter.lineWrap(1);
-    await SunmiPrinter.printText(text, style: SunmiStyle(
-      fontSize: SunmiFontSize.MD,
-      bold: true,
-      align: SunmiPrintAlign.CENTER,
-    ));
+    await SunmiPrinter.printText(text,
+        style: SunmiStyle(
+          fontSize: SunmiFontSize.MD,
+          bold: true,
+          align: SunmiPrintAlign.CENTER,
+        ));
     // await SunmiPrinter.lineWrap(1);
   }
+
   Future<void> printHeadline(String text) async {
     await SunmiPrinter.lineWrap(1);
-    await SunmiPrinter.printText(text, style: SunmiStyle(
-      fontSize: SunmiFontSize.LG,
-      bold: true,
-      align: SunmiPrintAlign.CENTER,
-    ));
+    await SunmiPrinter.printText(text,
+        style: SunmiStyle(
+          fontSize: SunmiFontSize.LG,
+          bold: true,
+          align: SunmiPrintAlign.CENTER,
+        ));
     // await SunmiPrinter.lineWrap(1);
   }
 
@@ -62,6 +63,7 @@ class Sunmi {
     await SunmiPrinter.printQRCode(text);
   }
 
+
   Future<void> printReceipt(String bookingNumber) async {
     String authToken = await ReadCache.getString(key: "token");
     print("Printing function called");
@@ -69,18 +71,21 @@ class Sunmi {
     try {
       // Make an HTTP GET request to the backend API endpoint
       final client = HttpClient();
-      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true; // Bypass SSL certificate verification
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) =>
+              true; // Bypass SSL certificate verification
       final request = await client.getUrl(
-        Uri.parse('https://parking-kori.rpu.solutions/api/v1/get-booking?booking_number=$bookingNumber'),
+        Uri.parse(
+            'https://parking-kori.rpu.solutions/api/v1/get-booking?booking_number=$bookingNumber'),
       );
       request.headers.add('Authorization', 'Bearer $authToken');
       final response = await request.close();
-      
+
       print(response.statusCode);
-      
-      
+
       if (response.statusCode == 200) {
-        final String responseBody = await response.transform(utf8.decoder).join();
+        final String responseBody =
+            await response.transform(utf8.decoder).join();
         final Map<String, dynamic> data = json.decode(responseBody);
         final bookingDetails = data['booking'][0];
         print('Booking details: $bookingDetails');
@@ -90,7 +95,9 @@ class Sunmi {
           String parkInTime = bookingDetails['park_in_time'] ?? '';
           String address = bookingDetails['location']['address'] ?? '';
           String num = bookingDetails['booking_number'] ?? '';
-          String vehicleType = bookingDetails['vehicle_type']['title'] ?? ''; 
+          String vehicleType = bookingDetails['vehicle_type']['title'] ?? '';
+          // parking_location = bookingDetails['location']['title'] ?? '';
+
 
           await initialize();
           // await printLogoImage();
@@ -113,27 +120,33 @@ class Sunmi {
       print('Error fetching booking details: $e');
     }
   }
- Future<void> printInvoice(String registration_num, String entry_time, String exit_time, String ticket_num, String payment_amount , String location, String address) async {
-    String authToken = await ReadCache.getString(key: "token");
+
+  Future<void> printInvoice(
+      String registration_num,
+      String entry_time,
+      String exit_time,
+      String ticket_num,
+      String payment_amount,
+      String location,
+      String address) async {
     print("Printing function called");
 
-          await initialize();
-          // await printLogoImage();
-          await printHeadline(location);
-          await printText("PARKING Entry Receipt");
-          
-          await printText("Entry: $entry_time");
-          await printText("Exit: $exit_time");
-          await printHeadline("Parking Bill: $payment_amount"); 
-          await printText("Ticket No: $ticket_num");
-          // await printQRCode(num);
-          // await printText("{$vehicleType}: $vehicleRegNumber");
-          await printText("Developed by ParkingKori");
-          await printText("");
-          await closePrinter();
-      
-      // print('Error fetching booking details: $e');
-    
+    await initialize();
+    // await printLogoImage();
+    await printHeadline(location);
+    await printText("PARKING Entry Receipt");
+
+    await printText("Entry: $entry_time");
+    await printText("Exit: $exit_time");
+    await printHeadline("Parking Bill: $payment_amount");
+    await printText("Ticket No: $ticket_num");
+    // await printQRCode(num);
+    // await printText("{$vehicleType}: $vehicleRegNumber");
+    await printText("Developed by ParkingKori");
+    await printText("");
+    await closePrinter();
+
+    // print('Error fetching booking details: $e');
   }
 
   Future<void> closePrinter() async {

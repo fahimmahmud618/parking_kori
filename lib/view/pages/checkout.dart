@@ -65,25 +65,29 @@ class _CheckOutPageState extends State<CheckOutPage> {
   }
 
   Future<void> load_invoice_data(String bookingNum) async {
+    String authToken = await ReadCache.getString(key: "token");
     try {
-      String url =
-          'https://parking-kori.rpu.solutions/api/v1/get-booking?booking_number=$bookingNum';
-      String token = await ReadCache.getString(key: "token");
-
-      HttpOverrides.global = MyHttpOverrides();
-
-      http.Response response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+      final client = HttpClient();
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) =>
+              true; // Bypass SSL certificate verification
+      final request = await client.getUrl(
+        Uri.parse(
+            'https://parking-kori.rpu.solutions/api/v1/get-booking?booking_number=$bookingNum'),
       );
+      request.headers.add('Authorization', 'Bearer $authToken');
+      final response = await request.close();
+
       if (response.statusCode == 200) {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
+         final String responseBody =
+            await response.transform(utf8.decoder).join();
+        final Map<String, dynamic> data = json.decode(responseBody);
+        final bookingDetails = data['booking'][0];
+        print('Booking details: $bookingDetails');
+
         setState(() {
-          location = responseData['booking'][0]['location']['title'];
-          address = responseData['booking'][0]['location']['address'];
+          location = bookingDetails['location']['title'];
+          // address =bookingDetails['location']['address'];
           print("----------------------------Location: " + location);
         });
       } else {
