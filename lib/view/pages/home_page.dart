@@ -43,16 +43,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchData() async {
-    // Fetch data for car
     await fetchVehicleData('Car', '1');
-
-    // Fetch data for bike
     await fetchVehicleData('Motor Cycle', '2');
-
-    // Fetch data for cycle
     await fetchVehicleData('CNG', '3');
-
-    // Fetch data for CNG
     await fetchVehicleData('Cycle', '4');
     await fetchVehicleData('Pickup', '5');
     await fetchVehicleData('Others', '6');
@@ -123,42 +116,42 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "car")));
+            builder: (context) => AddVehicle(vehicleType: "1")));
   }
 
   void add_bike() {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "bike")));
+            builder: (context) => AddVehicle(vehicleType: "2")));
   }
 
+ void add_cng() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AddVehicle(vehicleType: "3")));
+  }
   void add_cycle() {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "cycle")));
+            builder: (context) => AddVehicle(vehicleType: "4")));
   }
 
-  void add_cng() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "cng")));
-  }
 
   void add_pickup() {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "pickup")));
+            builder: (context) => AddVehicle(vehicleType: "5")));
   }
 
   void add_others() {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "others")));
+            builder: (context) => AddVehicle(vehicleType: "6")));
   }
 
   void go_to_park_out() {
