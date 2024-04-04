@@ -51,8 +51,7 @@ class _HomePageState extends State<HomePage> {
     await fetchVehicleData('Others', '6');
   }
 
-  Future<void> fetchVehicleData(
-      String vehicleType, String vehicleTypeId) async {
+  Future<void> fetchVehicleData(String vehicleType, String vehicleTypeId) async {
     authToken = await ReadCache.getString(key: "token");
     final response = await http.get(
       Uri.parse('https://parking-kori.rpu.solutions/api/v1/get/vehicle-types'),
