@@ -98,6 +98,7 @@ class Sunmi {
           await printText("Ticket No: $num");
           await printQRCode(num);
           await printText("Developed by ParkingKori");
+          await printText("");
           await closePrinter();
         } else {
           throw Exception('Booking details not found');
