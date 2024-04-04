@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, non_constant_identifier_names
+import 'dart:io';
 
 import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/parking_info_card.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -39,83 +39,90 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    print("TESTING");
     fetchData();
   }
 
   Future<void> fetchData() async {
-    // Fetch data for car
     await fetchVehicleData('Car', '1');
-
-    // Fetch data for bike
     await fetchVehicleData('Motor Cycle', '2');
-
-    // Fetch data for cycle
     await fetchVehicleData('CNG', '3');
-
-    // Fetch data for CNG
     await fetchVehicleData('Cycle', '4');
     await fetchVehicleData('Pickup', '5');
     await fetchVehicleData('Others', '6');
   }
 
-  Future<void> fetchVehicleData(
-      String vehicleType, String vehicleTypeId) async {
-    authToken = await ReadCache.getString(key: "token");
-    final response = await http.get(
-      Uri.parse('https://parking-kori.rpu.solutions/api/v1/get/vehicle-types'),
-      headers: <String, String>{
-        'Authorization': 'Bearer $authToken',
-      },
-    );
+  Future<void> fetchVehicleData(String vehicleType, String vehicleTypeId) async {
+    try {
+      authToken = await ReadCache.getString(key: "token");
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      // print(data);
-      final vehicleData = data.firstWhere(
-        (element) => element['vehicle_type']['slug'] == vehicleType,
-        orElse: () => null,
+      final client = HttpClient();
+
+      // Set the badCertificateCallback to ignore SSL certificate validation errors
+      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+
+      final request = await client.getUrl(
+        Uri.parse('https://parking-kori.rpu.solutions/api/v1/get/vehicle-types'),
       );
-      if (vehicleData != null) {
-        setState(() {
-          switch (vehicleType) {
-            case 'Car':
-              currentCarNumber = vehicleData['remaining_capacity'];
-              carCapacity = vehicleData['capacity']['capacity'];
-              currentCarNumber = carCapacity - currentCarNumber;
-              break;
-            case 'Motor Cycle':
-              currentMotorCycleNumber = vehicleData['remaining_capacity'];
-              MotorCycleCapacity = vehicleData['capacity']['capacity'];
-              currentMotorCycleNumber = MotorCycleCapacity - currentMotorCycleNumber;
-              break;
-            case 'Cycle':
+      request.headers.set('Authorization', 'Bearer $authToken');
 
-              currentCycleNumber = vehicleData['remaining_capacity'];
-              cycleCapacity = vehicleData['capacity']['capacity'];
-              currentCycleNumber = cycleCapacity - currentCycleNumber;
-              break;
-            case 'CNG':
-              currentCNGNumber = vehicleData['remaining_capacity'];
-              cngCapacity = vehicleData['capacity']['capacity'];
-              currentCNGNumber = cngCapacity - currentCNGNumber;
-              break;
-            case 'Pickup':
-              currentPickUpNumber = vehicleData['remaining_capacity'];
-              pickUpCapacity = vehicleData['capacity']['capacity'];
-              currentPickUpNumber = pickUpCapacity - currentPickUpNumber;
-              break;
-            case 'Others':
-              currentothersNumber = vehicleData['remaining_capacity'];
-              othersCapacity = vehicleData['capacity']['capacity'];
-              currentothersNumber = othersCapacity - currentothersNumber;
-              break;
-            default:
-              break;
-          }
-        });
+      final response = await request.close();
+      
+      // Read and decode the response
+      final responseBody = await response.transform(utf8.decoder).join();
+      // final List<dynamic> data = json.decode(responseBody);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(responseBody);
+        final vehicleData = data.firstWhere(
+          (element) => element['vehicle_type']['slug'] == vehicleType,
+          orElse: () => null,
+        );
+        if (vehicleData != null) {
+          setState(() {
+            switch (vehicleType) {
+              case 'Car':
+                currentCarNumber = vehicleData['remaining_capacity'];
+                carCapacity = vehicleData['capacity']['capacity'];
+                currentCarNumber = carCapacity - currentCarNumber;
+                break;
+              case 'Motor Cycle':
+                currentMotorCycleNumber = vehicleData['remaining_capacity'];
+                MotorCycleCapacity = vehicleData['capacity']['capacity'];
+                currentMotorCycleNumber = MotorCycleCapacity - currentMotorCycleNumber;
+                break;
+              case 'Cycle':
+                currentCycleNumber = vehicleData['remaining_capacity'];
+                cycleCapacity = vehicleData['capacity']['capacity'];
+                currentCycleNumber = cycleCapacity - currentCycleNumber;
+                break;
+              case 'CNG':
+                currentCNGNumber = vehicleData['remaining_capacity'];
+                cngCapacity = vehicleData['capacity']['capacity'];
+                currentCNGNumber = cngCapacity - currentCNGNumber;
+                break;
+              case 'Pickup':
+                currentPickUpNumber = vehicleData['remaining_capacity'];
+                pickUpCapacity = vehicleData['capacity']['capacity'];
+                currentPickUpNumber = pickUpCapacity - currentPickUpNumber;
+                break;
+              case 'Others':
+                currentothersNumber = vehicleData['remaining_capacity'];
+                othersCapacity = vehicleData['capacity']['capacity'];
+                currentothersNumber = othersCapacity - currentothersNumber;
+                break;
+              default:
+                break;
+            }
+          });
+        }
+      } else {
+        throw Exception('Failed to load data for $vehicleType');
       }
-    } else {
-      throw Exception('Failed to load data for $vehicleType');
+
+      // Close the client after the request
+      client.close();
+    } catch (e) {
+      print('Error fetching data: $e');
     }
   }
 
@@ -168,53 +175,55 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-      body: SingleChildScrollView(
+      child: Scaffold(
+        body: SingleChildScrollView(
           child: Column(
-        children: [
-          AppBarWidget(context, "Home"),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ParkingInfoCard(context, carLogo, "Car", currentCarNumber,
-                  carCapacity, add_car),
-              SizedBox(
-                width: 20,
+              AppBarWidget(context, "Home"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ParkingInfoCard(context, carLogo, "Car", currentCarNumber,
+                      carCapacity, add_car),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  ParkingInfoCard(context, bikeLogo, "Bike",
+                      currentMotorCycleNumber, MotorCycleCapacity, add_bike),
+                ],
               ),
-              ParkingInfoCard(context, bikeLogo, "Bike",
-                  currentMotorCycleNumber, MotorCycleCapacity, add_bike),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ParkingInfoCard(context, cycleLogo, "Cycle", currentCycleNumber,
+                      cycleCapacity, add_cycle),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  ParkingInfoCard(context, cngLogo, "CNG", currentCNGNumber,
+                      cngCapacity, add_cng),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ParkingInfoCard(context, pickupLogo, "Pickup",
+                      currentPickUpNumber, pickUpCapacity, add_pickup),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  ParkingInfoCard(context, othersLogo, "Others",
+                      currentothersNumber, othersCapacity, add_others),
+                ],
+              ),
+              SizedBox(
+                height: 40,
+              ),
+              ActionButton2(context, "Park Out", go_to_park_out),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ParkingInfoCard(context, cycleLogo, "Cycle", currentCycleNumber,
-                  cycleCapacity, add_cycle),
-              SizedBox(
-                width: 20,
-              ),
-              ParkingInfoCard(context, cngLogo, "CNG", currentCNGNumber,
-                  cngCapacity, add_cng),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ParkingInfoCard(context, pickupLogo, "Pickup",
-                  currentPickUpNumber, pickUpCapacity, add_pickup),
-              SizedBox(
-                width: 20,
-              ),
-              ParkingInfoCard(context, othersLogo, "Others",
-                  currentothersNumber, othersCapacity, add_others),
-            ],
-          ),
-          SizedBox(
-            height: 40,
-          ),
-          ActionButton2(context, "Park Out", go_to_park_out),
-        ],
-      )),
-    ));
+        ),
+      ),
+    );
   }
 }
