@@ -79,11 +79,12 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Center(
+        resizeToAvoidBottomInset: false, // Set to false to prevent overlapping with the keyboard
+        body: SingleChildScrollView( // Wrap with SingleChildScrollView
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: get_screenWidth(context) * 0.1),
                   child: Column(
@@ -92,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       Image.asset(pkLogo, width: get_screenWidth(context) * 0.3),
                       PageTitle(context, "Log in"),
-                     InputWIthIconImage(
+                      InputWIthIconImage(
                         context,
                         userLogo,
                         usernameController,
@@ -115,8 +116,8 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

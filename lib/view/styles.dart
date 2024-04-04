@@ -20,7 +20,7 @@ Color myBlack = Color(0xff000000);
 TextStyle normalTextStyle (BuildContext context, Color color) {
   return TextStyle(
     color: color,
-    fontSize: get_screenWidth(context)*0.04,
+    fontSize: get_screenWidth(context)*0.035,
     fontFamily: 'Myfont',
     // fontWeight: FontWeight.bold
   );
@@ -29,7 +29,7 @@ TextStyle normalTextStyle (BuildContext context, Color color) {
 TextStyle boldTextStyle (BuildContext context, Color color) {
   return TextStyle(
       color: color,
-      fontSize: get_screenWidth(context)*0.04,
+      fontSize: get_screenWidth(context)*0.035,
       fontWeight: FontWeight.bold,
     fontFamily: 'Myfont',
   );
@@ -39,7 +39,7 @@ TextStyle nameTitleStyle (BuildContext context, Color color) {
   return TextStyle(
       color: color,
       fontFamily: 'Myfont',
-      fontSize: 24*get_scale_factor(context),
+      fontSize: 20*get_scale_factor(context),
       fontWeight: FontWeight.bold
   );
 }
@@ -48,7 +48,7 @@ TextStyle hintTextStyle (BuildContext context, Color color) {
   return TextStyle(
       color: color,
       fontFamily: 'Myfont',
-      fontSize: get_screenWidth(context)*0.03,
+      fontSize: get_screenWidth(context)*0.025,
       fontWeight: FontWeight.bold
   );
 }
