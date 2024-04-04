@@ -20,7 +20,7 @@ dependencies:
   flutter_barcode_scanner: ^2.0.0
   device_info_plus: ^9.1.2
   sunmi_printer_plus: ^2.1.2
-  http: ^1.2.0
+  http: ^1.2.1
   sqflite: ^2.3.2
   shared_preferences: ^2.2.2
 
