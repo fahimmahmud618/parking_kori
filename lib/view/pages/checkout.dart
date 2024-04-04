@@ -23,7 +23,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   String entry_time = '';
   String exit_time = '';
   String ticket_num = '';
-  double payment_amount = 0;
+  String payment_amount = '';
 
   void load_data(String bookingNum) async {
     print("kireeeee----------------------------------------");
@@ -36,6 +36,8 @@ class _CheckOutPageState extends State<CheckOutPage> {
         "booking_number": bookingNum,
       };
 
+      // print(jsonEncode(requestData));
+
       http.Response response = await http.post(
         Uri.parse(url),
         headers: {
@@ -47,11 +49,14 @@ class _CheckOutPageState extends State<CheckOutPage> {
       if (response.statusCode == 200) {
         print("200 paisee....................................................");
         Map<String, dynamic> responseData = jsonDecode(response.body);
-        String registration_num = responseData['data']['booking_number'];
-        String entry_time = responseData['data']['park_in_time'];
-        String exit_time = responseData['data']['park_out_time'];
-        String ticket_num = responseData['data']['invoice_number'];
-        String payment_amount = responseData['data']['sub_total'].toString();
+        setState(() {
+          registration_num = responseData['data']['booking_number'];
+          entry_time = responseData['data']['park_in_time'];
+          exit_time = responseData['data']['park_out_time'];
+          ticket_num = responseData['data']['invoice_number'];
+          payment_amount = responseData['data']['sub_total'].toString();
+          print(registration_num + entry_time + exit_time + payment_amount);
+        });
       } else {
         // Request failed
         print('Failed to CHECKOUT. Status code: ${response.statusCode}');
@@ -78,23 +83,25 @@ class _CheckOutPageState extends State<CheckOutPage> {
     return SafeArea(
       child: Scaffold(
         body: Container(
-          padding: EdgeInsets.all(get_screenWidth(context) * 0.1),
           child: Column(
             children: [
               AppBarWidget(context, "Checkout"),
-              Expanded(
-                child: Center(
-                  child: Column(
-                    children: [
-                      DashboardInfoCard(
-                          context, "Booking Number", registration_num),
-                      DashboardInfoCard(context, "Invoice Number", ticket_num),
-                      DashboardInfoCard(context, "Arrived At", entry_time),
-                      DashboardInfoCard(context, "Exit At", exit_time),
-                      DashboardInfoCard(
-                          context, "Payable Amount", payment_amount.toString()),
-                      ActionButton(context, "Checkout", checkout),
-                    ],
+              Container(
+                padding: EdgeInsets.all(get_screenWidth(context)*0.05),
+                child: Expanded(
+                  child: Center(
+                    child: Column(
+                      children: [
+                        DashboardInfoCard(
+                            context, "Booking Number", registration_num),
+                        DashboardInfoCard(context, "Invoice Number", ticket_num),
+                        DashboardInfoCard(context, "Arrived At", entry_time),
+                        DashboardInfoCard(context, "Exit At", exit_time),
+                        DashboardInfoCard(
+                            context, "Payable Amount", payment_amount),
+                        ActionButton(context, "Checkout", checkout),
+                      ],
+                    ),
                   ),
                 ),
               ),
