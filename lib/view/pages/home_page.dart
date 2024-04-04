@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names
+
 import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
