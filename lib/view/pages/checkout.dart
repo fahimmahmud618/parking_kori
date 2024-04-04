@@ -19,11 +19,11 @@ class CheckOutPage extends StatefulWidget {
 }
 
 class _CheckOutPageState extends State<CheckOutPage> {
-  late String registration_num;
-  late String entry_time;
-  late String exit_time;
-  late String ticket_num;
-  late double payment_amount;
+   String registration_num = '';
+   String entry_time= '';
+   String exit_time = '';
+   String ticket_num = '';
+   double payment_amount = 0;
 
   void load_data(String bookingNum) async {
     try {
