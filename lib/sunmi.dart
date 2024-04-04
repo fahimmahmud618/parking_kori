@@ -77,7 +77,7 @@ class Sunmi {
       final response = await request.close();
       
       print(response.statusCode);
-      print("WHY ERROR");
+      
       
       if (response.statusCode == 200) {
         final String responseBody = await response.transform(utf8.decoder).join();
@@ -96,7 +96,7 @@ class Sunmi {
           // await printLogoImage();
           await printHeadline(" $address");
           await printHeadline("PARKING Entry Receipt");
-          await printText("{$vehicleType}: $vehicleRegNumber");
+          await printText("$vehicleType: $vehicleRegNumber");
           await printText("Entry: $parkInTime");
           await printText("Ticket No: $num");
           await printQRCode(num);
@@ -113,14 +113,13 @@ class Sunmi {
       print('Error fetching booking details: $e');
     }
   }
- Future<void> printInvoice(String registration_num, String entry_time, String exit_time, String ticket_num, String payment_amount ) async {
+ Future<void> printInvoice(String registration_num, String entry_time, String exit_time, String ticket_num, String payment_amount , String location, String address) async {
     String authToken = await ReadCache.getString(key: "token");
     print("Printing function called");
 
-
           await initialize();
           // await printLogoImage();
-          await printHeadline(" EkShop");
+          await printHeadline(location);
           await printText("PARKING Entry Receipt");
           
           await printText("Entry: $entry_time");

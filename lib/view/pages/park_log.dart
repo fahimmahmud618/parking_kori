@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:parking_kori/model/booking.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';

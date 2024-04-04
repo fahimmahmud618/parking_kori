@@ -24,6 +24,8 @@ class _CheckOutPageState extends State<CheckOutPage> {
   String exit_time = '';
   String ticket_num = '';
   String payment_amount = '';
+  String location = '';
+  String address = '';
 
   Future<void> load_data(String bookingNum) async {
     try {
@@ -62,9 +64,41 @@ class _CheckOutPageState extends State<CheckOutPage> {
     }
   }
 
+  Future<void> load_invoice_data(String bookingNum) async {
+    try {
+      String url =
+          'https://parking-kori.rpu.solutions/api/v1/get-booking?booking_number=$bookingNum';
+      String token = await ReadCache.getString(key: "token");
+
+      HttpOverrides.global = MyHttpOverrides();
+
+      http.Response response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        setState(() {
+          location = responseData['booking'][0]['location']['title'];
+          address = responseData['booking'][0]['location']['address'];
+          print("----------------------------Location: " + location);
+        });
+      } else {
+        print(
+            'Failed to FETCH INVOICE DATA. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error sending FETCH INVOICE DATA request: $e');
+    }
+  }
+
   void checkout() {
     Sunmi printer = Sunmi();
-    printer.printInvoice(registration_num,entry_time,exit_time,ticket_num,payment_amount);
+    printer.printInvoice(registration_num, entry_time, exit_time, ticket_num,
+        payment_amount, location, address);
     print(registration_num);
     print("-----------------------");
     Navigator.pushReplacement(
@@ -76,6 +110,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   @override
   void initState() {
     load_data(widget.booking_num);
+    load_invoice_data(widget.booking_num);
     super.initState();
   }
 
@@ -95,7 +130,8 @@ class _CheckOutPageState extends State<CheckOutPage> {
                       children: [
                         DashboardInfoCard(
                             context, "Booking Number", registration_num),
-                        DashboardInfoCard(context, "Invoice Number", ticket_num),
+                        DashboardInfoCard(
+                            context, "Invoice Number", ticket_num),
                         DashboardInfoCard(context, "Arrived At", entry_time),
                         DashboardInfoCard(context, "Exit At", exit_time),
                         DashboardInfoCard(
@@ -119,6 +155,7 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

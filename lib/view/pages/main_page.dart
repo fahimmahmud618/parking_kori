@@ -1,9 +1,9 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
-import 'package:parking_kori/view/pages/dashboard.dart';
 import 'package:parking_kori/view/pages/home_page.dart';
 import 'package:parking_kori/view/pages/park_log.dart';
 import 'package:parking_kori/view/pages/profile.dart';
-import 'package:parking_kori/view/pages/shift.dart';
 import 'package:parking_kori/view/styles.dart';
 
 class MainPage extends StatefulWidget {

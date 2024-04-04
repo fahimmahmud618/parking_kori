@@ -1,10 +1,9 @@
-import 'dart:io';
+// ignore_for_file: non_constant_identifier_names, prefer_const_constructors
 
+import 'dart:io';
 import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/pages/add_vehicle.dart';
 import 'package:parking_kori/view/pages/park_out_page.dart';
