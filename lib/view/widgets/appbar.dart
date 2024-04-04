@@ -17,6 +17,10 @@ Widget AppBarWidget(BuildContext context, String title) {
         TextButton.icon(
           onPressed: () {
             DeleteCache.deleteKey("cache");
+            DeleteCache.deleteKey("token");
+            DeleteCache.deleteKey("id");
+            DeleteCache.deleteKey("location_id");
+            
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => FlashPage()),

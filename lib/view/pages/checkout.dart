@@ -10,27 +10,27 @@ import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/dashboard_info_card.dart';
 import 'package:cache_manager/core/read_cache_service.dart';
 
-class CHeckOutPage extends StatefulWidget {
-  const CHeckOutPage({super.key, required this.booking_num});
+class CheckOutPage extends StatefulWidget {
+  const CheckOutPage({super.key, required this.booking_num});
   final String booking_num;
 
   @override
-  State<CHeckOutPage> createState() => _CHeckOutPageState();
+  State<CheckOutPage> createState() => _CheckOutPageState();
 }
 
-class _CHeckOutPageState extends State<CHeckOutPage> {
+class _CheckOutPageState extends State<CheckOutPage> {
   late String registration_num;
   late String entry_time;
   late String exit_time;
   late String ticket_num;
   late double payment_amount;
 
-  void load_data(String bookingNum) async{
-     try{
-    String url = 'https://parking-kori.rpu.solutions/api/v1/park-out';
-    String token = await ReadCache.getString(key: "token");
+  void load_data(String bookingNum) async {
+    try {
+      String url = 'https://parking-kori.rpu.solutions/api/v1/park-out';
+      String token = await ReadCache.getString(key: "token");
 
-    Map<String, dynamic> requestData = {
+      Map<String, dynamic> requestData = {
         "booking_num": bookingNum,
       };
 
@@ -40,16 +40,15 @@ class _CHeckOutPageState extends State<CHeckOutPage> {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        body: jsonEncode(requestData),      
+        body: jsonEncode(requestData),
       );
-       if (response.statusCode == 200) {
+      if (response.statusCode == 200) {
         Map<String, dynamic> responseData = jsonDecode(response.body);
         String registration_num = responseData['data']['booking_number'];
         String entry_time = responseData['data']['park_in_time'];
         String exit_time = responseData['data']['park_out_time'];
-        String ticket_num = responseData['data']['invoice_number'];  
+        String ticket_num = responseData['data']['invoice_number'];
         String payment_amount = responseData['data']['sub_total'];
-
       } else {
         // Request failed
         print('Failed to CHECKOUT. Status code: ${response.statusCode}');
@@ -60,10 +59,9 @@ class _CHeckOutPageState extends State<CHeckOutPage> {
     }
   }
 
-
-  void checkout(){
-    //TODO save in db
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>MainPage()));
+  void checkout() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => MainPage()));
   }
 
   @override
@@ -71,35 +69,33 @@ class _CHeckOutPageState extends State<CHeckOutPage> {
     load_data(widget.booking_num);
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: Scaffold(
-      body: Column(
-        children: [
-          AppBarWidget(context, "Checkout"),
-          Container(
-            padding: EdgeInsets.all( get_screenWidth(context) * 0.1),
-            child: Column(
-              children: [
-                Expanded(
-                  child: Center(
-                    child: Column(
-                      children: [
-                        DashboardInfoCard(context, "Booking Number", registration_num),
-                        DashboardInfoCard(context, "Invoice Number", ticket_num),
-                        DashboardInfoCard(context, "Arrived At", entry_time),
-                        DashboardInfoCard(context, "Exit At", exit_time),
-                        DashboardInfoCard(context, "Payable Amount", payment_amount.toString()),
-                        ActionButton(context, "Checkout", checkout),
-                      ],
-                    ),
-                  ),
+    return SafeArea(
+        child: Scaffold(
+      body: Container(
+        padding: EdgeInsets.all(get_screenWidth(context) * 0.1),
+        child: Column(
+          children: [
+            AppBarWidget(context, "Checkout"),
+            Expanded(
+              child: Center(
+                child: Column(
+                  children: [
+                    DashboardInfoCard(context, "Booking Number", registration_num),
+                    DashboardInfoCard(context, "Invoice Number", ticket_num),
+                    DashboardInfoCard(context, "Arrived At", entry_time),
+                    DashboardInfoCard(context, "Exit At", exit_time),
+                    DashboardInfoCard(context, "Payable Amount", payment_amount.toString()),
+                    ActionButton(context, "Checkout", checkout),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
         ],
+    ),
       ),
-    ));
+    ),);
   }
 }

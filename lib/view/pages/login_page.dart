@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io'; // Import 'dart:io' for HttpClient
+import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:cache_manager/core/write_cache_service.dart';
 import 'package:flutter/material.dart';
 import 'package:parking_kori/cache_handler.dart';
@@ -25,6 +26,9 @@ class _LoginPageState extends State<LoginPage> {
   void checkCredential() async {
     final username = usernameController.text;
     final password = passwordController.text;
+    String token = '';
+    int id = 0;
+    int locationId = 0;
 
     if (username.isEmpty || password.isEmpty) {
       myAlertDialog("Error!", "Username or password cannot be empty", context);
@@ -47,14 +51,13 @@ class _LoginPageState extends State<LoginPage> {
       final httpResponse = await response.close();
 
       if (httpResponse.statusCode == 200) {
-        // Parse response JSON
         Map<String, dynamic> responseData = jsonDecode(await httpResponse.transform(utf8.decoder).join());
-        String token = responseData['token'];
+        token = responseData['token'];
+        id = responseData['data'][0]['id'];
+        locationId = responseData['data'][0]['location_id'];
 
-        // Save token to shared preferences
-        saveCache(username, password, token);
+        saveCache(username, password, token, id, locationId);
 
-        // Navigate to the home page
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => MainPage()),
@@ -66,14 +69,20 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       // Error occurred during HTTP request
       print('Error: $e');
-      myAlertDialog("Error!", "An error occurred. Please try again later.", context);
+      // print(response.statusCode);
+      myAlertDialog(
+          "Error!", "An error occurred. Please try again later.", context);
     }
   }
 
-  void saveCache(String username, String password, String token) {
+  void saveCache(String username, String password, String token, int id,
+      int locationId) {
     final cacheValue = caesarCipherEncode(makeCache(username, password), 2);
     WriteCache.setString(key: "cache", value: cacheValue);
     WriteCache.setString(key: "token", value: token);
+    WriteCache.setInt(key: "id", value: id);
+    WriteCache.setInt(key: "locationId", value: locationId);
+    print(ReadCache.getString(key: "id"));
   }
 
   @override
@@ -87,12 +96,14 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               Center(
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: get_screenWidth(context) * 0.1),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: get_screenWidth(context) * 0.1),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset(pkLogo, width: get_screenWidth(context) * 0.3),
+                      Image.asset(pkLogo,
+                          width: get_screenWidth(context) * 0.3),
                       PageTitle(context, "Log in"),
                       InputWIthIconImage(
                         context,

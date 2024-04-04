@@ -6,7 +6,7 @@ import 'package:parking_kori/view/pages/main_page.dart';
 void main() {
   runApp(const MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: MainPage(),
+    home: FlashPage(),
   ));
 }
 
