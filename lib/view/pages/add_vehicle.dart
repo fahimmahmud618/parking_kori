@@ -26,8 +26,8 @@ class _AddVehicleState extends State<AddVehicle> {
   bool isQRGenerated = false;
   String booking_num = "";
   String token = '';
-  String id = '';
-  String locationId = '';
+  int id = 0;
+  int locationId = 0;
   // String vehicleType
   TextEditingController registrationnumber = new TextEditingController();
 
@@ -49,15 +49,17 @@ class _AddVehicleState extends State<AddVehicle> {
       String url = 'https://parking-kori.rpu.solutions/api/v1/new-booking';
       String registrationNumber = r;
       token = await ReadCache.getString(key: "token");
-      id = await ReadCache.getString(key: "id");
-      locationId = await ReadCache.getString(key: "locationId");
+      id = await ReadCache.getInt(key: "id");
+      locationId = await ReadCache.getInt(key: "locationId");
+
+      print(widget.vehicleType);
 
       // Request body data
       Map<String, dynamic> requestData = {
         "vehicle_type": widget.vehicleType,
         "car_reg": registrationNumber,
-        "agent_id": id,
-        "location": locationId
+        "agent_id": id.toString(),
+        "location": locationId.toString()
       };
 
       // Send POST request to backend with the bearer token in headers
@@ -74,9 +76,7 @@ class _AddVehicleState extends State<AddVehicle> {
         Map<String, dynamic> responseData = jsonDecode(response.body);
         String bookingNumber = responseData['booking']['booking_number'];
         print("Booking ID: $bookingNumber");
-        
 
-        // Do something with booking number, maybe save it or show it in UI
         setState(() {
           booking_num = bookingNumber;
         });
@@ -94,12 +94,14 @@ class _AddVehicleState extends State<AddVehicle> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView( // Wrap with SingleChildScrollView
+      body: SingleChildScrollView(
+        // Wrap with SingleChildScrollView
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(get_screenWidth(context) * 0.1, get_screenWidth(context) * 0.1, 0, 0),
+              padding: EdgeInsets.fromLTRB(get_screenWidth(context) * 0.1,
+                  get_screenWidth(context) * 0.1, 0, 0),
               child: BackOption(context, go_back),
             ),
             Center(
@@ -141,6 +143,4 @@ class _AddVehicleState extends State<AddVehicle> {
       ),
     );
   }
-
-
 }

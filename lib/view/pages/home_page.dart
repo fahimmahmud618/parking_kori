@@ -130,42 +130,42 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "car")));
+            builder: (context) => AddVehicle(vehicleType: "1")));
   }
 
   void add_bike() {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "bike")));
+            builder: (context) => AddVehicle(vehicleType: "2")));
   }
 
+ void add_cng() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AddVehicle(vehicleType: "3")));
+  }
   void add_cycle() {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "cycle")));
+            builder: (context) => AddVehicle(vehicleType: "4")));
   }
 
-  void add_cng() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "cng")));
-  }
 
   void add_pickup() {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "pickup")));
+            builder: (context) => AddVehicle(vehicleType: "5")));
   }
 
   void add_others() {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "others")));
+            builder: (context) => AddVehicle(vehicleType: "6")));
   }
 
   void go_to_park_out() {
