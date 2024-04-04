@@ -20,21 +20,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-   int currentCarNumber = 0;
-   int carCapacity = 0;
-   int currentMotorCycleNumber = 0;
-   int MotorCycleCapacity = 0;
-   int currentCycleNumber = 0;
-   int cycleCapacity = 0;
-   int currentCNGNumber = 0;
-   int cngCapacity = 0;
-   int currentPickUpNumber = 0;
-   int pickUpCapacity = 0;
-   int currentTruckNumber = 0;
-   int truckCapacity = 0;
-   int currentothersNumber = 0;
+  int currentCarNumber = 0;
+  int carCapacity = 0;
+  int currentMotorCycleNumber = 0;
+  int MotorCycleCapacity = 0;
+  int currentCycleNumber = 0;
+  int cycleCapacity = 0;
+  int currentCNGNumber = 0;
+  int cngCapacity = 0;
+  int currentPickUpNumber = 0;
+  int pickUpCapacity = 0;
+  int currentTruckNumber = 0;
+  int truckCapacity = 0;
+  int currentothersNumber = 0;
   int othersCapacity = 0;
-   String authToken = "";
+  String authToken = "";
 
   @override
   void initState() {
@@ -42,136 +42,179 @@ class _HomePageState extends State<HomePage> {
     fetchData();
   }
 
-   Future<void> fetchData() async {
+  Future<void> fetchData() async {
     // Fetch data for car
-    await fetchVehicleData('car', '1');
+    await fetchVehicleData('Car', '1');
 
     // Fetch data for bike
-    await fetchVehicleData('bike', '2');
+    await fetchVehicleData('Motor Cycle', '2');
 
     // Fetch data for cycle
-    await fetchVehicleData('cycle', '3');
+    await fetchVehicleData('CNG', '3');
 
     // Fetch data for CNG
-    await fetchVehicleData('CNG', '4');
+    await fetchVehicleData('Cycle', '4');
+    await fetchVehicleData('Pickup', '5');
+    await fetchVehicleData('Others', '6');
   }
 
- Future<void> fetchVehicleData(String vehicleType, String vehicleTypeId) async {
-   print("Got vehicle types");
-   authToken = await ReadCache.getString(key: "token");
+  Future<void> fetchVehicleData(
+      String vehicleType, String vehicleTypeId) async {
+    authToken = await ReadCache.getString(key: "token");
     final response = await http.get(
       Uri.parse('https://parking-kori.rpu.solutions/api/v1/get/vehicle-types'),
       headers: <String, String>{
         'Authorization': 'Bearer $authToken',
       },
     );
-   
-    print(response.body);
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        switch (vehicleType) {
-          case 'car':
-            currentCarNumber = data['current_number'];
-            carCapacity = data['capacity'];
-            break;
-          case 'bike':
-            currentMotorCycleNumber = data['current_number'];
-            MotorCycleCapacity = data['capacity'];
-            break;
-          case 'cycle':
-            currentCycleNumber = data['current_number'];
-            cycleCapacity = data['capacity'];
-            break;
-          case 'CNG':
-            currentCNGNumber = data['current_number'];
-            cngCapacity = data['capacity'];
-            break;
+      final List<dynamic> data = json.decode(response.body);
+      // print(data);
+      final vehicleData = data.firstWhere(
+        (element) => element['vehicle_type']['slug'] == vehicleType,
+        orElse: () => null,
+      );
+      if (vehicleData != null) {
+        setState(() {
+          switch (vehicleType) {
+            case 'Car':
+              currentCarNumber = vehicleData['remaining_capacity'];
+              carCapacity = vehicleData['capacity']['capacity'];
+              currentCarNumber = carCapacity - currentCarNumber;
+              break;
+            case 'Motor Cycle':
+              currentMotorCycleNumber = vehicleData['remaining_capacity'];
+              MotorCycleCapacity = vehicleData['capacity']['capacity'];
+              currentMotorCycleNumber = MotorCycleCapacity - currentMotorCycleNumber;
+              break;
+            case 'Cycle':
 
-            case 'pickup':
-            currentCNGNumber = data['current_number'];
-            cngCapacity = data['capacity'];
-            break;
-
-            case 'others':
-            currentCNGNumber = data['current_number'];
-            cngCapacity = data['capacity'];
-            break;
-
-          default:
-            break;
-        }
-      });
+              currentCycleNumber = vehicleData['remaining_capacity'];
+              cycleCapacity = vehicleData['capacity']['capacity'];
+              currentCycleNumber = cycleCapacity - currentCycleNumber;
+              break;
+            case 'CNG':
+              currentCNGNumber = vehicleData['remaining_capacity'];
+              cngCapacity = vehicleData['capacity']['capacity'];
+              currentCNGNumber = cngCapacity - currentCNGNumber;
+              break;
+            case 'Pickup':
+              currentPickUpNumber = vehicleData['remaining_capacity'];
+              pickUpCapacity = vehicleData['capacity']['capacity'];
+              currentPickUpNumber = pickUpCapacity - currentPickUpNumber;
+              break;
+            case 'Others':
+              currentothersNumber = vehicleData['remaining_capacity'];
+              othersCapacity = vehicleData['capacity']['capacity'];
+              currentothersNumber = othersCapacity - currentothersNumber;
+              break;
+            default:
+              break;
+          }
+        });
+      }
     } else {
       throw Exception('Failed to load data for $vehicleType');
     }
   }
 
-  void add_car(){
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddVehicle(vehicleType: "car")));
-  }
-  void add_bike(){
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddVehicle(vehicleType: "bike")));
-  }
-  void add_cycle(){
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddVehicle(vehicleType: "cycle")));
-  }
-  void add_cng(){
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddVehicle(vehicleType: "cng")));
+  void add_car() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AddVehicle(vehicleType: "car")));
   }
 
-  void add_pickup(){
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddVehicle(vehicleType: "pickup")));
+  void add_bike() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AddVehicle(vehicleType: "bike")));
   }
 
-  void add_others(){
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddVehicle(vehicleType: "others")));
+  void add_cycle() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AddVehicle(vehicleType: "cycle")));
   }
 
-  void go_to_park_out(){
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>ParkOut()));
+  void add_cng() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AddVehicle(vehicleType: "cng")));
+  }
+
+  void add_pickup() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AddVehicle(vehicleType: "pickup")));
+  }
+
+  void add_others() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AddVehicle(vehicleType: "others")));
+  }
+
+  void go_to_park_out() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ParkOut()));
   }
 
   @override
   Widget build(BuildContext context) {
-    
-    return SafeArea(child: Scaffold(
+    return SafeArea(
+        child: Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            AppBarWidget(context, "Home"),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ParkingInfoCard(context, carLogo, "Car", currentCarNumber, carCapacity,add_car ),
-                SizedBox(width: 20,),
-                ParkingInfoCard(context, bikeLogo, "Bike", currentMotorCycleNumber, MotorCycleCapacity, add_bike),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ParkingInfoCard(context, cycleLogo, "Cycle", currentCycleNumber, cycleCapacity, add_cycle),
-                SizedBox(width: 20,),
-                ParkingInfoCard(context, cngLogo, "CNG", currentCNGNumber, cngCapacity, add_cng),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ParkingInfoCard(context, pickupLogo, "Pickup", currentPickUpNumber, pickUpCapacity, add_cycle),
-                SizedBox(width: 20,),
-                ParkingInfoCard(context, othersLogo, "Others", currentothersNumber, othersCapacity, add_cng),
-              ],
-            ),
-            SizedBox(height: 40,),
-            ActionButton2(context, "Park Out", go_to_park_out),
-
-          ],
-        )
-      ),
-
+          child: Column(
+        children: [
+          AppBarWidget(context, "Home"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ParkingInfoCard(context, carLogo, "Car", currentCarNumber,
+                  carCapacity, add_car),
+              SizedBox(
+                width: 20,
+              ),
+              ParkingInfoCard(context, bikeLogo, "Bike",
+                  currentMotorCycleNumber, MotorCycleCapacity, add_bike),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ParkingInfoCard(context, cycleLogo, "Cycle", currentCycleNumber,
+                  cycleCapacity, add_cycle),
+              SizedBox(
+                width: 20,
+              ),
+              ParkingInfoCard(context, cngLogo, "CNG", currentCNGNumber,
+                  cngCapacity, add_cng),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ParkingInfoCard(context, pickupLogo, "Pickup",
+                  currentPickUpNumber, pickUpCapacity, add_pickup),
+              SizedBox(
+                width: 20,
+              ),
+              ParkingInfoCard(context, othersLogo, "Others",
+                  currentothersNumber, othersCapacity, add_others),
+            ],
+          ),
+          SizedBox(
+            height: 40,
+          ),
+          ActionButton2(context, "Park Out", go_to_park_out),
+        ],
+      )),
     ));
   }
 }
