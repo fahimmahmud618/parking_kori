@@ -1,7 +1,7 @@
 import 'dart:convert';
+import 'dart:io'; // Import 'dart:io' for HttpClient
 import 'package:cache_manager/core/write_cache_service.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:parking_kori/cache_handler.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
@@ -32,25 +32,27 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     try {
-      final response = await http.post(
-        Uri.parse('https://parking-kori.rpu.solutions/api/v1/agent/login'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'username': username,
-          'password': password,
-        }),
-      );
+      HttpClient client = HttpClient()
+        ..badCertificateCallback = (X509Certificate cert, String host, int port) => true; // Temporarily bypass SSL verification
 
-      if (response.statusCode == 200) {
+      final response = await client.postUrl(
+        Uri.parse('https://parking-kori.rpu.solutions/api/v1/agent/login'),
+      )
+      ..headers.contentType = ContentType.json
+      ..write(jsonEncode(<String, String>{
+        'username': username,
+        'password': password,
+      }));
+
+      final httpResponse = await response.close();
+
+      if (httpResponse.statusCode == 200) {
         // Parse response JSON
-        Map<String, dynamic> responseData = jsonDecode(response.body);
+        Map<String, dynamic> responseData = jsonDecode(await httpResponse.transform(utf8.decoder).join());
         String token = responseData['token'];
 
         // Save token to shared preferences
         saveCache(username, password, token);
-        // await saveToken(token);
 
         // Navigate to the home page
         Navigator.push(
@@ -67,7 +69,6 @@ class _LoginPageState extends State<LoginPage> {
       myAlertDialog("Error!", "An error occurred. Please try again later.", context);
     }
   }
-
 
   void saveCache(String username, String password, String token) {
     final cacheValue = caesarCipherEncode(makeCache(username, password), 2);
@@ -92,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       Image.asset(pkLogo, width: get_screenWidth(context) * 0.3),
                       PageTitle(context, "Log in"),
-                     InputWIthIconImage(
+                      InputWIthIconImage(
                         context,
                         userLogo,
                         usernameController,
