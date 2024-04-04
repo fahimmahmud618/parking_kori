@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:parking_kori/view/pages/add_vehicle.dart';
 import 'package:sunmi_printer_plus/column_maker.dart';
 import 'package:sunmi_printer_plus/enums.dart';
@@ -16,7 +20,7 @@ class Sunmi {
   // print image
   Future<void> printLogoImage() async {
     await SunmiPrinter.lineWrap(1); // creates one line space
-    Uint8List byte = await _getImageFromAsset('assets/flutter_black_white.png');
+    Uint8List byte = await _getImageFromAsset('asset/image/pklogo.png');
     await SunmiPrinter.printImage(byte);
     await SunmiPrinter.lineWrap(1); // creates one line space
   }
@@ -32,17 +36,6 @@ class Sunmi {
     return await readFileBytes(iconPath);
   }
 
-  // print text passed as parameter
-  Future<void> printHeadline(String text) async {
-    await SunmiPrinter.lineWrap(2); // creates one line space
-    await SunmiPrinter.printText(text,
-        style: SunmiStyle(
-          fontSize: SunmiFontSize.LG,
-          bold: true,
-          align: SunmiPrintAlign.CENTER,
-        ));
-    await SunmiPrinter.lineWrap(1); // creates one line space
-  }
   Future<void> printText(String text) async {
     await SunmiPrinter.lineWrap(1); // creates one line space
     await SunmiPrinter.printText(text,
@@ -54,13 +47,13 @@ class Sunmi {
     await SunmiPrinter.lineWrap(1); // creates one line space
   }
 
-  // print text as qrcode
+ 
   Future<void> printQRCode(String text) async {
     // set alignment center
     await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
-    await SunmiPrinter.lineWrap(1); // creates one line space
+    // await SunmiPrinter.lineWrap(1); // creates one line space
     await SunmiPrinter.printQRCode(text);
-    await SunmiPrinter.lineWrap(4); // creates one line space
+    // await SunmiPrinter.lineWrap(4); // creates one line space
   }
 
   // print row and 2 columns
@@ -68,7 +61,6 @@ class Sunmi {
       {String? column1 = "column 1",
       String? column2 = "column 2",
       String? column3 = "column 3"}) async {
-    await SunmiPrinter.lineWrap(1); // creates one line space
 
     // set alignment center
     await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
@@ -101,18 +93,40 @@ class Sunmi {
   }
 
   // print one structure
-  Future<void> printReceipt(String booking_num) async {
-    await initialize();
-    // await printLogoImage();
-    await printHeadline("PARKING - Entry Receipt");
-    await printText("Vehicle: Toyota Corolla - 255310");
-    await printRowAndColumns(
-        column1: "Entry", column2: "Time", column3: "10.30 AM");
-    await printText("Ticket number - 1234");
-    // AddVehicle addVehicle = AddVehicle(vehicleType: 'Bike',);
-    await printQRCode(booking_num);
-    //await SunmiPrinter.cut();
-    await printText("Developed by: Parking Kori");
-    await closePrinter();
+  Future<void> printReceipt(String bookingNumber) async {
+    String authToken = await ReadCache.getString(key: "token");
+
+    // Make an HTTP GET request to the backend API endpoint
+    final response = await http.get(
+      Uri.parse(
+          'https://parking-kori.rpu.solutions/api/v1/get-booking?booking_number=$bookingNumber'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $authToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // Parse the JSON response
+      final Map<String, dynamic> data = json.decode(response.body);
+      final bookingDetails = data['booking'][0];
+
+      // Extract the required information
+      String vehicleRegNumber = bookingDetails['vehicle_reg_number'];
+      String parkInTime = bookingDetails['park_in_time'];
+      String address = bookingDetails['location']['address'];
+
+      // Initialize and print receipt
+      await initialize();
+      await printLogoImage();
+      await printText("PARKING - Entry Receipt");
+      await printText("Vehicle Registration Number: $vehicleRegNumber");
+      await printText("Park In Time: $parkInTime");
+      await printText("Address: $address");
+      await printQRCode(bookingNumber);
+      await printText("Developed by: Parking Kori");
+      await closePrinter();
+    } else {
+      throw Exception('Failed to load booking details');
+    }
   }
 }

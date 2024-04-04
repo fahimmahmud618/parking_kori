@@ -1,9 +1,14 @@
+// ignore_for_file: non_constant_identifier_names, unused_local_variable
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:parking_kori/view/pages/home_page.dart';
+import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/dashboard_info_card.dart';
+import 'package:cache_manager/core/read_cache_service.dart';
 
 class CHeckOutPage extends StatefulWidget {
   const CHeckOutPage({super.key, required this.booking_num});
@@ -20,18 +25,45 @@ class _CHeckOutPageState extends State<CHeckOutPage> {
   late String ticket_num;
   late double payment_amount;
 
-  void load_data(String bookingNum){
-    //TODO: Fetch from api, Dummy data here
-    registration_num="2212";
-    entry_time="11:43 am";
-    exit_time="12:43 am";
-    ticket_num="112-112-223-333";
-    payment_amount=150;
+  void load_data(String bookingNum) async{
+     try{
+    String url = 'https://parking-kori.rpu.solutions/api/v1/park-out';
+    String token = await ReadCache.getString(key: "token");
+
+    Map<String, dynamic> requestData = {
+        "booking_num": bookingNum,
+      };
+
+      http.Response response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(requestData),      
+      );
+       if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        String registration_num = responseData['data']['booking_number'];
+        String entry_time = responseData['data']['park_in_time'];
+        String exit_time = responseData['data']['park_out_time'];
+        String ticket_num = responseData['data']['invoice_number'];  
+        String payment_amount = responseData['data']['sub_total'];
+
+      } else {
+        // Request failed
+        print('Failed to CHECKOUT. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Exception occurred
+      print('Error sending CHECKOUT request: $e');
+    }
   }
+
 
   void checkout(){
     //TODO save in db
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>MainPage()));
   }
 
   @override
@@ -51,8 +83,8 @@ class _CHeckOutPageState extends State<CHeckOutPage> {
               child: Center(
                 child: Column(
                   children: [
-                    DashboardInfoCard(context, "Registration Num", registration_num),
-                    DashboardInfoCard(context, "Ticket Num", ticket_num),
+                    DashboardInfoCard(context, "Booking Number", registration_num),
+                    DashboardInfoCard(context, "Invoice Number", ticket_num),
                     DashboardInfoCard(context, "Arrived At", entry_time),
                     DashboardInfoCard(context, "Exit At", exit_time),
                     DashboardInfoCard(context, "Payable Amount", payment_amount.toString()),

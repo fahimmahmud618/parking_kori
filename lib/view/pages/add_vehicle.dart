@@ -26,8 +26,8 @@ class _AddVehicleState extends State<AddVehicle> {
   String token='';
   TextEditingController registrationnumber = new TextEditingController();
 
-  void generate_qr_and_print(){
-    send_registration_number_and_get_booking_number();
+  void generate_qr_and_print(String r){
+    send_registration_number_and_get_booking_number(r);
     setState(() {
       isQRGenerated=true;
     });
@@ -41,10 +41,11 @@ class _AddVehicleState extends State<AddVehicle> {
   }
 
 
-  void send_registration_number_and_get_booking_number() async {
+  void send_registration_number_and_get_booking_number(String r) async {
+
     try {
       String url = 'https://parking-kori.rpu.solutions/api/v1/new-booking';
-      String registrationNumber = registrationnumber.text;
+      String registrationNumber = r;
       token = await ReadCache.getString(key: "token");
 
       // Request body data
@@ -66,7 +67,11 @@ class _AddVehicleState extends State<AddVehicle> {
       );
 
       if (response.statusCode == 200) {
-        String bookingNumber = response.body;
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        String bookingNumber = responseData['booking']['booking_number'];
+        print("Booking ID: $bookingNumber");
+        
+
         // Do something with booking number, maybe save it or show it in UI
         setState(() {
           booking_num = bookingNumber;
@@ -100,7 +105,7 @@ class _AddVehicleState extends State<AddVehicle> {
                   children: [
                     PageTitle(context, "Add Vehicle"),
                     InputWIthIconImage(context, editLogo, registrationnumber, "Registration Number", "Write the registration number of vehicle", false),
-                    ActionButton(context, "Generate QR and PrintOut", generate_qr_and_print),
+                    ActionButton(context, "Generate QR and PrintOut", () => generate_qr_and_print(registrationnumber.text)),
                     isQRGenerated ? Container(
                       height: 80,
                       width: 80,
