@@ -17,7 +17,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int myIndex=0;
   List<Widget> widgetList = const[
-    LoginPage(),
+    // LoginPage(),
     HomePage(),
     ShiftPage(),
     ParkLog(),

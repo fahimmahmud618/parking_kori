@@ -70,6 +70,7 @@ class _AddVehicleState extends State<AddVehicle> {
         Map<String, dynamic> responseData = jsonDecode(response.body);
         String bookingNumber = responseData['booking']['booking_number'];
         print("Booking ID: $bookingNumber");
+        
 
         // Do something with booking number, maybe save it or show it in UI
         setState(() {

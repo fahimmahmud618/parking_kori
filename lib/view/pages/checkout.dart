@@ -22,7 +22,7 @@ class _CHeckOutPageState extends State<CHeckOutPage> {
   late double payment_amount;
 
   void load_data(String bookingNum){
-    //TODO: Fetch from api, Dummy data here
+    
     DateTime currentTime = DateTime.now();
 
     registration_num="2212";
