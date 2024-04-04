@@ -89,11 +89,12 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Center(
+        resizeToAvoidBottomInset: false, // Set to false to prevent overlapping with the keyboard
+        body: SingleChildScrollView( // Wrap with SingleChildScrollView
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
                 child: Container(
                   padding: EdgeInsets.symmetric(
                       horizontal: get_screenWidth(context) * 0.1),
@@ -127,8 +128,8 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
