@@ -36,7 +36,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
       client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
 
       Map<String, dynamic> requestData = {
-        "booking_num": bookingNum,
+        "booking_number": bookingNum,
       };
 
       // print(jsonEncode(requestData));
@@ -58,7 +58,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
           exit_time = responseData['data']['park_out_time'];
           ticket_num = responseData['data']['invoice_number'];
           payment_amount = responseData['data']['sub_total'].toString();
-          print(registration_num + entry_time + exit_time + payment_amount);
+          // print(registration_num + entry_time + exit_time + payment_amount);
         });
       } else {
         // Request failed
