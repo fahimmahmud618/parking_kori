@@ -1,9 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:sunmi_printer_plus/enums.dart';
 import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
 import 'package:sunmi_printer_plus/sunmi_style.dart';
@@ -39,11 +39,23 @@ class Sunmi {
       bold: true,
       align: SunmiPrintAlign.CENTER,
     ));
+    // await SunmiPrinter.lineWrap(1);
+  }
+  Future<void> printHeadline(String text) async {
     await SunmiPrinter.lineWrap(1);
+    await SunmiPrinter.printText(text, style: SunmiStyle(
+      fontSize: SunmiFontSize.LG,
+      bold: true,
+      align: SunmiPrintAlign.CENTER,
+    ));
+    // await SunmiPrinter.lineWrap(1);
   }
 
   Future<void> printQRCode(String text) async {
     await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
+    print(text);
+    print("------------------");
+    await SunmiPrinter.lineWrap(1);
     await SunmiPrinter.printQRCode(text);
   }
 
@@ -53,16 +65,20 @@ class Sunmi {
 
     try {
       // Make an HTTP GET request to the backend API endpoint
-      final response = await http.get(
+      final client = HttpClient();
+      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true; // Bypass SSL certificate verification
+      final request = await client.getUrl(
         Uri.parse('https://parking-kori.rpu.solutions/api/v1/get-booking?booking_number=$bookingNumber'),
-        headers: <String, String>{
-          'Authorization': 'Bearer $authToken',
-        },
       );
-      print(response.statusCode); 
+      request.headers.add('Authorization', 'Bearer $authToken');
+      final response = await request.close();
+      
+      print(response.statusCode);
       print("WHY ERROR");
+      
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
+        final String responseBody = await response.transform(utf8.decoder).join();
+        final Map<String, dynamic> data = json.decode(responseBody);
         final bookingDetails = data['booking'][0];
         print('Booking details: $bookingDetails');
 
@@ -70,14 +86,18 @@ class Sunmi {
           String vehicleRegNumber = bookingDetails['vehicle_reg_number'] ?? '';
           String parkInTime = bookingDetails['park_in_time'] ?? '';
           String address = bookingDetails['location']['address'] ?? '';
+          String num = bookingDetails['booking_number'] ?? '';
+          String vehicleType = bookingDetails['vehicle_type']['title'] ?? ''; 
 
           await initialize();
-          await printLogoImage();
-          await printText("PARKING - Entry Receipt");
-          await printText("Vehicle Registration Number: $vehicleRegNumber");
-          await printText("Park In Time: $parkInTime");
-          await printText("Address: $address");
-          await printQRCode(bookingNumber);
+          // await printLogoImage();
+          await printHeadline(" $address");
+          await printHeadline("PARKING Entry Receipt");
+          await printText("{$vehicleType}: $vehicleRegNumber");
+          await printText("Entry: $parkInTime");
+          await printText("Ticket No: $num");
+          await printQRCode(num);
+          await printText("Developed by ParkingKori");
           await closePrinter();
         } else {
           throw Exception('Booking details not found');
