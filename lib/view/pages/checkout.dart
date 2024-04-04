@@ -93,9 +93,9 @@ class _CheckOutPageState extends State<CheckOutPage> {
                 ),
               ),
             ),
-          ],
-        ),
+        ],
+    ),
       ),
-    ));
+    ),);
   }
 }
