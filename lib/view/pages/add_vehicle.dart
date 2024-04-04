@@ -1,7 +1,9 @@
-// ignore_for_file: non_constant_identifier_names, use_super_parameters
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:parking_kori/sunmi.dart';
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/styles.dart';
@@ -10,8 +12,6 @@ import 'package:parking_kori/view/widgets/back_button.dart';
 import 'package:parking_kori/view/widgets/input_with_icon_image.dart';
 import 'package:parking_kori/view/widgets/page_title.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 class AddVehicle extends StatefulWidget {
   final String vehicleType;
@@ -28,8 +28,7 @@ class _AddVehicleState extends State<AddVehicle> {
   String token = '';
   int id = 0;
   int locationId = 0;
-  // String vehicleType
-  TextEditingController registrationnumber = new TextEditingController();
+  TextEditingController registrationnumber = TextEditingController();
 
   void generate_qr_and_print(String r) {
     send_registration_number_and_get_booking_number(r);
@@ -52,9 +51,6 @@ class _AddVehicleState extends State<AddVehicle> {
       id = await ReadCache.getInt(key: "id");
       locationId = await ReadCache.getInt(key: "locationId");
 
-      print(widget.vehicleType);
-
-      // Request body data
       Map<String, dynamic> requestData = {
         "vehicle_type": widget.vehicleType,
         "car_reg": registrationNumber,
@@ -62,7 +58,9 @@ class _AddVehicleState extends State<AddVehicle> {
         "location": locationId.toString()
       };
 
-      // Send POST request to backend with the bearer token in headers
+      // Set the badCertificateCallback to handle SSL certificate verification errors
+      HttpOverrides.global = MyHttpOverrides();
+
       http.Response response = await http.post(
         Uri.parse(url),
         headers: {
@@ -75,18 +73,14 @@ class _AddVehicleState extends State<AddVehicle> {
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = jsonDecode(response.body);
         String bookingNumber = responseData['booking']['booking_number'];
-        print("Booking ID: $bookingNumber");
 
         setState(() {
           booking_num = bookingNumber;
         });
       } else {
-        // Request failed
-        print(
-            'Failed to send registration number. Status code: ${response.statusCode}');
+        print('Failed to send registration number. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      // Exception occurred
       print('Error sending registration number: $e');
     }
   }
@@ -95,13 +89,11 @@ class _AddVehicleState extends State<AddVehicle> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        // Wrap with SingleChildScrollView
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(get_screenWidth(context) * 0.1,
-                  get_screenWidth(context) * 0.1, 0, 0),
+              padding: EdgeInsets.fromLTRB(get_screenWidth(context) * 0.1, get_screenWidth(context) * 0.1, 0, 0),
               child: BackOption(context, go_back),
             ),
             SizedBox(
@@ -109,21 +101,24 @@ class _AddVehicleState extends State<AddVehicle> {
             ),
             Center(
               child: Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: get_screenWidth(context) * 0.1),
+                padding: EdgeInsets.symmetric(horizontal: get_screenWidth(context) * 0.1),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     PageTitle(context, "Add Vehicle"),
                     InputWIthIconImage(
-                        context,
-                        editLogo,
-                        registrationnumber,
-                        "Registration Number",
-                        "Write the registration number of vehicle",
-                        false),
-                    ActionButton(context, "Generate QR and PrintOut",
-                        () => generate_qr_and_print(registrationnumber.text)),
+                      context,
+                      editLogo,
+                      registrationnumber,
+                      "Registration Number",
+                      "Write the registration number of vehicle",
+                      false,
+                    ),
+                    ActionButton(
+                      context,
+                      "Generate QR and PrintOut",
+                      () => generate_qr_and_print(registrationnumber.text),
+                    ),
                     isQRGenerated
                         ? Container(
                             height: 80,
@@ -145,5 +140,14 @@ class _AddVehicleState extends State<AddVehicle> {
         ),
       ),
     );
+  }
+}
+
+// Custom HttpOverrides class to handle SSL certificate verification errors
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }
