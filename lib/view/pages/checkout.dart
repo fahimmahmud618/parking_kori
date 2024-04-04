@@ -19,19 +19,21 @@ class CheckOutPage extends StatefulWidget {
 }
 
 class _CheckOutPageState extends State<CheckOutPage> {
-   String registration_num = '';
-   String entry_time= '';
-   String exit_time = '';
-   String ticket_num = '';
-   double payment_amount = 0;
+  String registration_num = '';
+  String entry_time = '';
+  String exit_time = '';
+  String ticket_num = '';
+  double payment_amount = 0;
 
   void load_data(String bookingNum) async {
+    print("kireeeee----------------------------------------");
     try {
       String url = 'https://parking-kori.rpu.solutions/api/v1/park-out';
       String token = await ReadCache.getString(key: "token");
+      print(bookingNum);
 
       Map<String, dynamic> requestData = {
-        "booking_num": bookingNum,
+        "booking_number": bookingNum,
       };
 
       http.Response response = await http.post(
@@ -43,12 +45,13 @@ class _CheckOutPageState extends State<CheckOutPage> {
         body: jsonEncode(requestData),
       );
       if (response.statusCode == 200) {
+        print("200 paisee....................................................");
         Map<String, dynamic> responseData = jsonDecode(response.body);
         String registration_num = responseData['data']['booking_number'];
         String entry_time = responseData['data']['park_in_time'];
         String exit_time = responseData['data']['park_out_time'];
         String ticket_num = responseData['data']['invoice_number'];
-        String payment_amount = responseData['data']['sub_total'];
+        String payment_amount = responseData['data']['sub_total'].toString();
       } else {
         // Request failed
         print('Failed to CHECKOUT. Status code: ${response.statusCode}');
