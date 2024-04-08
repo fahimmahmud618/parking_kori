@@ -30,18 +30,17 @@ class _CheckOutPageState extends State<CheckOutPage> {
   String? baseUrl = dotenv.env['BASE_URL'];
 
   Future<void> load_data(String bookingNum) async {
+    String url = '$baseUrl/park-out';
+    String token = await ReadCache.getString(key: "token");
+    print("Booking num in checkout page: "+ bookingNum);
+
+    // Override the validateCertificate method to bypass SSL certificate validation
+    HttpOverrides.global = MyHttpOverrides();
+
+    Map<String, dynamic> requestData = {
+      "booking_number": bookingNum,
+    };
     try {
-      
-      String url = '$baseUrl/park-out';
-      String token = await ReadCache.getString(key: "token");
-
-      // Override the validateCertificate method to bypass SSL certificate validation
-      HttpOverrides.global = MyHttpOverrides();
-
-      Map<String, dynamic> requestData = {
-        "booking_number": bookingNum,
-      };
-
       http.Response response = await http.post(
         Uri.parse(url),
         headers: {
@@ -65,33 +64,24 @@ class _CheckOutPageState extends State<CheckOutPage> {
     } catch (e) {
       print('Error sending CHECKOUT request: $e');
     }
-  }
 
-  Future<void> load_invoice_data(String bookingNum) async {
-    String authToken = await ReadCache.getString(key: "token");
     try {
-      final client = HttpClient();
-      client.badCertificateCallback =
-          (X509Certificate cert, String host, int port) =>
-              true; // Bypass SSL certificate verification
-      final request = await client.getUrl(
-        Uri.parse(
-            '$baseUrl/get-booking?booking_number=$bookingNum'),
+      http.Response response = await http.get(
+        Uri.parse('$baseUrl/get-booking?booking_number=$bookingNum'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
       );
-      request.headers.add('Authorization', 'Bearer $authToken');
-      final response = await request.close();
 
       if (response.statusCode == 200) {
-         final String responseBody =
-            await response.transform(utf8.decoder).join();
-        final Map<String, dynamic> data = json.decode(responseBody);
+        Map<String, dynamic> data = jsonDecode(response.body);
         final bookingDetails = data['booking'][0];
         print('Booking details: $bookingDetails');
 
         setState(() {
           location = bookingDetails['location']['title'];
-          // address =bookingDetails['location']['address'];
-          print("----------------------------Location: " + location);
+          print("------------------------------------Location: " + location);
         });
       } else {
         print(
@@ -117,7 +107,6 @@ class _CheckOutPageState extends State<CheckOutPage> {
   @override
   void initState() {
     load_data(widget.booking_num);
-    load_invoice_data(widget.booking_num);
     super.initState();
   }
 

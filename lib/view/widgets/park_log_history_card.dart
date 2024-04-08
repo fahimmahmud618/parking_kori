@@ -19,7 +19,12 @@ Widget ParkLogHistoryCard(BuildContext context, Booking booking) {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${booking.vehicle_type} : ${booking.registration_number}",
+                  "Boooking ID : ${booking.booking_id}",
+                  style: boldTextStyle(context, myWhite),
+                ),
+                SizedBox(height: 5,),
+                Text(
+                  "Registration Number: ${booking.registration_number}",
                   style: boldTextStyle(context, myWhite),
                 ),
                 SizedBox(height: 5,),
