@@ -61,13 +61,14 @@ class _ParkLogState extends State<ParkLog> {
     for (var bookingData in bookingsData) {
       String bookingId = bookingData['id'].toString();
       String vehicleType = bookingData['vehicle_type_id'].toString();
+      String bookingNumber = bookingData['booking_number'];
       String registrationNumber = bookingData['vehicle_reg_number'];
       String inTime = bookingData['park_in_time'];
       String outTime = isPresent ? "" : bookingData['park_out_time'];
       setState(() {
         (isPresent ? presentBookings : notPresentBookings).add(
           Booking(
-            booking_id: bookingId,
+            booking_id: bookingNumber,
             vehicle_type: vehicleType,
             registration_number: registrationNumber,
             in_time: inTime,
