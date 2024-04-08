@@ -3,6 +3,7 @@ import 'dart:io'; // Import 'dart:io' for HttpClient
 import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:cache_manager/core/write_cache_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/cache_handler.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
@@ -22,6 +23,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  
+  String? baseUrl = dotenv.env['BASE_URL'];
 
   void checkCredential() async {
     final username = usernameController.text;
@@ -40,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
         ..badCertificateCallback = (X509Certificate cert, String host, int port) => true; // Temporarily bypass SSL verification
 
       final response = await client.postUrl(
-        Uri.parse('https://parking-kori.rpu.solutions/api/v1/agent/login'),
+        Uri.parse('$baseUrl/agent/login'),
       )
       ..headers.contentType = ContentType.json
       ..write(jsonEncode(<String, String>{

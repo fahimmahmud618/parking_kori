@@ -39,7 +39,7 @@ Widget ParkLogHistoryCard(BuildContext context, Booking booking) {
                       ),
               ],
             )),
-        Expanded(flex: 1, child: Icon(Icons.delete, color: myWhite,))
+        // Expanded(flex: 1, child: Icon(Icons.delete, color: myWhite,))
       ],
     ),
   );

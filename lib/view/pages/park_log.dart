@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/model/booking.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
@@ -20,6 +21,8 @@ class _ParkLogState extends State<ParkLog> {
   List<Booking> notPresentBookings = [];
   List<Booking> presentBookings = [];
   bool isParkedInSelected = true;
+  
+  String? baseUrl = dotenv.env['BASE_URL'];
 
     Future<void> load_data() async {
     String token = await ReadCache.getString(key: "token");
@@ -29,7 +32,7 @@ class _ParkLogState extends State<ParkLog> {
     client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
 
     final requestParkin = await client.getUrl(
-      Uri.parse('https://parking-kori.rpu.solutions/api/v1/get-booking?status=pending'),
+      Uri.parse('$baseUrl/get-booking?status=pending'),
     );
     requestParkin.headers.add('Authorization', 'Bearer $token');
     final responseParkin = await requestParkin.close();
@@ -40,7 +43,7 @@ class _ParkLogState extends State<ParkLog> {
     }
 
     final requestParkOut = await client.getUrl(
-      Uri.parse('https://parking-kori.rpu.solutions/api/v1/get-booking?status=park-out'),
+      Uri.parse('$baseUrl/get-booking?status=park-out'),
     );
     requestParkOut.headers.add('Authorization', 'Bearer $token');
     final responseParkOut = await requestParkOut.close();

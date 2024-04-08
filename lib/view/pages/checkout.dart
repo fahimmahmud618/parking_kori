@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:parking_kori/sunmi.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
@@ -26,10 +27,12 @@ class _CheckOutPageState extends State<CheckOutPage> {
   String payment_amount = '';
   String location = '';
   String address = '';
+  String? baseUrl = dotenv.env['BASE_URL'];
 
   Future<void> load_data(String bookingNum) async {
     try {
-      String url = 'https://parking-kori.rpu.solutions/api/v1/park-out';
+      
+      String url = '$baseUrl/park-out';
       String token = await ReadCache.getString(key: "token");
 
       // Override the validateCertificate method to bypass SSL certificate validation
@@ -73,7 +76,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
               true; // Bypass SSL certificate verification
       final request = await client.getUrl(
         Uri.parse(
-            'https://parking-kori.rpu.solutions/api/v1/get-booking?booking_number=$bookingNum'),
+            '$baseUrl/get-booking?booking_number=$bookingNum'),
       );
       request.headers.add('Authorization', 'Bearer $authToken');
       final response = await request.close();

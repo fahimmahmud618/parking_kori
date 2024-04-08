@@ -23,6 +23,7 @@ dependencies:
   http: ^1.2.1
   sqflite: ^2.3.2
   shared_preferences: ^2.2.2
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -38,6 +39,7 @@ flutter:
   
   assets:
     - asset/image/
+    - lib/.env
 
   fonts:
     - family: Myfont

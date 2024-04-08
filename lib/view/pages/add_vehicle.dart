@@ -12,6 +12,7 @@ import 'package:parking_kori/view/widgets/back_button.dart';
 import 'package:parking_kori/view/widgets/input_with_icon_image.dart';
 import 'package:parking_kori/view/widgets/page_title.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AddVehicle extends StatefulWidget {
   final String vehicleType;
@@ -45,7 +46,8 @@ class _AddVehicleState extends State<AddVehicle> {
 
   void send_registration_number_and_get_booking_number(String r) async {
     try {
-      String url = 'https://parking-kori.rpu.solutions/api/v1/new-booking';
+      String? baseUrl = dotenv.env['BASE_URL'];
+      String url = '$baseUrl/new-booking';
       String registrationNumber = r;
       token = await ReadCache.getString(key: "token");
       id = await ReadCache.getInt(key: "id");
@@ -78,7 +80,8 @@ class _AddVehicleState extends State<AddVehicle> {
           booking_num = bookingNumber;
         });
       } else {
-        print('Failed to send registration number. Status code: ${response.statusCode}');
+        print(
+            'Failed to send registration number. Status code: ${response.statusCode}');
       }
     } catch (e) {
       print('Error sending registration number: $e');
@@ -93,15 +96,17 @@ class _AddVehicleState extends State<AddVehicle> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(get_screenWidth(context) * 0.1, get_screenWidth(context) * 0.1, 0, 0),
+              padding: EdgeInsets.fromLTRB(get_screenWidth(context) * 0.1,
+                  get_screenWidth(context) * 0.1, 0, 0),
               child: BackOption(context, go_back),
             ),
             SizedBox(
-              height: get_screenWidth(context)*0.05,
+              height: get_screenWidth(context) * 0.05,
             ),
             Center(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: get_screenWidth(context) * 0.1),
+                padding: EdgeInsets.symmetric(
+                    horizontal: get_screenWidth(context) * 0.1),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -148,6 +153,7 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

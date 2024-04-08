@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/pages/add_vehicle.dart';
@@ -35,11 +36,11 @@ class _HomePageState extends State<HomePage> {
   int currentothersNumber = 0;
   int othersCapacity = 0;
   String authToken = "";
+  String? baseUrl = dotenv.env['BASE_URL'];
 
   @override
   void initState() {
     super.initState();
-    print("TESTING");
     fetchData();
   }
 
@@ -62,7 +63,7 @@ class _HomePageState extends State<HomePage> {
       client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
 
       final request = await client.getUrl(
-        Uri.parse('https://parking-kori.rpu.solutions/api/v1/get/vehicle-types'),
+        Uri.parse('$baseUrl/get/vehicle-types'),
       );
       request.headers.set('Authorization', 'Bearer $authToken');
 
