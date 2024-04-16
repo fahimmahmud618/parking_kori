@@ -113,11 +113,11 @@ class _LoginPageState extends State<LoginPage> {
                         userLogo,
                         usernameController,
                         "Username",
-                        "Username or Mobile number",
+                        "Enter username or number",
                         false,
                       ),
                       SizedBox(height: 30),
-                      InputWithIconImage(context: context, icon: passLogo, textEditingController: passwordController, title: "Password", hinttext: "Write your password", isHide: true),
+                      InputWithIconImage(context: context, icon: passLogo, textEditingController: passwordController, title: "Password", hinttext: "Enter password", isHide: true),
                       // InputWIthIconImage2(
                       //   context,
                       //   passLogo,
