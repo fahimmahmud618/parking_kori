@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -79,6 +81,7 @@ class _AddVehicleState extends State<AddVehicle> {
         },
         body: jsonEncode(requestData),
       );
+
 
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = jsonDecode(response.body);

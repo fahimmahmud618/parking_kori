@@ -12,6 +12,7 @@ import 'package:parking_kori/view/widgets/input_with_icon_image.dart';
 import 'package:parking_kori/view/widgets/page_title.dart';
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/styles.dart';
+import 'package:parking_kori/service/database.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -23,7 +24,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  
+
   String? baseUrl = dotenv.env['BASE_URL'];
 
   void checkCredential() async {
@@ -40,26 +41,30 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       HttpClient client = HttpClient()
-        ..badCertificateCallback = (X509Certificate cert, String host, int port) => true; // Temporarily bypass SSL verification
+        ..badCertificateCallback =
+            (X509Certificate cert, String host, int port) =>
+                true; // Temporarily bypass SSL verification
 
       final response = await client.postUrl(
         Uri.parse('$baseUrl/agent/login'),
       )
-      ..headers.contentType = ContentType.json
-      ..write(jsonEncode(<String, String>{
-        'username': username,
-        'password': password,
-      }));
+        ..headers.contentType = ContentType.json
+        ..write(jsonEncode(<String, String>{
+          'username': username,
+          'password': password,
+        }));
 
       final httpResponse = await response.close();
 
       if (httpResponse.statusCode == 200) {
-        Map<String, dynamic> responseData = jsonDecode(await httpResponse.transform(utf8.decoder).join());
+        Map<String, dynamic> responseData =
+            jsonDecode(await httpResponse.transform(utf8.decoder).join());
         token = responseData['token'];
         id = responseData['data'][0]['id'];
         locationId = responseData['data'][0]['location_id'];
 
         saveCache(username, password, token, id, locationId);
+        await DatabaseHelper().loadParkLogDataFromRemoteDB();
 
         Navigator.push(
           context,
@@ -78,8 +83,8 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void saveCache(String username, String password, String token, int id,
-      int locationId) {
+  void saveCache(
+      String username, String password, String token, int id, int locationId) {
     final cacheValue = caesarCipherEncode(makeCache(username, password), 2);
     WriteCache.setString(key: "cache", value: cacheValue);
     WriteCache.setString(key: "token", value: token);
@@ -92,8 +97,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        resizeToAvoidBottomInset: false, // Set to false to prevent overlapping with the keyboard
-        body: SingleChildScrollView( // Wrap with SingleChildScrollView
+        resizeToAvoidBottomInset:
+            false, // Set to false to prevent overlapping with the keyboard
+        body: SingleChildScrollView(
+          // Wrap with SingleChildScrollView
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
