@@ -60,57 +60,56 @@ class DatabaseHelper {
     client.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
 
-    final requestParkin = await client.getUrl(
-      Uri.parse('$baseUrl/get-booking?status=pending'),
-    );
-    requestParkin.headers.add('Authorization', 'Bearer $token');
-    final responseParkin = await requestParkin.close();
-    if (responseParkin.statusCode == 200) {
-      await handleResponse(responseParkin, true);
-      for (var booking in BookingList) {
-        await addVehicle(booking);
-      }
-    } else {
-      throw Exception('Failed to load data present park log');
-    }
+    try {
+      final request = await client.getUrl(
+        Uri.parse('$baseUrl/get-booking'),
+      );
+      request.headers.add('Authorization', 'Bearer $token');
+      final response = await request.close();
 
-    final requestParkOut = await client.getUrl(
-      Uri.parse('$baseUrl/get-booking?status=park-out'),
-    );
-    requestParkOut.headers.add('Authorization', 'Bearer $token');
-    final responseParkOut = await requestParkOut.close();
-    if (responseParkOut.statusCode == 200) {
-      await handleResponse(responseParkOut, true);
-      for (var booking in BookingList) {
-        await addVehicle(booking);
+      if (response.statusCode == 200) {
+        final responseBody = await utf8.decoder.bind(response).join();
+        final responseData = json.decode(responseBody);
+
+        List<dynamic> bookings = responseData['booking'];
+
+        for (var bookingData in bookings) {
+          String status = bookingData['status'];
+          bool isPresent = status == 'pending';
+
+          await handleResponse(bookingData, isPresent);
+        }
+      } else {
+        throw Exception('Failed to load data park log');
       }
-    } else {
-      throw Exception('Failed to load data park-out park log');
+    } catch (e) {
+      print('Error loading data from remote: $e');
+      throw Exception('Failed to load data from remote');
     }
   }
 
   Future<void> handleResponse(
-      HttpClientResponse response, bool isPresent) async {
-    final responseBody = await utf8.decoder.bind(response).join();
-    final responseData = json.decode(responseBody);
-    final bookingsData = responseData['booking'];
-    for (var bookingData in bookingsData) {
-      String vehicleType = bookingData['vehicle_type_id'].toString();
-      String bookingNumber = bookingData['booking_number'];
-      String registrationNumber = bookingData['vehicle_reg_number'];
-      String inTime = bookingData['park_in_time'];
-      String outTime = isPresent ? "" : bookingData['park_out_time'];
+      Map<String, dynamic> bookingData, bool isPresent) async {
+    String vehicleType = bookingData['vehicle_type_id'].toString();
+    String bookingNumber = bookingData['booking_number'];
+    String registrationNumber = bookingData['vehicle_reg_number'];
+    String inTime = bookingData['park_in_time'];
+    String outTime = isPresent ? "" : bookingData['park_out_time'];
 
-      BookingList.add(
-        Booking(
-          booking_id: bookingNumber,
-          vehicle_type: vehicleType,
-          registration_number: registrationNumber,
-          in_time: inTime,
-          out_time: outTime,
-          isPresent: isPresent,
-        ),
-      );
+    Booking booking = Booking(
+      booking_id: bookingNumber,
+      vehicle_type: vehicleType,
+      registration_number: registrationNumber,
+      in_time: inTime,
+      out_time: outTime,
+      isPresent: isPresent,
+    );
+
+    try {
+      await addVehicle(booking);
+    } catch (e) {
+      print('Error adding booking to local database: $e');
+      throw Exception('Failed to add booking to local database');
     }
   }
 }
