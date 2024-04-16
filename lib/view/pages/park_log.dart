@@ -20,16 +20,18 @@ class ParkLog extends StatefulWidget {
 class _ParkLogState extends State<ParkLog> {
   List<Booking> notPresentBookings = [];
   List<Booking> presentBookings = [];
+  List<Booking> allBookings = [];
   bool isParkedInSelected = true;
-  
+
   String? baseUrl = dotenv.env['BASE_URL'];
 
-    Future<void> load_data() async {
+  Future<void> load_data() async {
     String token = await ReadCache.getString(key: "token");
 
     // HttpClient with badCertificateCallback to bypass SSL certificate verification
     final client = HttpClient();
-    client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+    client.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
 
     final requestParkin = await client.getUrl(
       Uri.parse('$baseUrl/get-booking?status=pending'),
@@ -54,13 +56,12 @@ class _ParkLogState extends State<ParkLog> {
     }
   }
 
-  Future<void> handleResponse(HttpClientResponse response, bool isPresent) async {
-    
+  Future<void> handleResponse(
+      HttpClientResponse response, bool isPresent) async {
     final responseBody = await utf8.decoder.bind(response).join();
     final responseData = json.decode(responseBody);
     final bookingsData = responseData['booking'];
     for (var bookingData in bookingsData) {
-      String bookingId = bookingData['id'].toString();
       String vehicleType = bookingData['vehicle_type_id'].toString();
       String bookingNumber = bookingData['booking_number'];
       String registrationNumber = bookingData['vehicle_reg_number'];
