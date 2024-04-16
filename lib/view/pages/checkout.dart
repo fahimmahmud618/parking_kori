@@ -30,6 +30,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   String? baseUrl = dotenv.env['BASE_URL'];
 
   Future<void> load_data(String bookingNum) async {
+    
     String url = '$baseUrl/park-out';
     String token = await ReadCache.getString(key: "token");
     print("Booking num in checkout page: "+ bookingNum);

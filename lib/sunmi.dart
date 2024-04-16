@@ -34,7 +34,7 @@ class Sunmi {
   }
 
   Future<void> printText(String text) async {
-    await SunmiPrinter.lineWrap(1);
+    // await SunmiPrinter.lineWrap(1);
     await SunmiPrinter.printText(text,
         style: SunmiStyle(
           fontSize: SunmiFontSize.MD,
@@ -45,7 +45,7 @@ class Sunmi {
   }
 
   Future<void> printHeadline(String text) async {
-    await SunmiPrinter.lineWrap(1);
+    // await SunmiPrinter.lineWrap(1);
     await SunmiPrinter.printText(text,
         style: SunmiStyle(
           fontSize: SunmiFontSize.LG,
@@ -93,7 +93,7 @@ class Sunmi {
         if (bookingDetails != null) {
           String vehicleRegNumber = bookingDetails['vehicle_reg_number'] ?? '';
           String parkInTime = bookingDetails['park_in_time'] ?? '';
-          String address = bookingDetails['location']['address'] ?? '';
+          String address = bookingDetails['location']['title'] ?? '';
           String num = bookingDetails['booking_number'] ?? '';
           String vehicleType = bookingDetails['vehicle_type']['title'] ?? '';
           // parking_location = bookingDetails['location']['title'] ?? '';
@@ -102,13 +102,17 @@ class Sunmi {
           await initialize();
           // await printLogoImage();
           await printHeadline(" $address");
-          await printHeadline("PARKING Entry Receipt");
+          await printText("PARKING Entry Receipt");
           await printText("$vehicleType: $vehicleRegNumber");
           await printText("Entry: $parkInTime");
           await printText("Ticket No: $num");
           await printQRCode(num);
           await printText("Developed by ParkingKori");
-          await printText("");
+          // await printText("               ");
+          // await printText("               ");
+          await printText("               ");
+          await printText("               ");
+          await printText("               ");
           await closePrinter();
         } else {
           throw Exception('Booking details not found');
@@ -143,9 +147,12 @@ class Sunmi {
     // await printQRCode(num);
     // await printText("{$vehicleType}: $vehicleRegNumber");
     await printText("Developed by ParkingKori");
-    await printText("");
+    // await printText("               ");
+    await printText("               ");
+    // await printText("               ");
+    await printText("               ");
+    await printText("               ");
     await closePrinter();
-
     // print('Error fetching booking details: $e');
   }
 
