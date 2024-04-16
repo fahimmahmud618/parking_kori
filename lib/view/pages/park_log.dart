@@ -44,7 +44,16 @@ class _ParkLogState extends State<ParkLog> {
     try {
       List<Booking>? bookings = await DatabaseHelper.getAllCars();
       if (bookings != null) {
+        
         allBookings = bookings;
+
+        for (var bookingData in bookings) {      
+          bool isPresent = bookingData.isPresent;
+          handleResponse(
+            bookingData as Map<String, dynamic>,
+            isPresent,
+          );
+        }
       } else {
         allBookings.clear();
       }
