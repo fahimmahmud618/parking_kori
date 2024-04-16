@@ -115,7 +115,7 @@ class _AddVehicleState extends State<AddVehicle> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     PageTitle(context, "Add Vehicle"),
-                    InputWIthIconImage(
+                    InputWIthIconImage2(
                       context,
                       editLogo,
                       registrationnumber,

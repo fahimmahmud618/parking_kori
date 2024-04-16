@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:parking_kori/view/styles.dart';
 
-Widget InputWIthIconImage(
+Widget InputWIthIconImage2(
     BuildContext context,
     String icon,
     TextEditingController textEditingController,
@@ -60,4 +60,96 @@ Widget InputWIthIconImage(
       ],
     ),
   );
+}
+
+
+
+class InputWithIconImage extends StatefulWidget {
+  final BuildContext context;
+  final String icon;
+  final TextEditingController textEditingController;
+  final String title;
+  final String hinttext;
+  final bool isHide;
+
+  InputWithIconImage(
+      {required this.context,
+        required this.icon,
+        required this.textEditingController,
+        required this.title,
+        required this.hinttext,
+        required this.isHide});
+
+  @override
+  _InputWithIconImageState createState() => _InputWithIconImageState();
+}
+
+class _InputWithIconImageState extends State<InputWithIconImage> {
+  bool _isObscure = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Image.asset(
+                widget.icon,
+                height: get_screenWidth(widget.context) * 0.04,
+                width: get_screenWidth(widget.context) * 0.04,
+              ),
+              SizedBox(width: 5),
+              Text(
+                widget.title,
+                style: TextStyle(
+                  color: myBlack,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Myfont',
+                  fontSize: get_screenWidth(widget.context) * 0.04,
+                ),
+              ),
+            ],
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 5),
+            margin: EdgeInsets.symmetric(vertical: 2),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.black.withOpacity(0.7),
+                  width: 1,
+                ),
+              ),
+            ),
+            child: TextField(
+              obscureText: _isObscure,
+              controller: widget.textEditingController,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: widget.hinttext,
+                hintStyle: TextStyle(
+                  color: myBlack.withOpacity(0.5),
+                  fontSize: get_screenWidth(widget.context) * 0.03,
+                  fontFamily: 'Myfont',
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isObscure ? Icons.visibility : Icons.visibility_off,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      // Toggle password visibility
+                      _isObscure = !_isObscure;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
