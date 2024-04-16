@@ -55,6 +55,7 @@ class _ParkLogState extends State<ParkLog> {
   }
 
   Future<void> handleResponse(HttpClientResponse response, bool isPresent) async {
+    
     final responseBody = await utf8.decoder.bind(response).join();
     final responseData = json.decode(responseBody);
     final bookingsData = responseData['booking'];

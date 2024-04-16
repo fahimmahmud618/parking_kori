@@ -1,12 +1,14 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:parking_kori/view/pages/checkout.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/back_button.dart';
+import 'package:barcode_scan2/barcode_scan2.dart';
 
 class ParkOut extends StatefulWidget {
-  const ParkOut({super.key});
+  const ParkOut({Key? key}) : super(key: key);
 
   @override
   State<ParkOut> createState() => _ParkOutState();
@@ -16,16 +18,39 @@ class _ParkOutState extends State<ParkOut> {
   bool isQRScanned = false;
   String booking_num = "";
 
-  void scanQR_and_retrive_data() {
-    // Navigator.push(context, MaterialPageRoute(builder: (context)=>ScanQR()));
-    setState(() {
-      isQRScanned = true;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _scan(); // Start scanning when the widget is initialized
   }
-
-  void go_back() {
+   void goBack() {
     Navigator.pop(context);
   }
+
+  Future<void> _scan() async {
+    try {
+      final result = await BarcodeScanner.scan(
+        options: ScanOptions(
+          autoEnableFlash: true, // Enable flashlight automatically
+        ),
+      );
+      setState(() {
+        isQRScanned = true;
+        booking_num = result.rawContent;
+      });
+      // Handle further processing or navigation here
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CheckOutPage(booking_num: booking_num),
+        ),
+      );
+    } catch (e) {
+      // Handle any errors here
+      print('Error while scanning: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +59,16 @@ class _ParkOutState extends State<ParkOut> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(get_screenWidth(context) * 0.1,
-                  get_screenWidth(context) * 0.1, 0, 0),
-              child: BackOption(context, go_back),
+              padding: EdgeInsets.fromLTRB(
+                get_screenWidth(context) * 0.1,
+                get_screenWidth(context) * 0.1,
+                0,
+                0,
+              ),
+              child: BackOption(context, goBack),
             ),
             SizedBox(
-              height: get_screenWidth(context)*0.05,
+              height: get_screenWidth(context) * 0.05,
             ),
             isQRScanned
                 ? Text("")
@@ -59,10 +88,12 @@ class _ParkOutState extends State<ParkOut> {
                           booking_num = barcodes.first.rawValue!;
                         });
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    CheckOutPage(booking_num: booking_num)));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                CheckOutPage(booking_num: booking_num),
+                          ),
+                        );
                         if (image != null) {}
                       },
                     ),

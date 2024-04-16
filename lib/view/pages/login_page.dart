@@ -117,6 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                         false,
                       ),
                       SizedBox(height: 30),
+                      
                       InputWIthIconImage(
                         context,
                         passLogo,

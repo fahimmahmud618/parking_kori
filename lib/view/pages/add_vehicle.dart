@@ -79,6 +79,7 @@ class _AddVehicleState extends State<AddVehicle> {
         setState(() {
           booking_num = bookingNumber;
         });
+        go_back();
       } else {
         print(
             'Failed to send registration number. Status code: ${response.statusCode}');
