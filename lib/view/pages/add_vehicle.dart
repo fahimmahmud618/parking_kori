@@ -11,6 +11,7 @@ import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/back_button.dart';
 import 'package:parking_kori/view/widgets/input_with_icon_image.dart';
 import 'package:parking_kori/view/widgets/page_title.dart';
+import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -43,6 +44,13 @@ class _AddVehicleState extends State<AddVehicle> {
   void go_back() {
     Navigator.pop(context);
   }
+  void navigateToNewPage(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => MainPage()),
+  );
+}
+
 
   void send_registration_number_and_get_booking_number(String r) async {
     try {
@@ -79,7 +87,7 @@ class _AddVehicleState extends State<AddVehicle> {
         setState(() {
           booking_num = bookingNumber;
         });
-        go_back();
+        navigateToNewPage(context);
       } else {
         print(
             'Failed to send registration number. Status code: ${response.statusCode}');
