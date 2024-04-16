@@ -108,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                       Image.asset(pkLogo,
                           width: get_screenWidth(context) * 0.3),
                       PageTitle(context, "Log in"),
-                      InputWIthIconImage(
+                      InputWIthIconImage2(
                         context,
                         userLogo,
                         usernameController,
@@ -117,14 +117,15 @@ class _LoginPageState extends State<LoginPage> {
                         false,
                       ),
                       SizedBox(height: 30),
-                      InputWIthIconImage(
-                        context,
-                        passLogo,
-                        passwordController,
-                        "Password",
-                        "Password",
-                        true,
-                      ),
+                      InputWithIconImage(context: context, icon: passLogo, textEditingController: passwordController, title: "Password", hinttext: "Write your password", isHide: true),
+                      // InputWIthIconImage2(
+                      //   context,
+                      //   passLogo,
+                      //   passwordController,
+                      //   "Password",
+                      //   "Password",
+                      //   true,
+                      // ),
                       SizedBox(height: 20),
                       ActionButton(context, "Login", checkCredential),
                     ],
