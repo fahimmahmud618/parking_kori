@@ -5,7 +5,7 @@ Widget ProfileInfoCard(BuildContext context, String title, String data) {
   return Container(
     alignment: Alignment.center,
     constraints: BoxConstraints(
-    minWidth: 120,
+    minWidth: get_screenWidth(context)*0.35,
     minHeight: 120,
    
   ),

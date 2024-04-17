@@ -39,7 +39,7 @@ TextStyle nameTitleStyle (BuildContext context, Color color) {
   return TextStyle(
       color: color,
       fontFamily: 'Myfont',
-      fontSize: 20*get_scale_factor(context),
+      fontSize:get_screenWidth(context)*0.05,
       fontWeight: FontWeight.bold
   );
 }
