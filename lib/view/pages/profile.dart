@@ -1,8 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:cache_manager/cache_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/cache_handler.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
+import 'package:parking_kori/view/widgets/dashboard_info_card.dart';
+import 'package:parking_kori/view/widgets/profile_info_card.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,20 +19,61 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   String currentUser = "";
+  int location = 0;
+  String address = "";
   String token = '';
   int loginTime = 0;
   late Duration difference;
-  late DateTime currentTime= DateTime.now();
+  late DateTime currentTime = DateTime.now();
   int dif = 0;
+  int income = 0;
+  int parkin = 0;
+  int parkout = 0;
+
+  String? baseUrl = dotenv.env['BASE_URL'];
+
+  Future<void> load_data() async {
+    String token = await ReadCache.getString(key: "token");
+
+    // HttpClient with badCertificateCallback to bypass SSL certificate verification
+    final client = HttpClient();
+    client.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+
+    final requestData = await client.getUrl(
+      Uri.parse('$baseUrl/report-summary'),
+    );
+    requestData.headers.add('Authorization', 'Bearer $token');
+    final responseData = await requestData.close();
+
+    final responseBody = await responseData.transform(utf8.decoder).join();
+
+    if (responseData.statusCode == 200) {
+      final responseData = json.decode(responseBody);
+      setState(() {
+        parkin = responseData['total_park_in'];
+        parkout = responseData['total_park_out'];
+        income = responseData['total_income'];
+      });
+    } else {
+      throw Exception('Failed to load data present park log');
+    }
+  }
 
   Future<void> fetchDataFromCache() async {
     try {
       currentUser = await ReadCache.getString(key: "cache");
+      print(currentUser);
       token = await ReadCache.getString(key: "token");
       loginTime = await ReadCache.getInt(key: "loginTime");
+      location = await ReadCache.getInt(key: "locationId");
+      address = await ReadCache.getString(key: "address");
+      print(location);
       print(loginTime);
+
       setState(() {
         currentUser = getUserNameFromChache(caesarCipherDecode(currentUser, 2));
+        print(currentUser);
         currentTime = DateTime.now();
         print(currentTime);
         DateTime savedDateTime = DateTime.fromMillisecondsSinceEpoch(loginTime);
@@ -45,6 +92,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     fetchDataFromCache();
+    load_data();
     super.initState();
   }
 
@@ -61,22 +109,49 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    "Hi, $currentUser",
-                    style: nameTitleStyle(context, myred),
+                  const SizedBox(
+                    height: 30,
                   ),
                   Text(
-                    "Login Time: ${loginTime != null ? formatDate(DateTime.fromMillisecondsSinceEpoch(loginTime)) : 'N/A'}",
-                    style: nameTitleStyle(context, myred),
+                    address,
+                    style: nameTitleStyle(context, myBlack),
+                  ),
+                  const SizedBox(
+                    height: 10,
                   ),
                   Text(
-                    "Current Time: ${formatDate(currentTime)}",
-                    style: nameTitleStyle(context, myred),
+                    "Agent: $currentUser",
+                    style: normalTextStyle(context, myBlack),
+                  ),
+
+                  const SizedBox(
+                    height: 10,
                   ),
                   Text(
-                    "Work Time: ${dif.toString()} hour(s)",
-                    style: nameTitleStyle(context, myred),
+                    "Login Time: ${formatDate(DateTime.fromMillisecondsSinceEpoch(loginTime))}",
+                    style: normalTextStyle(context, myBlack),
+                  ),
+                  const SizedBox(
+                    height: 45,
+                  ),
+                  // DashboardInfoCard(context, "Location", address),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ProfileInfoCard(
+                          context, "Work Hour", "${dif.toString()} hour(s)"),
+                      ProfileInfoCard(context, "Park In", "$parkin"),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ProfileInfoCard(context, "Park Out", "$parkout"),
+                      ProfileInfoCard(context, "Income", "$income Taka"),
+                    ],
                   )
+
+                  //ProfileInfoCard(context, "Work Hour", data)
                 ],
               ),
             ),

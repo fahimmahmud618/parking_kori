@@ -20,7 +20,7 @@ Color myBlack = Color(0xff000000);
 TextStyle normalTextStyle (BuildContext context, Color color) {
   return TextStyle(
     color: color,
-    fontSize: get_screenWidth(context)*0.035,
+    fontSize: 15*get_scale_factor(context),
     fontFamily: 'Myfont',
     // fontWeight: FontWeight.bold
   );

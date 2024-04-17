@@ -33,6 +33,7 @@ class _LoginPageState extends State<LoginPage> {
     String token = '';
     int id = 0;
     int locationId = 0;
+    String myAddress = "";
 
     if (username.isEmpty || password.isEmpty) {
       myAlertDialog("Error!", "Username or password cannot be empty", context);
@@ -62,8 +63,9 @@ class _LoginPageState extends State<LoginPage> {
         token = responseData['token'];
         id = responseData['data'][0]['id'];
         locationId = responseData['data'][0]['location_id'];
+        myAddress = responseData['data'][0]['location']['title'];
 
-        saveCache(username, password, token, id, locationId);
+        saveCache(username, password, token, id, locationId, myAddress);
         await DatabaseHelper().loadParkLogDataFromRemoteDB();
 
         Navigator.push(
@@ -84,12 +86,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void saveCache(
-      String username, String password, String token, int id, int locationId) {
+      String username, String password, String token, int id, int locationId, String myAddress) {
     final cacheValue = caesarCipherEncode(makeCache(username, password), 2);
     WriteCache.setString(key: "cache", value: cacheValue);
     WriteCache.setString(key: "token", value: token);
     WriteCache.setInt(key: "id", value: id);
     WriteCache.setInt(key: "locationId", value: locationId);
+    WriteCache.setString(key: "address", value: myAddress);
     DateTime currentTime = DateTime.now();
     WriteCache.setInt(
         key: "loginTime", value: currentTime.millisecondsSinceEpoch);

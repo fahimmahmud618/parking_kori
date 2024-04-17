@@ -93,16 +93,18 @@ class _ParkLogState extends State<ParkLog> {
     } else {
       if (isParkedInSelected) {
         results = presentBookings
-            .where((element) => element.booking_id
-                .toLowerCase()
-                .contains(enteredKeyword.toLowerCase()))
-            .toList();
+    .where((element) =>
+        element.booking_id.toLowerCase().contains(enteredKeyword.toLowerCase()) ||
+        element.registration_number.toLowerCase().contains(enteredKeyword.toLowerCase()))
+    .toList();
+
       } else {
         results = notPresentBookings
-            .where((element) => element.booking_id
-                .toLowerCase()
-                .contains(enteredKeyword.toLowerCase()))
-            .toList();
+    .where((element) =>
+        element.booking_id.toLowerCase().contains(enteredKeyword.toLowerCase()) ||
+        element.registration_number.toLowerCase().contains(enteredKeyword.toLowerCase()))
+    .toList();
+
       }
     }
 
