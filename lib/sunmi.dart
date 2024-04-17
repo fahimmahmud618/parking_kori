@@ -107,7 +107,7 @@ class Sunmi {
           await printText("Entry: $parkInTime");
           await printText("Ticket No: $num");
           await printQRCode(num);
-          await printText("Developed by ParkingKori");
+          await printText("Developed by ParkingKori.com");
           // await printText("               ");
           // await printText("               ");
           await printText("               ");
@@ -138,15 +138,15 @@ class Sunmi {
     await initialize();
     // await printLogoImage();
     await printHeadline(location);
-    await printText("PARKING Entry Receipt");
+    await printText("PARKING Exit Receipt");
 
     await printText("Entry: $entry_time");
     await printText("Exit: $exit_time");
     await printHeadline("Parking Bill: $payment_amount");
-    await printText("Ticket No: $ticket_num");
+    await printText("Ticket No: $registration_num");
     // await printQRCode(num);
     // await printText("{$vehicleType}: $vehicleRegNumber");
-    await printText("Developed by ParkingKori");
+    await printText("Developed by ParkingKori.com");
     // await printText("               ");
     await printText("               ");
     // await printText("               ");

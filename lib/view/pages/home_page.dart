@@ -45,15 +45,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchData() async {
-    await fetchVehicleData('Car', '1');
-    await fetchVehicleData('Motor Cycle', '2');
-    await fetchVehicleData('CNG', '3');
-    await fetchVehicleData('Cycle', '4');
-    await fetchVehicleData('Pickup', '5');
-    await fetchVehicleData('Others', '6');
+    await fetchVehicleData('Car');
+    await fetchVehicleData('Motor Cycle');
+    await fetchVehicleData('CNG');
+    await fetchVehicleData('Cycle');
+    await fetchVehicleData('Pickup');
+    await fetchVehicleData('Others');
   }
 
-  Future<void> fetchVehicleData(String vehicleType, String vehicleTypeId) async {
+  Future<void> fetchVehicleData(String vehicleType) async {
     try {
       authToken = await ReadCache.getString(key: "token");
 
