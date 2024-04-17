@@ -7,7 +7,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/cache_handler.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
-import 'package:parking_kori/view/widgets/dashboard_info_card.dart';
 import 'package:parking_kori/view/widgets/profile_info_card.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -86,8 +85,14 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   String formatDate(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute}:${dateTime.second}';
-  }
+  String hour = (dateTime.hour > 12) ? (dateTime.hour - 12).toString() : dateTime.hour.toString();
+  String minute = dateTime.minute.toString().padLeft(2, '0');
+  String second = dateTime.second.toString().padLeft(2, '0');
+  String amPm = (dateTime.hour >= 12) ? 'PM' : 'AM';
+  
+  return '${dateTime.day}/${dateTime.month}/${dateTime.year} $hour:$minute:$second $amPm';
+}
+
 
   @override
   void initState() {
