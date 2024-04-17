@@ -20,7 +20,7 @@ class ParkLog extends StatefulWidget {
 class _ParkLogState extends State<ParkLog> {
   List<Booking> notPresentBookings = [];
   List<Booking> presentBookings = [];
-  List<Booking> allBookings = [];
+  List<Booking> showableList = [];
   bool isParkedInSelected = true;
 
   String? baseUrl = dotenv.env['BASE_URL'];
@@ -82,9 +82,39 @@ class _ParkLogState extends State<ParkLog> {
     }
   }
 
+  void _runFilter(String enteredKeyword) {
+    List<Booking> results = [];
+    if (enteredKeyword.isEmpty) {
+      if (isParkedInSelected)
+        results = presentBookings;
+      else
+        results = notPresentBookings;
+      // results = todoList;
+    } else {
+      if (isParkedInSelected) {
+        results = presentBookings
+            .where((element) => element.booking_id
+                .toLowerCase()
+                .contains(enteredKeyword.toLowerCase()))
+            .toList();
+      } else {
+        results = notPresentBookings
+            .where((element) => element.booking_id
+                .toLowerCase()
+                .contains(enteredKeyword.toLowerCase()))
+            .toList();
+      }
+    }
+
+    setState(() {
+      showableList = results;
+    });
+  }
+
   @override
   void initState() {
     load_data();
+    showableList = presentBookings;
     super.initState();
   }
 
@@ -96,6 +126,7 @@ class _ParkLogState extends State<ParkLog> {
         child: Column(
           children: [
             AppBarWidget(context, "Park Log"),
+            searchBox(),
             Container(
               padding: EdgeInsets.all(get_screenWidth(context) * 0.1),
               child: Column(
@@ -109,6 +140,7 @@ class _ParkLogState extends State<ParkLog> {
                           onTap: () {
                             setState(() {
                               isParkedInSelected = true;
+                              showableList = presentBookings;
                             });
                           },
                           child: Container(
@@ -132,6 +164,7 @@ class _ParkLogState extends State<ParkLog> {
                           onTap: () {
                             setState(() {
                               isParkedInSelected = false;
+                              showableList = notPresentBookings;
                             });
                           },
                           child: Container(
@@ -155,13 +188,16 @@ class _ParkLogState extends State<ParkLog> {
                     ),
                   ),
                   Column(
-                    children: isParkedInSelected
-                        ? presentBookings
-                            .map((e) => ParkLogHistoryCard(context, e))
-                            .toList()
-                        : notPresentBookings
-                            .map((e) => ParkLogHistoryCard(context, e))
-                            .toList(),
+                    children: showableList
+                        .map((e) => ParkLogHistoryCard(context, e))
+                        .toList(),
+                    // children: isParkedInSelected
+                    //     ? presentBookings
+                    //         .map((e) => ParkLogHistoryCard(context, e))
+                    //         .toList()
+                    //     : notPresentBookings
+                    //         .map((e) => ParkLogHistoryCard(context, e))
+                    //         .toList(),
                   )
                 ],
               ),
@@ -171,4 +207,50 @@ class _ParkLogState extends State<ParkLog> {
       ),
     ));
   }
+
+  Widget searchBox() {
+  return Container(
+    alignment: Alignment.center,
+    padding: EdgeInsets.fromLTRB(2, 0, 1, 2),
+    margin: EdgeInsets.fromLTRB(
+        20 * get_scale_factor(context),
+        15 * get_scale_factor(context),
+        20 * get_scale_factor(context),
+        0),
+    decoration: BoxDecoration(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(17),
+      border: Border.all(
+        color: myred.withOpacity(0.5), // Set the desired border color
+        width: 2, // Set the desired border width
+      ),
+    ),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(10, 8, 0, 0),
+          child: Icon(
+            Icons.search,
+            color: myred,
+            size: 20 * get_scale_factor(context),
+          ),
+        ),
+        SizedBox(width: 10 * get_scale_factor(context)), // Adjust the spacing as needed
+        Expanded(
+          child: TextField(
+            onChanged: (value) => _runFilter(value),
+            decoration: InputDecoration(
+              hintText: "Search Booking number or Registration number",
+              hintStyle: hintTextStyle(context, myBlack.withOpacity(0.6)),
+              contentPadding: EdgeInsets.all(0),
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 }

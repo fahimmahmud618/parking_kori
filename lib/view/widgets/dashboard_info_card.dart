@@ -12,7 +12,7 @@ Widget DashboardInfoCard(BuildContext context, String title, String data){
     child: Row(
       children: [
         Expanded(flex:2, child: Text("$title ", style: boldTextStyle(context, myWhite),)),
-        Expanded(flex:1, child: Text(": $data", style: normalTextStyle(context, myBlack),)),
+        Expanded(flex:1, child: Text(": $data", style: normalTextStyle(context, myWhite.withOpacity(0.6)),)),
       ],
     ),
   );
