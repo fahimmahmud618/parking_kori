@@ -90,6 +90,10 @@ class _LoginPageState extends State<LoginPage> {
     WriteCache.setString(key: "token", value: token);
     WriteCache.setInt(key: "id", value: id);
     WriteCache.setInt(key: "locationId", value: locationId);
+    DateTime currentTime = DateTime.now();
+    WriteCache.setInt(
+        key: "loginTime", value: currentTime.millisecondsSinceEpoch);
+
     print(ReadCache.getString(key: "id"));
   }
 
@@ -124,7 +128,13 @@ class _LoginPageState extends State<LoginPage> {
                         false,
                       ),
                       SizedBox(height: 30),
-                      InputWithIconImage(context: context, icon: passLogo, textEditingController: passwordController, title: "Password", hinttext: "Enter password", isHide: true),
+                      InputWithIconImage(
+                          context: context,
+                          icon: passLogo,
+                          textEditingController: passwordController,
+                          title: "Password",
+                          hinttext: "Enter password",
+                          isHide: true),
                       // InputWIthIconImage2(
                       //   context,
                       //   passLogo,
