@@ -31,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
         print(currentTime);
         DateTime savedDateTime = DateTime.fromMillisecondsSinceEpoch(loginTime);
         difference = currentTime.difference(savedDateTime);
-        dif = difference.inMinutes;
+        dif = difference.inHours;
       });
     } catch (e) {
       print("Error fetching data: $e");
@@ -74,7 +74,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: nameTitleStyle(context, myred),
                   ),
                   Text(
-                    "Difference: ${dif.toString()} minutes",
+                    "Work Time: ${dif.toString()} hour(s)",
                     style: nameTitleStyle(context, myred),
                   )
                 ],
