@@ -90,7 +90,8 @@ class _ProfilePageState extends State<ProfilePage> {
   String second = dateTime.second.toString().padLeft(2, '0');
   String amPm = (dateTime.hour >= 12) ? 'PM' : 'AM';
   
-  return '${dateTime.day}/${dateTime.month}/${dateTime.year} $hour:$minute:$second $amPm';
+    return '$hour:$minute:$second $amPm';
+  // return '${dateTime.day}/${dateTime.month}/${dateTime.year} $hour:$minute:$second $amPm';
 }
 
 
