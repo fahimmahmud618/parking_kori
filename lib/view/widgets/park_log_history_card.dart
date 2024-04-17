@@ -30,17 +30,17 @@ Widget ParkLogHistoryCard(BuildContext context, Booking booking) {
                 SizedBox(height: 5,),
                 Text(
                   "In time: ${booking.in_time}",
-                  style: normalTextStyle(context, myBlack),
+                  style: normalTextStyle(context, myWhite.withOpacity(0.6)),
                 ),
                 booking.isPresent
                     ? Text(
                         "Present",
-                        style: normalTextStyle(context, myBlack),
+                        style: normalTextStyle(context, myWhite.withOpacity(0.6)),
                       )
                     : Text(
                         "Out time: ${booking.out_time}",
                       
-                        style: boldTextStyle(context, myBlack),
+                        style: boldTextStyle(context, myWhite.withOpacity(0.6)),
                       ),
               ],
             )),
