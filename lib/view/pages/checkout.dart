@@ -60,6 +60,12 @@ class _CheckOutPageState extends State<CheckOutPage> {
           payment_amount = responseData['data']['sub_total'].toString();
         });
       } else {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        if (responseData['success'] == false) {
+        // If success is false, show the error dialog
+        showErrorDialog("ERROR", responseData['message']);
+        return;
+      } 
         print('Failed to CHECKOUT. Status code: ${response.statusCode}');
       }
     } catch (e) {
@@ -145,6 +151,47 @@ class _CheckOutPageState extends State<CheckOutPage> {
       ),
     );
   }
+
+  showErrorDialog(String title, String description) {
+  // Create button
+  Widget okButton = TextButton(
+    child: Text("OK", style: normalTextStyle(context, myWhite),),
+    onPressed: () {
+      Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => MainPage()),
+    );
+    },
+  );
+
+  // Create AlertDialog
+  AlertDialog alert = AlertDialog(
+    backgroundColor: myred,
+    title: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Nameplate(context),
+        Padding(
+          padding: const EdgeInsets.only(top: 15),
+          child: Text(title, style: nameTitleStyle(context, myWhite)),
+        ),
+      ],
+    ),
+    content: Text(description, style: normalTextStyle(context,myWhite ),),
+    actions: [
+      okButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
 }
 
 // Custom HttpOverrides class to bypass SSL certificate validation
