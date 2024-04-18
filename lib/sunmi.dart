@@ -106,6 +106,11 @@ class Sunmi {
                 bold: true,
                 align: SunmiPrintAlign.CENTER,
               ));
+          await printText("   ");
+          await printText("   ");
+          await printText("   ");
+          await printText("   ");
+          
           await closePrinter();
         } else {
           throw Exception('Booking details not found');
@@ -145,6 +150,11 @@ class Sunmi {
           bold: true,
           align: SunmiPrintAlign.CENTER,
         ));
+      await printText("   ");
+      await printText("   ");
+      await printText("   ");
+      await printText("   ");
+        
     await closePrinter();
   }
 
