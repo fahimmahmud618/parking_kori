@@ -224,12 +224,12 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: get_screenWidth(context) * 0.05,
               ),
-              Text("|"),
+              // Text(" "),
               Text(
                 "OR",
                 style: nameTitleStyle(context, myBlack),
               ),
-              Text("|"),
+              // Text(" "),
               SizedBox(
                 height: get_screenWidth(context) * 0.05,
               ),
