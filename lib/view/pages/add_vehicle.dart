@@ -44,6 +44,10 @@ class _AddVehicleState extends State<AddVehicle> {
   }
 
   void go_back() {
+    setState(() {
+      isQRGenerated = false; // Reset to false to hide the generated QR
+      registrationnumber.clear(); // Clear the text field
+    });
     Navigator.pop(context);
   }
   void navigateToNewPage(BuildContext context) {
