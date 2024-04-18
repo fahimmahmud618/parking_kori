@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:parking_kori/view/styles.dart';
 
-Widget ProfileInfoCard(BuildContext context, String title, String data) {
+Widget ProfileInfoCard(BuildContext context, String title, String data, int type) {
   return Container(
     alignment: Alignment.center,
     constraints: BoxConstraints(
-    minWidth: get_screenWidth(context)*0.35,
+    minWidth: get_screenWidth(context)*0.35*type,
     minHeight: 120,
    
   ),
-    width: get_screenWidth(context) * 0.3,
+    width: get_screenWidth(context) * 0.3*type,
       margin: EdgeInsets.only(top: 20),
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(

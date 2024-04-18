@@ -33,8 +33,7 @@ class _ParkLogState extends State<ParkLog> {
     String second = dateTime.second.toString().padLeft(2, '0');
     String amPm = (dateTime.hour >= 12) ? 'PM' : 'AM';
 
-    return '${dateTime.day}-${dateTime.month}-${dateTime.year}  $hour:$minute:$second $amPm';
-    // return '${dateTime.day}/${dateTime.month}/${dateTime.year} $hour:$minute:$second $amPm';
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year}   $hour:$minute:$second $amPm';
   }
 
   Future<void> load_data() async {

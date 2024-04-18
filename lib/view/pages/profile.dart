@@ -107,19 +107,12 @@ class _ProfilePageState extends State<ProfilePage> {
   void _onFromDateSelected(DateTime selectedDate) {
     setState(() {
       startTime = selectedDate;
-    });
-  }
-
-  void _onToDateSelected(DateTime selectedDate) {
-    setState(() {
       endTime = selectedDate;
     });
   }
 
   void _onGoButtonPressed() {
     load_data();
-    print('From Date: $startTime');
-    print('To Date: $endTime');
   }
 
   @override
@@ -142,19 +135,13 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                 
                   SizedBox(
                     height: get_screenWidth(context) * 0.02,
                   ),
-                  
-                  // Divider(
-                  //   height:
-                  //       get_screenWidth(context) * 0.2, // Thickness of the line
-                  //   color: myBlack, // Color of the line
-                  //   // Indentation from the right
-                  // ),
 
-                   Text(
+            
+
+                  Text(
                     address,
                     style: nameTitleStyle(context, myBlack),
                   ),
@@ -172,23 +159,20 @@ class _ProfilePageState extends State<ProfilePage> {
                     "Login Time: ${formatTime(DateTime.fromMillisecondsSinceEpoch(loginTime))}",
                     style: normalTextStyle(context, myBlack),
                   ),
+                   Text(
+                    "Currrent Time: ${formatTime(currentTime)}",
+                    style: normalTextStyle(context, myBlack),
+                  ),
                   const SizedBox(
                     height: 45,
                   ),
-                   Text(
-                    "Enter Date Range",
-                    style: nameTitleStyle(context, myBlack),
-                  ),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       DateInputWidget(
-                        label: 'From',
+                        label: 'Select Date',
                         onDateSelected: _onFromDateSelected,
-                      ),
-                      DateInputWidget(
-                        label: 'To',
-                        onDateSelected: _onToDateSelected,
                       ),
                       InkWell(
                         onTap: _onGoButtonPressed,
@@ -200,27 +184,22 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   ),
-                  
+
                   SizedBox(
                     height: get_screenWidth(context) * 0.05,
                   ),
-                  
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      ProfileInfoCard(
-                        context,
-                        "Work Hour",
-                        "${dif.toString()} hour(s)",
-                      ),
-                      ProfileInfoCard(context, "Park In", "$parkin"),
+                      ProfileInfoCard(context, "Park In", "$parkin",1),
+                      ProfileInfoCard(context, "Park Out", "$parkout",1),
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      ProfileInfoCard(context, "Park Out", "$parkout"),
-                      ProfileInfoCard(context, "Income", "$income Taka"),
+                      ProfileInfoCard(context, "Income", "$income Taka",2),
                     ],
                   ),
                 ],
