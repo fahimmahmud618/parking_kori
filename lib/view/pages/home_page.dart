@@ -7,10 +7,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/pages/add_vehicle.dart';
+import 'package:parking_kori/view/pages/checkout.dart';
 import 'package:parking_kori/view/pages/park_out_page.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
+import 'package:parking_kori/view/widgets/input_with_icon_image.dart';
 import 'package:parking_kori/view/widgets/parking_info_card.dart';
 
 class HomePage extends StatefulWidget {
@@ -37,6 +39,7 @@ class _HomePageState extends State<HomePage> {
   int othersCapacity = 0;
   String authToken = "";
   String? baseUrl = dotenv.env['BASE_URL'];
+  TextEditingController registration_number = new TextEditingController();
 
   @override
   void initState() {
@@ -60,7 +63,8 @@ class _HomePageState extends State<HomePage> {
       final client = HttpClient();
 
       // Set the badCertificateCallback to ignore SSL certificate validation errors
-      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
 
       final request = await client.getUrl(
         Uri.parse('$baseUrl/get/vehicle-types'),
@@ -68,7 +72,7 @@ class _HomePageState extends State<HomePage> {
       request.headers.set('Authorization', 'Bearer $authToken');
 
       final response = await request.close();
-      
+
       // Read and decode the response
       final responseBody = await response.transform(utf8.decoder).join();
       // final List<dynamic> data = json.decode(responseBody);
@@ -89,7 +93,8 @@ class _HomePageState extends State<HomePage> {
               case 'Motor Cycle':
                 currentMotorCycleNumber = vehicleData['remaining_capacity'];
                 MotorCycleCapacity = vehicleData['capacity']['capacity'];
-                currentMotorCycleNumber = MotorCycleCapacity - currentMotorCycleNumber;
+                currentMotorCycleNumber =
+                    MotorCycleCapacity - currentMotorCycleNumber;
                 break;
               case 'Cycle':
                 currentCycleNumber = vehicleData['remaining_capacity'];
@@ -128,49 +133,46 @@ class _HomePageState extends State<HomePage> {
   }
 
   void add_car() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "1")));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "1")));
   }
 
   void add_bike() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "2")));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "2")));
   }
 
- void add_cng() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "3")));
+  void add_cng() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "3")));
   }
+
   void add_cycle() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "4")));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "4")));
   }
-
 
   void add_pickup() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "5")));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "5")));
   }
 
   void add_others() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => AddVehicle(vehicleType: "6")));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "6")));
   }
 
   void go_to_park_out() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => ParkOut()));
+  }
+
+  void do_park_out_with_regNUmber() {
+    print("aaaaa");
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                CheckOutPage(booking_num: registration_number.text)));
   }
 
   @override
@@ -182,7 +184,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               AppBarWidget(context, "Parking"),
               SizedBox(
-                height: get_screenWidth(context)*0.05,
+                height: get_screenWidth(context) * 0.05,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -191,15 +193,16 @@ class _HomePageState extends State<HomePage> {
                       carCapacity, add_car),
                   ParkingInfoCard(context, bikeLogo, "Bike",
                       currentMotorCycleNumber, MotorCycleCapacity, add_bike),
-                  ParkingInfoCard(context, cycleLogo, "Cycle", currentCycleNumber,
-                      cycleCapacity, add_cycle),
+                  ParkingInfoCard(context, cycleLogo, "Cycle",
+                      currentCycleNumber, cycleCapacity, add_cycle),
                 ],
               ),
-              SizedBox(height: get_screenWidth(context)*0.03,),
+              SizedBox(
+                height: get_screenWidth(context) * 0.03,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-
                   ParkingInfoCard(context, cngLogo, "CNG", currentCNGNumber,
                       cngCapacity, add_cng),
                   ParkingInfoCard(context, pickupLogo, "Pickup",
@@ -207,13 +210,44 @@ class _HomePageState extends State<HomePage> {
                   ParkingInfoCard(context, othersLogo, "Others",
                       currentothersNumber, othersCapacity, add_others),
                 ],
-
               ),
-
               SizedBox(
-                height: get_screenWidth(context)*0.05,
+                height: get_screenWidth(context) * 0.05,
               ),
-              ActionButton2(context, "Park Out", go_to_park_out),
+              Divider(
+                height: 2, // Thickness of the line
+                color: myBlack, // Color of the line
+                indent: 20, // Indentation from the left
+                endIndent: 20, // Indentation from the right
+              ),
+              SizedBox(
+                height: get_screenWidth(context) * 0.05,
+              ),
+              ActionButton2(context, "Park Out With QR Scan", go_to_park_out),
+              SizedBox(
+                height: get_screenWidth(context) * 0.05,
+              ),
+              Text(
+                "| OR |",
+                style: nameTitleStyle(context, myBlack),
+              ),
+              SizedBox(
+                height: get_screenWidth(context) * 0.05,
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(
+                    horizontal: get_screenWidth(context) * 0.1),
+                child: InputWIthIconImage4(
+                    context,
+                    editLogo,
+                    registration_number,
+                    "Registration Number",
+                    "Registration number of parked in vehicle",
+                    false,
+                    do_park_out_with_regNUmber
+                ),
+              ),
+
             ],
           ),
         ),
