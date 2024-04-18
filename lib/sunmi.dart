@@ -94,23 +94,18 @@ class Sunmi {
           await printText("Entry: $parkInTime");
           await printText("Ticket No: $num");
           await printQRCode(num);
-          await printText("Developed by ",
-              style: SunmiStyle(
-                fontSize: SunmiFontSize.MD,
-                bold: true,
-                align: SunmiPrintAlign.CENTER,
-              ));
-          await printText("ParkingKori.com",
-              style: SunmiStyle(
-                fontSize: SunmiFontSize.MD,
-                bold: true,
-                align: SunmiPrintAlign.CENTER,
-              ));
-          await printText("   ");
-          await printText("   ");
-          await printText("   ");
-          await printText("   ");
           
+          await printText("Developed by ParkingKori.com",
+              style: SunmiStyle(
+                fontSize: SunmiFontSize.MD,
+                bold: true,
+                align: SunmiPrintAlign.CENTER,
+              ));
+          // await printText("   ");
+          await printText("   ");
+          await printText("   ");
+          await printText("   ");
+
           await closePrinter();
         } else {
           throw Exception('Booking details not found');
@@ -138,19 +133,14 @@ class Sunmi {
     await printText("Exit: $exit_time");
     await printHeadline("Parking Bill: $payment_amount");
     await printText("Ticket No: $registration_num");
-    await printText("Developed by ",
+    
+    await printText("Developed by ParkingKori.com",
         style: SunmiStyle(
           fontSize: SunmiFontSize.MD,
           bold: true,
           align: SunmiPrintAlign.CENTER,
         ));
-    await printText("ParkingKori.com",
-        style: SunmiStyle(
-          fontSize: SunmiFontSize.MD,
-          bold: true,
-          align: SunmiPrintAlign.CENTER,
-        ));
-      await printText("   ");
+      // await printText("   ");
       await printText("   ");
       await printText("   ");
       await printText("   ");
