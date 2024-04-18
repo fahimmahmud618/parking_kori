@@ -25,6 +25,18 @@ class _ParkLogState extends State<ParkLog> {
 
   String? baseUrl = dotenv.env['BASE_URL'];
 
+  String formatTime(DateTime dateTime) {
+    String hour = (dateTime.hour > 12)
+        ? (dateTime.hour - 12).toString()
+        : dateTime.hour.toString();
+    String minute = dateTime.minute.toString().padLeft(2, '0');
+    String second = dateTime.second.toString().padLeft(2, '0');
+    String amPm = (dateTime.hour >= 12) ? 'PM' : 'AM';
+
+    return '${dateTime.day}-${dateTime.month}-${dateTime.year}  $hour:$minute:$second $amPm';
+    // return '${dateTime.day}/${dateTime.month}/${dateTime.year} $hour:$minute:$second $amPm';
+  }
+
   Future<void> load_data() async {
     String token = await ReadCache.getString(key: "token");
 
@@ -65,16 +77,22 @@ class _ParkLogState extends State<ParkLog> {
       String vehicleType = bookingData['vehicle_type_id'].toString();
       String bookingNumber = bookingData['booking_number'];
       String registrationNumber = bookingData['vehicle_reg_number'];
-      String inTime = bookingData['park_in_time'];
-      String outTime = isPresent ? "" : bookingData['park_out_time'];
+      DateTime inTime = DateTime.parse(bookingData['park_in_time']);
+      String formattedInTime = formatTime(inTime);
+      DateTime outTime = isPresent
+          ? DateTime.now()
+          : DateTime.parse(bookingData['park_out_time']);
+      String formattedOutTime =
+          isPresent ? "" : formatTime(outTime);
+
       setState(() {
         (isPresent ? presentBookings : notPresentBookings).add(
           Booking(
             booking_id: bookingNumber,
             vehicle_type: vehicleType,
             registration_number: registrationNumber,
-            in_time: inTime,
-            out_time: outTime,
+            in_time: formattedInTime,
+            out_time: formattedOutTime,
             isPresent: isPresent,
           ),
         );
@@ -93,18 +111,24 @@ class _ParkLogState extends State<ParkLog> {
     } else {
       if (isParkedInSelected) {
         results = presentBookings
-    .where((element) =>
-        element.booking_id.toLowerCase().contains(enteredKeyword.toLowerCase()) ||
-        element.registration_number.toLowerCase().contains(enteredKeyword.toLowerCase()))
-    .toList();
-
+            .where((element) =>
+                element.booking_id
+                    .toLowerCase()
+                    .contains(enteredKeyword.toLowerCase()) ||
+                element.registration_number
+                    .toLowerCase()
+                    .contains(enteredKeyword.toLowerCase()))
+            .toList();
       } else {
         results = notPresentBookings
-    .where((element) =>
-        element.booking_id.toLowerCase().contains(enteredKeyword.toLowerCase()) ||
-        element.registration_number.toLowerCase().contains(enteredKeyword.toLowerCase()))
-    .toList();
-
+            .where((element) =>
+                element.booking_id
+                    .toLowerCase()
+                    .contains(enteredKeyword.toLowerCase()) ||
+                element.registration_number
+                    .toLowerCase()
+                    .contains(enteredKeyword.toLowerCase()))
+            .toList();
       }
     }
 
@@ -211,48 +235,46 @@ class _ParkLogState extends State<ParkLog> {
   }
 
   Widget searchBox() {
-  return Container(
-    alignment: Alignment.center,
-    padding: EdgeInsets.fromLTRB(2, 0, 1, 2),
-    margin: EdgeInsets.fromLTRB(
-        20 * get_scale_factor(context),
-        15 * get_scale_factor(context),
-        20 * get_scale_factor(context),
-        0),
-    decoration: BoxDecoration(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(17),
-      border: Border.all(
-        color: myred.withOpacity(0.5), // Set the desired border color
-        width: 2, // Set the desired border width
-      ),
-    ),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(10, 8, 0, 0),
-          child: Icon(
-            Icons.search,
-            color: myred,
-            size: 20 * get_scale_factor(context),
-          ),
+    return Container(
+      alignment: Alignment.center,
+      padding: EdgeInsets.fromLTRB(2, 0, 1, 2),
+      margin: EdgeInsets.fromLTRB(20 * get_scale_factor(context),
+          15 * get_scale_factor(context), 20 * get_scale_factor(context), 0),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(17),
+        border: Border.all(
+          color: myred.withOpacity(0.5), // Set the desired border color
+          width: 2, // Set the desired border width
         ),
-        SizedBox(width: 10 * get_scale_factor(context)), // Adjust the spacing as needed
-        Expanded(
-          child: TextField(
-            onChanged: (value) => _runFilter(value),
-            decoration: InputDecoration(
-              hintText: "Search Booking number or Registration number",
-              hintStyle: hintTextStyle(context, myBlack.withOpacity(0.6)),
-              contentPadding: EdgeInsets.all(0),
-              border: InputBorder.none,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(10, 8, 0, 0),
+            child: Icon(
+              Icons.search,
+              color: myred,
+              size: 20 * get_scale_factor(context),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
+          SizedBox(
+              width: 10 *
+                  get_scale_factor(context)), // Adjust the spacing as needed
+          Expanded(
+            child: TextField(
+              onChanged: (value) => _runFilter(value),
+              decoration: InputDecoration(
+                hintText: "Search Booking number or Registration number",
+                hintStyle: hintTextStyle(context, myBlack.withOpacity(0.6)),
+                contentPadding: EdgeInsets.all(0),
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

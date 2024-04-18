@@ -176,7 +176,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 45,
                   ),
                    Text(
-                    "Enter date range to show data",
+                    "Enter Date Range",
                     style: nameTitleStyle(context, myBlack),
                   ),
                   Row(

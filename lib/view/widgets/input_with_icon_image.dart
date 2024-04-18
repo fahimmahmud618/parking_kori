@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:parking_kori/view/styles.dart';
 
 Widget InputWIthIconImage2(
@@ -132,91 +133,39 @@ Widget InputWIthIconImage3(
   );
 }
 
-Widget InputWIthIconImage4(
-    BuildContext context,
-    String icon,
-    TextEditingController textEditingController,
-    String title,
-    String hinttext,
-    bool isHide,
-    action) {
+
+
+Widget regnum(BuildContext context, TextEditingController textEditingController){
   return Container(
-    child: Column(
-      children: [
-        Row(
-          children: [
-            Image.asset(
-              icon,
-              height: get_screenWidth(context) * 0.04,
-              width: get_screenWidth(context) * 0.04,
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            Text(
-              title,
-              style: TextStyle(
-                  color: myBlack,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Myfont',
-                  fontSize: get_screenWidth(context) * 0.04),
-            ),
-          ],
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          margin: const EdgeInsets.symmetric(vertical: 2),
-          decoration: BoxDecoration(
-            // borderRadius: BorderRadius.circular(5),
-            border: Border(
+      decoration: BoxDecoration(
+        border: Border(
               bottom: BorderSide(
                 color:
                     Colors.black.withOpacity(0.7), // Specify your desired color
                 width: 1, // Specify your desired width
               ),
             ),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 6,
-                child: TextField(
-                  obscureText: isHide,
-                  controller: textEditingController,
-                  keyboardType:
-                      TextInputType.number, // Set keyboard type to numeric
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly
-                  ], // Only allow digits (0 to 9)
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: hinttext,
-                    hintStyle: TextStyle(
+      ),
+      child: Container(
+        
+        width: get_screenWidth(context) * 0.8,
+        child: TextField(
+          controller: textEditingController,
+          decoration: InputDecoration(
+            hintText: "Enter Registration number here",
+            hintStyle: TextStyle(
                       color: myBlack.withOpacity(0.5),
                       fontSize: get_screenWidth(context) * 0.03,
                       fontFamily: 'Myfont',
                     ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 2),
-                child: Expanded(
-                    flex: 1,
-                    child: InkWell(
-                      onTap: action,
-                        child: Icon(
-                      Icons.arrow_circle_right_sharp,
-                      color: myred,
-                          size: 30,
-                    ))),
-              ),
-            ],
+            border: InputBorder.none,
+            labelStyle: nameTitleStyle(context, myred),
+            
           ),
+          
         ),
-      ],
-    ),
-  );
+      ),
+    );
 }
 
 class InputWithIconImage extends StatefulWidget {

@@ -2,7 +2,9 @@
 
 import 'dart:io';
 import 'package:cache_manager/core/read_cache_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:parking_kori/view/image_file.dart';
@@ -214,12 +216,7 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: get_screenWidth(context) * 0.05,
               ),
-              Divider(
-                height: 2, // Thickness of the line
-                color: myBlack, // Color of the line
-                indent: 20, // Indentation from the left
-                endIndent: 20, // Indentation from the right
-              ),
+              
               SizedBox(
                 height: get_screenWidth(context) * 0.05,
               ),
@@ -227,27 +224,59 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: get_screenWidth(context) * 0.05,
               ),
+              Text("|"),
               Text(
-                "| OR |",
+                "OR",
                 style: nameTitleStyle(context, myBlack),
               ),
+              Text("|"),
               SizedBox(
                 height: get_screenWidth(context) * 0.05,
               ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: get_screenWidth(context) * 0.1),
-                child: InputWIthIconImage4(
-                    context,
-                    editLogo,
-                    registration_number,
-                    "Registration Number",
-                    "Registration number of parked in vehicle",
-                    false,
-                    do_park_out_with_regNUmber
+              // Padding(
+              //   padding: const EdgeInsets.only(right: 8),
+              //   child: Row(
+              //     children: [
+              //       Expanded(
+              //         flex: 10,
+              //         child: Container(
+              //           padding: EdgeInsets.symmetric(
+              //               horizontal: get_screenWidth(context) * 0.1),
+              //           child: InputWIthIconImage3(
+              //               context,
+              //               editLogo,
+              //               registration_number,
+              //               "Registration Number",
+              //               "Enter Registration Number Here",
+              //               false,
+              //           ),
+              //         ),
+              //       ),
+              //       Expanded(flex: 1, child: Icon(
+              //               Icons.arrow_circle_right_sharp,
+              //               color: myred,
+              //               size: 30,
+              //             ),),
+              //     ],
+              //   ),
+              // ),
+             Text("Park out with Registration Number", style: boldTextStyle(context, myBlack),),
+              Padding(
+                padding:  EdgeInsets.symmetric(horizontal: get_screenWidth(context)*0.05),
+                child: Row(
+                  children: [
+                    regnum(context, registration_number),
+                    InkWell(
+                          onTap: do_park_out_with_regNUmber,
+                          child: Icon(
+                            Icons.arrow_circle_right_sharp,
+                            color: myred,
+                            size: 30,
+                          ),
+                        ),
+                  ],
                 ),
-              ),
-
+              )
             ],
           ),
         ),
