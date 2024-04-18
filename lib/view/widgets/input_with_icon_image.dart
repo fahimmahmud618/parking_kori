@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
+// ignore_for_file: avoid_unnecessary_containers, non_constant_identifier_names, library_private_types_in_public_api, use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:parking_kori/view/styles.dart';
 
 Widget InputWIthIconImage2(
@@ -21,7 +21,7 @@ Widget InputWIthIconImage2(
               height: get_screenWidth(context) * 0.04,
               width: get_screenWidth(context) * 0.04,
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
             Text(
@@ -35,8 +35,8 @@ Widget InputWIthIconImage2(
           ],
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 5),
-          margin: EdgeInsets.symmetric(vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          margin: const EdgeInsets.symmetric(vertical: 2),
           decoration: BoxDecoration(
             // borderRadius: BorderRadius.circular(5),
             border: Border(
@@ -83,7 +83,7 @@ Widget InputWIthIconImage3(
               height: get_screenWidth(context) * 0.04,
               width: get_screenWidth(context) * 0.04,
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
             Text(
@@ -97,8 +97,8 @@ Widget InputWIthIconImage3(
           ],
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 5),
-          margin: EdgeInsets.symmetric(vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          margin: const EdgeInsets.symmetric(vertical: 2),
           decoration: BoxDecoration(
             // borderRadius: BorderRadius.circular(5),
             border: Border(
@@ -150,7 +150,7 @@ Widget InputWIthIconImage4(
               height: get_screenWidth(context) * 0.04,
               width: get_screenWidth(context) * 0.04,
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
             Text(
@@ -164,8 +164,8 @@ Widget InputWIthIconImage4(
           ],
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 5),
-          margin: EdgeInsets.symmetric(vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          margin: const EdgeInsets.symmetric(vertical: 2),
           decoration: BoxDecoration(
             // borderRadius: BorderRadius.circular(5),
             border: Border(
@@ -227,7 +227,7 @@ class InputWithIconImage extends StatefulWidget {
   final String hinttext;
   final bool isHide;
 
-  InputWithIconImage(
+  const InputWithIconImage(
       {required this.context,
       required this.icon,
       required this.textEditingController,
@@ -254,7 +254,7 @@ class _InputWithIconImageState extends State<InputWithIconImage> {
                 height: get_screenWidth(widget.context) * 0.04,
                 width: get_screenWidth(widget.context) * 0.04,
               ),
-              SizedBox(width: 5),
+              const SizedBox(width: 5),
               Text(
                 widget.title,
                 style: TextStyle(
@@ -267,8 +267,8 @@ class _InputWithIconImageState extends State<InputWithIconImage> {
             ],
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 5),
-            margin: EdgeInsets.symmetric(vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            margin: const EdgeInsets.symmetric(vertical: 2),
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(

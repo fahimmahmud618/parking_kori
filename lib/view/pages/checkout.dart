@@ -88,7 +88,6 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
         setState(() {
           location = bookingDetails['location']['title'];
-          print("------------------------------------Location: " + location);
         });
       } else {
         print(

@@ -8,7 +8,7 @@ double get_scale_factor(BuildContext context){
 double get_screenWidth(BuildContext context){
   return MediaQuery.of(context).size.width;
 }
-
+// Color myred = Colors.black;
 Color myred = Color(0xFFb01b40);
 // Color myred = Color(0xFFe1136e);
 // Color myred = Color(0xFFD20062);

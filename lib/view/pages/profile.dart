@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/cache_handler.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
+import 'package:parking_kori/view/widgets/dateInput.dart';
 import 'package:parking_kori/view/widgets/profile_info_card.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -23,7 +24,9 @@ class _ProfilePageState extends State<ProfilePage> {
   String token = '';
   int loginTime = 0;
   late Duration difference;
-  late DateTime currentTime = DateTime.now();
+  DateTime currentTime = DateTime.now();
+  DateTime startTime = DateTime.now();
+  DateTime endTime = DateTime.now();
   int dif = 0;
   int income = 0;
   int parkin = 0;
@@ -40,7 +43,8 @@ class _ProfilePageState extends State<ProfilePage> {
         (X509Certificate cert, String host, int port) => true;
 
     final requestData = await client.getUrl(
-      Uri.parse('$baseUrl/report-summary'),
+      Uri.parse(
+          '$baseUrl/report-summary?from_date=${formatDate(startTime)} && to_date=${formatDate(endTime)}'),
     );
     requestData.headers.add('Authorization', 'Bearer $token');
     final responseData = await requestData.close();
@@ -84,16 +88,39 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  String formatDate(DateTime dateTime) {
-  String hour = (dateTime.hour > 12) ? (dateTime.hour - 12).toString() : dateTime.hour.toString();
-  String minute = dateTime.minute.toString().padLeft(2, '0');
-  String second = dateTime.second.toString().padLeft(2, '0');
-  String amPm = (dateTime.hour >= 12) ? 'PM' : 'AM';
-  
-    return '$hour:$minute:$second $amPm';
-  // return '${dateTime.day}/${dateTime.month}/${dateTime.year} $hour:$minute:$second $amPm';
-}
+  String formatTime(DateTime dateTime) {
+    String hour = (dateTime.hour > 12)
+        ? (dateTime.hour - 12).toString()
+        : dateTime.hour.toString();
+    String minute = dateTime.minute.toString().padLeft(2, '0');
+    String second = dateTime.second.toString().padLeft(2, '0');
+    String amPm = (dateTime.hour >= 12) ? 'PM' : 'AM';
 
+    return '$hour:$minute:$second $amPm';
+    // return '${dateTime.day}/${dateTime.month}/${dateTime.year} $hour:$minute:$second $amPm';
+  }
+
+  String formatDate(DateTime dateTime) {
+    return '${dateTime.day}-${dateTime.month}-${dateTime.year}';
+  }
+
+  void _onFromDateSelected(DateTime selectedDate) {
+    setState(() {
+      startTime = selectedDate;
+    });
+  }
+
+  void _onToDateSelected(DateTime selectedDate) {
+    setState(() {
+      endTime = selectedDate;
+    });
+  }
+
+  void _onGoButtonPressed() {
+    load_data();
+    print('From Date: $startTime');
+    print('To Date: $endTime');
+  }
 
   @override
   void initState() {
@@ -115,10 +142,19 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(
-                    height: 30,
+                 
+                  SizedBox(
+                    height: get_screenWidth(context) * 0.02,
                   ),
-                  Text(
+                  
+                  // Divider(
+                  //   height:
+                  //       get_screenWidth(context) * 0.2, // Thickness of the line
+                  //   color: myBlack, // Color of the line
+                  //   // Indentation from the right
+                  // ),
+
+                   Text(
                     address,
                     style: nameTitleStyle(context, myBlack),
                   ),
@@ -129,23 +165,54 @@ class _ProfilePageState extends State<ProfilePage> {
                     "Agent: $currentUser",
                     style: normalTextStyle(context, myBlack),
                   ),
-
                   const SizedBox(
                     height: 10,
                   ),
                   Text(
-                    "Login Time: ${formatDate(DateTime.fromMillisecondsSinceEpoch(loginTime))}",
+                    "Login Time: ${formatTime(DateTime.fromMillisecondsSinceEpoch(loginTime))}",
                     style: normalTextStyle(context, myBlack),
                   ),
                   const SizedBox(
                     height: 45,
                   ),
-                  // DashboardInfoCard(context, "Location", address),
+                   Text(
+                    "Enter date range to show data",
+                    style: nameTitleStyle(context, myBlack),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      DateInputWidget(
+                        label: 'From',
+                        onDateSelected: _onFromDateSelected,
+                      ),
+                      DateInputWidget(
+                        label: 'To',
+                        onDateSelected: _onToDateSelected,
+                      ),
+                      InkWell(
+                        onTap: _onGoButtonPressed,
+                        child: Icon(
+                          Icons.arrow_circle_right_sharp,
+                          color: myred,
+                          size: 30,
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                  SizedBox(
+                    height: get_screenWidth(context) * 0.05,
+                  ),
+                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       ProfileInfoCard(
-                          context, "Work Hour", "${dif.toString()} hour(s)"),
+                        context,
+                        "Work Hour",
+                        "${dif.toString()} hour(s)",
+                      ),
                       ProfileInfoCard(context, "Park In", "$parkin"),
                     ],
                   ),
@@ -155,9 +222,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ProfileInfoCard(context, "Park Out", "$parkout"),
                       ProfileInfoCard(context, "Income", "$income Taka"),
                     ],
-                  )
-
-                  //ProfileInfoCard(context, "Work Hour", data)
+                  ),
                 ],
               ),
             ),
