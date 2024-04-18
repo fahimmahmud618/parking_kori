@@ -49,7 +49,7 @@ class _DateInputWidgetState extends State<DateInputWidget> {
       ),
       child: Container(
         
-        width: get_screenWidth(context) * 0.3,
+        width: get_screenWidth(context) * 0.7,
         child: TextFormField(
           readOnly: true,
           onTap: () => _selectDate(context),
