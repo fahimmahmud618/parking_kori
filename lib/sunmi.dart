@@ -5,8 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:sunmi_printer_plus/enums.dart';
 import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
 import 'package:sunmi_printer_plus/sunmi_style.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Sunmi {
+  // String? baseUrl = dotenv.env['BASE_URL'];
   Future<void> initialize() async {
     await SunmiPrinter.bindingPrinter();
     await SunmiPrinter.initPrinter();
@@ -58,7 +60,8 @@ class Sunmi {
 
   Future<void> printReceipt(String bookingNumber) async {
     String authToken = await ReadCache.getString(key: "token");
-
+    String? baseUrl = dotenv.env['BASE_URL'];
+    // String url = '$baseUrl/park-out';
     try {
       final client = HttpClient();
       client.badCertificateCallback =
@@ -66,7 +69,7 @@ class Sunmi {
               true; // Bypass SSL certificate verification
       final request = await client.getUrl(
         Uri.parse(
-            'https://parking-kori.rpu.solutions/api/v1/get-booking?booking_number=$bookingNumber'),
+            '$baseUrl/get-booking?booking_number=$bookingNumber'),
       );
       request.headers.add('Authorization', 'Bearer $authToken');
       final response = await request.close();
@@ -103,6 +106,11 @@ class Sunmi {
                 bold: true,
                 align: SunmiPrintAlign.CENTER,
               ));
+          await printText("   ");
+          await printText("   ");
+          await printText("   ");
+          await printText("   ");
+          
           await closePrinter();
         } else {
           throw Exception('Booking details not found');
@@ -142,6 +150,11 @@ class Sunmi {
           bold: true,
           align: SunmiPrintAlign.CENTER,
         ));
+      await printText("   ");
+      await printText("   ");
+      await printText("   ");
+      await printText("   ");
+        
     await closePrinter();
   }
 

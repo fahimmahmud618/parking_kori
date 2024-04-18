@@ -48,36 +48,50 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        child: widgetList[myIndex],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 0,
-        onTap: (index) {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) {
+        if (didPop) return;
+        // When the back button is pressed, the controller.currentIndex.value will be 0 and that screen will show
+        if (myIndex != 0) {
           setState(() {
-            myIndex = index;
-          });
-        },
-        showUnselectedLabels: true,
-        showSelectedLabels: true,
-        currentIndex: myIndex,
-        backgroundColor: myred,
-        selectedItemColor: myWhite,
-        unselectedItemColor: myWhite.withOpacity(0.6),
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-              label: "Parking",
-              icon: Icon(
-                Icons.directions_bike,
-              ),
-              backgroundColor: myred),
-          //  BottomNavigationBarItem(label: "Shift", icon: Icon(Icons.dataset_outlined), backgroundColor: myred),
-          BottomNavigationBarItem(label: "Park log", icon: Icon(Icons.history)),
-          //  BottomNavigationBarItem(label: "Dashboard", icon: Icon(Icons.dashboard)),
-          BottomNavigationBarItem(label: "Profile", icon: Icon(Icons.person)),
-        ],
+              myIndex = 0;
+            });
+        } else {
+         
+          Navigator.pop(context);
+        }},
+      child: Scaffold(
+        body: Container(
+          child: widgetList[myIndex],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          elevation: 0,
+          onTap: (index) {
+            setState(() {
+              myIndex = index;
+            });
+          },
+          showUnselectedLabels: true,
+          showSelectedLabels: true,
+          currentIndex: myIndex,
+          backgroundColor: myred,
+          selectedItemColor: myWhite,
+          unselectedItemColor: myWhite.withOpacity(0.6),
+          type: BottomNavigationBarType.fixed,
+          items: [
+            BottomNavigationBarItem(
+                label: "Parking",
+                icon: Icon(
+                  Icons.directions_bike,
+                ),
+                backgroundColor: myred),
+            //  BottomNavigationBarItem(label: "Shift", icon: Icon(Icons.dataset_outlined), backgroundColor: myred),
+            BottomNavigationBarItem(label: "Park log", icon: Icon(Icons.history)),
+            //  BottomNavigationBarItem(label: "Dashboard", icon: Icon(Icons.dashboard)),
+            BottomNavigationBarItem(label: "Profile", icon: Icon(Icons.person)),
+          ],
+        ),
       ),
     );
   }
