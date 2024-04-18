@@ -33,30 +33,26 @@ class _AddVehicleState extends State<AddVehicle> {
   int id = 0;
   int locationId = 0;
   TextEditingController registrationnumber = TextEditingController();
+  bool isPrinting = false; // Add a boolean variable to track printing
 
   void generate_qr_and_print(String r) {
     send_registration_number_and_get_booking_number(r);
-    setState(() {
-      isQRGenerated = true;
-    });
-    Sunmi printer = Sunmi();
-    printer.printReceipt(booking_num);
   }
 
   void go_back() {
     setState(() {
-      isQRGenerated = false; // Reset to false to hide the generated QR
-      registrationnumber.clear(); // Clear the text field
+      isQRGenerated = false;
+      registrationnumber.clear();
     });
     Navigator.pop(context);
   }
-  void navigateToNewPage(BuildContext context) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => MainPage()),
-  );
-}
 
+  void navigateToNewPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MainPage()),
+    );
+  }
 
   void send_registration_number_and_get_booking_number(String r) async {
     try {
@@ -86,7 +82,6 @@ class _AddVehicleState extends State<AddVehicle> {
         body: jsonEncode(requestData),
       );
 
-
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = jsonDecode(response.body);
         String bookingNumber = responseData['booking']['booking_number'];
@@ -94,6 +89,14 @@ class _AddVehicleState extends State<AddVehicle> {
         setState(() {
           booking_num = bookingNumber;
         });
+
+        // Print the QR code only if it hasn't been printed yet
+        if (!isPrinting) {
+          Sunmi printer = Sunmi();
+          printer.printReceipt(bookingNumber);
+          isPrinting = true; // Set the flag to true to indicate printing
+        }
+
         navigateToNewPage(context);
       } else {
         print(

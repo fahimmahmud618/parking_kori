@@ -214,15 +214,15 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               SizedBox(
-                height: get_screenWidth(context) * 0.05,
+                height: get_screenWidth(context) * 0.005,
               ),
               
               SizedBox(
-                height: get_screenWidth(context) * 0.05,
+                height: get_screenWidth(context) * 0.005,
               ),
               ActionButton2(context, "Park Out With QR Scan", go_to_park_out),
               SizedBox(
-                height: get_screenWidth(context) * 0.05,
+                height: get_screenWidth(context) * 0.005,
               ),
               // Text(" "),
               Text(
@@ -231,7 +231,7 @@ class _HomePageState extends State<HomePage> {
               ),
               // Text(" "),
               SizedBox(
-                height: get_screenWidth(context) * 0.05,
+                height: get_screenWidth(context) * 0.005,
               ),
               // Padding(
               //   padding: const EdgeInsets.only(right: 8),
