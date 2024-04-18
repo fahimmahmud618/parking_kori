@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:parking_kori/view/styles.dart';
 
 Widget InputWIthIconImage2(
@@ -16,33 +18,34 @@ Widget InputWIthIconImage2(
           children: [
             Image.asset(
               icon,
-              height: get_screenWidth(context)*0.04,
-              width: get_screenWidth(context)*0.04,
+              height: get_screenWidth(context) * 0.04,
+              width: get_screenWidth(context) * 0.04,
             ),
-            SizedBox(width: 5,),
+            SizedBox(
+              width: 5,
+            ),
             Text(
               title,
               style: TextStyle(
                   color: myBlack,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Myfont',
-                  fontSize: get_screenWidth(context)*0.04),
+                  fontSize: get_screenWidth(context) * 0.04),
             ),
           ],
         ),
-
-
         Container(
           padding: EdgeInsets.symmetric(horizontal: 5),
           margin: EdgeInsets.symmetric(vertical: 2),
           decoration: BoxDecoration(
-              // borderRadius: BorderRadius.circular(5),
-              border: Border(
-                bottom: BorderSide(
-                  color: Colors.black.withOpacity(0.7), // Specify your desired color
-                  width: 1, // Specify your desired width
-                ),
+            // borderRadius: BorderRadius.circular(5),
+            border: Border(
+              bottom: BorderSide(
+                color:
+                    Colors.black.withOpacity(0.7), // Specify your desired color
+                width: 1, // Specify your desired width
               ),
+            ),
           ),
           child: TextField(
             obscureText: isHide,
@@ -52,7 +55,7 @@ Widget InputWIthIconImage2(
               hintText: hinttext,
               hintStyle: TextStyle(
                 color: myBlack.withOpacity(0.5),
-                fontSize: get_screenWidth(context)*0.03,
+                fontSize: get_screenWidth(context) * 0.03,
                 fontFamily: 'Myfont',
               ),
             ),
@@ -62,8 +65,6 @@ Widget InputWIthIconImage2(
     ),
   );
 }
-
-
 
 Widget InputWIthIconImage3(
     BuildContext context,
@@ -79,22 +80,22 @@ Widget InputWIthIconImage3(
           children: [
             Image.asset(
               icon,
-              height: get_screenWidth(context)*0.04,
-              width: get_screenWidth(context)*0.04,
+              height: get_screenWidth(context) * 0.04,
+              width: get_screenWidth(context) * 0.04,
             ),
-            SizedBox(width: 5,),
+            SizedBox(
+              width: 5,
+            ),
             Text(
               title,
               style: TextStyle(
                   color: myBlack,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Myfont',
-                  fontSize: get_screenWidth(context)*0.04),
+                  fontSize: get_screenWidth(context) * 0.04),
             ),
           ],
         ),
-
-
         Container(
           padding: EdgeInsets.symmetric(horizontal: 5),
           margin: EdgeInsets.symmetric(vertical: 2),
@@ -102,7 +103,8 @@ Widget InputWIthIconImage3(
             // borderRadius: BorderRadius.circular(5),
             border: Border(
               bottom: BorderSide(
-                color: Colors.black.withOpacity(0.7), // Specify your desired color
+                color:
+                    Colors.black.withOpacity(0.7), // Specify your desired color
                 width: 1, // Specify your desired width
               ),
             ),
@@ -111,13 +113,15 @@ Widget InputWIthIconImage3(
             obscureText: isHide,
             controller: textEditingController,
             keyboardType: TextInputType.number, // Set keyboard type to numeric
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Only allow digits (0 to 9)
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly
+            ], // Only allow digits (0 to 9)
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText: hinttext,
               hintStyle: TextStyle(
                 color: myBlack.withOpacity(0.5),
-                fontSize: get_screenWidth(context)*0.03,
+                fontSize: get_screenWidth(context) * 0.03,
                 fontFamily: 'Myfont',
               ),
             ),
@@ -128,6 +132,92 @@ Widget InputWIthIconImage3(
   );
 }
 
+Widget InputWIthIconImage4(
+    BuildContext context,
+    String icon,
+    TextEditingController textEditingController,
+    String title,
+    String hinttext,
+    bool isHide,
+    action) {
+  return Container(
+    child: Column(
+      children: [
+        Row(
+          children: [
+            Image.asset(
+              icon,
+              height: get_screenWidth(context) * 0.04,
+              width: get_screenWidth(context) * 0.04,
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            Text(
+              title,
+              style: TextStyle(
+                  color: myBlack,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Myfont',
+                  fontSize: get_screenWidth(context) * 0.04),
+            ),
+          ],
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 5),
+          margin: EdgeInsets.symmetric(vertical: 2),
+          decoration: BoxDecoration(
+            // borderRadius: BorderRadius.circular(5),
+            border: Border(
+              bottom: BorderSide(
+                color:
+                    Colors.black.withOpacity(0.7), // Specify your desired color
+                width: 1, // Specify your desired width
+              ),
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 6,
+                child: TextField(
+                  obscureText: isHide,
+                  controller: textEditingController,
+                  keyboardType:
+                      TextInputType.number, // Set keyboard type to numeric
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly
+                  ], // Only allow digits (0 to 9)
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: hinttext,
+                    hintStyle: TextStyle(
+                      color: myBlack.withOpacity(0.5),
+                      fontSize: get_screenWidth(context) * 0.03,
+                      fontFamily: 'Myfont',
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 2),
+                child: Expanded(
+                    flex: 1,
+                    child: InkWell(
+                      onTap: action,
+                        child: Icon(
+                      Icons.arrow_circle_right_sharp,
+                      color: myred,
+                          size: 30,
+                    ))),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
 class InputWithIconImage extends StatefulWidget {
   final BuildContext context;
@@ -139,11 +229,11 @@ class InputWithIconImage extends StatefulWidget {
 
   InputWithIconImage(
       {required this.context,
-        required this.icon,
-        required this.textEditingController,
-        required this.title,
-        required this.hinttext,
-        required this.isHide});
+      required this.icon,
+      required this.textEditingController,
+      required this.title,
+      required this.hinttext,
+      required this.isHide});
 
   @override
   _InputWithIconImageState createState() => _InputWithIconImageState();

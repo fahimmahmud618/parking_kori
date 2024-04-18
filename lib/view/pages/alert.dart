@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cache_manager/cache_manager.dart';
-import 'package:parking_kori/view/pages/flash_page.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/styles.dart';
 
