@@ -46,15 +46,18 @@ class _DateInputWidgetState extends State<DateInputWidget> {
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Text(
-                  widget.label,
+                  _selectedDate != null
+                      ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
+                      : widget.label,
                   style: normalTextStyle(context, myred),
                 ),
               ),
-              Icon(
-                Icons.calendar_today,
-                color: myred,
-                size: get_screenWidth(context) * 0.04,
-              ),
+              if (_selectedDate == null)
+                Icon(
+                  Icons.calendar_today,
+                  color: myred,
+                  size: get_screenWidth(context) * 0.04,
+                ),
             ],
           ),
         ),
