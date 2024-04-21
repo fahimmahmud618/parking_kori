@@ -196,7 +196,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
       // Show toast message
       Fluttertoast.showToast(
-        msg: "Thank you for successfully checking out!",
+        msg: "Thank you for checking out!",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.SNACKBAR,
         timeInSecForIosWeb: 1,

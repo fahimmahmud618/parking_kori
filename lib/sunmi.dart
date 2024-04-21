@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:cache_manager/core/read_cache_service.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sunmi_printer_plus/enums.dart';
 import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
@@ -68,8 +69,7 @@ class Sunmi {
           (X509Certificate cert, String host, int port) =>
               true; // Bypass SSL certificate verification
       final request = await client.getUrl(
-        Uri.parse(
-            '$baseUrl/get-booking?booking_number=$bookingNumber'),
+        Uri.parse('$baseUrl/get-booking?booking_number=$bookingNumber'),
       );
       request.headers.add('Authorization', 'Bearer $authToken');
       final response = await request.close();
@@ -94,7 +94,7 @@ class Sunmi {
           await printText("Entry: $parkInTime");
           await printText("Ticket No: $num");
           await printQRCode(num);
-          
+
           await printText("Developed by ParkingKori.com",
               style: SunmiStyle(
                 fontSize: SunmiFontSize.MD,
@@ -133,19 +133,60 @@ class Sunmi {
     await printText("Exit: $exit_time");
     await printHeadline("Parking Bill: $payment_amount");
     await printText("Ticket No: $registration_num");
-    
+
     await printText("Developed by ParkingKori.com",
         style: SunmiStyle(
           fontSize: SunmiFontSize.MD,
           bold: true,
           align: SunmiPrintAlign.CENTER,
         ));
-      // await printText("   ");
-      await printText("   ");
-      await printText("   ");
-      await printText("   ");
-        
+    // await printText("   ");
+    await printText("   ");
+    await printText("   ");
+    await printText("   ");
+
     await closePrinter();
+  }
+
+  String formatDate(DateTime dateTime) {
+  return '${dateTime.day}-${dateTime.month}-${dateTime.year}';
+}
+
+
+  Future<void> print_summary(
+      String total_park_in,
+      String total_park_out,
+      String total_income,
+      DataTable dataTable,
+      DateTime dateTime,
+      String address) async {
+    // Your existing printing logic here
+
+    await printHeadline("$address");
+    await printText(formatDate(dateTime)); 
+    await printText("Total Park In: $total_park_in");
+    await printText("Total Park Out: $total_park_out");
+
+    // Printing DataTable
+    for (var row in dataTable.rows) {
+      for (var cell in row.cells) {
+        // Extracting cell data and printing
+        await printText(cell.child.toString());
+      }
+      await printText("   ");
+    }
+    await printText("Total Income: $total_income");
+    await printText("Developed by ParkingKori.com",
+        style: SunmiStyle(
+          fontSize: SunmiFontSize.MD,
+          bold: true,
+          align: SunmiPrintAlign.CENTER,
+        ));
+    await printText("   ");
+    await printText("   ");
+    await printText("   ");
+
+    await closePrinter(); // Empty string to create a new line
   }
 
   Future<void> closePrinter() async {
