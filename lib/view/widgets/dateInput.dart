@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api, use_super_parameters, file_names
-
 import 'package:flutter/material.dart';
 import 'package:parking_kori/view/styles.dart';
 
@@ -38,38 +36,26 @@ class _DateInputWidgetState extends State<DateInputWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        border: Border(
-              bottom: BorderSide(
-                color:
-                    Colors.black.withOpacity(0.7), // Specify your desired color
-                width: 1, // Specify your desired width
+      child: InkWell(
+        onTap: () => _selectDate(context),
+        child: SizedBox(
+          width: get_screenWidth(context) * 0.6,
+          height: get_screenWidth(context) * 0.1,
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text(
+                  widget.label,
+                  style: normalTextStyle(context, myred),
+                ),
               ),
-            ),
-      ),
-      child: Container(
-        
-        width: get_screenWidth(context) * 0.7,
-        child: TextFormField(
-          readOnly: true,
-          onTap: () => _selectDate(context),
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            labelText: widget.label,
-            labelStyle: nameTitleStyle(context, myred),
-            suffixIcon: Container(
-              padding: EdgeInsets.all(10), // Adjust padding as needed
-              child: Icon(
+              Icon(
                 Icons.calendar_today,
                 color: myred,
-                size: get_screenWidth(context)*0.04, // Set the desired size here
+                size: get_screenWidth(context) * 0.04,
               ),
-            ),
-          ),
-          controller: TextEditingController(
-            text: _selectedDate != null
-                ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
-                : '',
+            ],
           ),
         ),
       ),

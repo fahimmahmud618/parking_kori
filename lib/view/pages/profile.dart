@@ -1,18 +1,21 @@
+// ignore_for_file: non_constant_identifier_names
+
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:cache_manager/cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/cache_handler.dart';
 import 'package:parking_kori/view/pages/infocard.dart';
 import 'package:parking_kori/view/styles.dart';
+import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/dateInput.dart';
 import 'package:parking_kori/view/widgets/profile_info_card.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -25,13 +28,14 @@ class _ProfilePageState extends State<ProfilePage> {
   String token = '';
   int loginTime = 0;
   late Duration difference;
-  DateTime currentTime = DateTime.now();
+  late DateTime currentTime;
   DateTime startTime = DateTime.now();
   DateTime endTime = DateTime.now();
   int dif = 0;
   int parkin = 0;
   int parkout = 0;
-  List<Map<String, dynamic>> totalIncome = []; // List of agent incomes
+  List<Map<String, dynamic>> totalIncome = [];
+  late Timer _timer;
 
   String? baseUrl = dotenv.env['BASE_URL'];
 
@@ -72,14 +76,10 @@ class _ProfilePageState extends State<ProfilePage> {
       loginTime = await ReadCache.getInt(key: "loginTime");
       location = await ReadCache.getInt(key: "locationId");
       address = await ReadCache.getString(key: "address");
-      print(location);
-      print(loginTime);
 
       setState(() {
         currentUser = getUserNameFromChache(caesarCipherDecode(currentUser, 2));
-        print(currentUser);
         currentTime = DateTime.now();
-        print(currentTime);
         DateTime savedDateTime = DateTime.fromMillisecondsSinceEpoch(loginTime);
         difference = currentTime.difference(savedDateTime);
         dif = difference.inHours;
@@ -98,7 +98,6 @@ class _ProfilePageState extends State<ProfilePage> {
     String amPm = (dateTime.hour >= 12) ? 'PM' : 'AM';
 
     return '$hour:$minute:$second $amPm';
-    // return '${dateTime.day}/${dateTime.month}/${dateTime.year} $hour:$minute:$second $amPm';
   }
 
   String formatDate(DateTime dateTime) {
@@ -116,43 +115,32 @@ class _ProfilePageState extends State<ProfilePage> {
     load_data();
   }
 
-  List<Widget> buildAgentIncomeList() {
-  List<Widget> agentIncomeWidgets = [];
-  
-  // Keep track of added agent titles
-  Set<String> addedTitles = Set<String>();
+  List<DataRow> buildAgentIncomeList() {
+    List<DataRow> agentIncomeWidgets = [];
 
-  for (var agentIncome in totalIncome) {
-    // Check if the agent title has already been added
-    if (!addedTitles.contains(agentIncome['agent'])) {
+    Set<String> addedTitles = Set<String>();
+
+    for (var agentIncome in totalIncome) {
       agentIncomeWidgets.add(
-        InfoCard(
-          context,
-          "Agent",
-          agentIncome['agent'],
-          "Income",
-          "${agentIncome['income']} Taka",
-        ),
+        DataRow(cells: [
+          DataCell(Text(agentIncome['agent'])),
+          DataCell(Text("${agentIncome['income']} Taka")),
+        ]),
       );
-
-      // Add the agent title to the set of added titles
       addedTitles.add(agentIncome['agent']);
-    } else {
-      // If the agent title has already been added, only add the income
-      agentIncomeWidgets.add(
-        InfoCard(
-          context,
-          "", // Empty string for title
-          "",
-          "Income",
-          "${agentIncome['income']} Taka",
-        ),
-      );
     }
-  }
 
-  return agentIncomeWidgets;
-}
+    // for (var agentIncome in totalIncome) {
+    //   agentIncomeWidgets.add(
+    //     DataRow(cells: [
+    //       DataCell(Text(agentIncome['agent'])),
+    //       DataCell(Text("${agentIncome['income']} Taka")),
+    //     ]),
+    //   );
+    //   addedTitles.add(agentIncome['agent']);
+    // }
+    return agentIncomeWidgets;
+  }
 
   int calculateTotalIncome() {
     int total = 0;
@@ -162,11 +150,31 @@ class _ProfilePageState extends State<ProfilePage> {
     return total;
   }
 
+  void print_summary(){
+    
+  }
+
   @override
   void initState() {
     fetchDataFromCache();
     load_data();
+    currentTime = DateTime.now();
+    _startTimer();
     super.initState();
+  }
+
+@override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        currentTime = DateTime.now();
+      });
+    });
   }
 
   @override
@@ -188,66 +196,87 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: get_screenWidth(context) * 0.02,
                       ),
                       Text(
-                        address,
+                        "$address ($currentUser)",
                         style: nameTitleStyle(context, myBlack),
                       ),
                       const SizedBox(
                         height: 10,
                       ),
                       Text(
-                        "Agent: $currentUser",
+                        formatTime(currentTime),
                         style: normalTextStyle(context, myBlack),
                       ),
-                      const SizedBox(
-                        height: 10,
+                      SizedBox(
+                        height: get_screenWidth(context) * 0.1,
                       ),
-                      Text(
-                        "Login Time: ${formatTime(DateTime.fromMillisecondsSinceEpoch(loginTime))}",
-                        style: normalTextStyle(context, myBlack),
-                      ),
-                      Text(
-                        "Currrent Time: ${formatTime(currentTime)}",
-                        style: normalTextStyle(context, myBlack),
-                      ),
-                      const SizedBox(
-                        height: 45,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          DateInputWidget(
-                            label: 'Select Date',
-                            onDateSelected: _onFromDateSelected,
+                      Container(
+                        margin: EdgeInsets.all(8.0),
+                        
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          border: Border.all(
+                            color: Colors.black.withOpacity(0.7),
+                            width: 1,
                           ),
-                          InkWell(
-                            onTap: _onGoButtonPressed,
-                            child: Icon(
-                              Icons.arrow_circle_right_sharp,
-                              color: myred,
-                              size: 30,
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            DateInputWidget(
+                              label: 'Select Date',
+                              onDateSelected: _onFromDateSelected,
                             ),
-                          ),
+                            InkWell(
+                              onTap: _onGoButtonPressed,
+                              child: Icon(
+                                Icons.arrow_circle_right_sharp,
+                                color: myred,
+                                size: 40,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // SizedBox(
+                      //   height: get_screenWidth(context) * 0.04,
+                      // ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ProfileInfoCard(context, "Park In", "$parkin"),
+                          ProfileInfoCard(context, "Park Out", "$parkout"),
                         ],
                       ),
                       SizedBox(
-                        height: get_screenWidth(context) * 0.05,
+                        height: get_screenWidth(context) * 0.1,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          ProfileInfoCard(context, "Park In", "$parkin", 1),
-                          ProfileInfoCard(context, "Park Out", "$parkout", 1),
-                        ],
+                      Container(
+                        height: get_screenWidth(context) * 0.4,
+                        width: get_screenWidth(context) * 0.75,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey,
+                          ),
+                          // borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: SingleChildScrollView(
+                          child: DataTable(
+                          
+                            columns: [
+                              DataColumn(label: Text('AGENT')),
+                              DataColumn(label: Text('TAKA')),
+                            ],
+                            rows: buildAgentIncomeList(),
+                          ),
+                        ),
                       ),
-                      ...buildAgentIncomeList(),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          ProfileInfoCard(context, "Total Income",
-                              "${calculateTotalIncome()} Taka", 1),
-                        ],
-                      ),
+                      // SizedBox(
+                      //   height: get_screenWidth(context) * 0.05,
+                      // ),
+                      InfoCard(context, "Total Income",
+                              "${calculateTotalIncome()} Taka"),
+                     ActionButton3(context, "Print", print_summary)
                     ],
                   ),
                 ),
