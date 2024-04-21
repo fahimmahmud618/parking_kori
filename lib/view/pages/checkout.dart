@@ -28,19 +28,144 @@ class _CheckOutPageState extends State<CheckOutPage> {
   String location = '';
   String address = '';
   String? baseUrl = dotenv.env['BASE_URL'];
+  // String token = await ReadCache.getString(key: "token");
+  //   print("Booking num in checkout page: " + bookingNum);
 
   Future<void> load_data(String bookingNum) async {
-    
     String url = '$baseUrl/park-out';
     String token = await ReadCache.getString(key: "token");
-    print("Booking num in checkout page: "+ bookingNum);
 
-    // Override the validateCertificate method to bypass SSL certificate validation
-    HttpOverrides.global = MyHttpOverrides();
+    try {
+      http.Response response = await http.get(
+        Uri.parse('$baseUrl/checkout/summary?booking_number=$bookingNum'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-    Map<String, dynamic> requestData = {
-      "booking_number": bookingNum,
-    };
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        setState(() {
+          registration_num = responseData['data']['booking_number'] ?? '';
+          entry_time = responseData['data']['park_in_time'] ?? '';
+          exit_time = responseData['data']['park_out_time'] ?? '';
+          ticket_num = responseData['data']['invoice_number'] ?? '';
+          payment_amount = responseData['data']['sub_total'].toString() ?? '';
+        });
+
+        // Fetch additional data after successful checkout
+        await fetchInvoiceData(bookingNum, token);
+      } else {
+        print(
+            'Failed to FETCH CHECKOUT DETAILS. Status code: ${response.statusCode}');
+        // If there's an error, show the error dialog
+        showErrorDialog("ERROR",
+            "Failed to FETCH CHECKOUT DETAILS. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Error sending FETCH CHECKOUT DETAILS request: $e');
+      // If there's an error, show the error dialog
+      showErrorDialog(
+          "ERROR", "Error sending FETCH CHECKOUT DETAILS request: $e");
+    }
+  }
+
+  Future<void> fetchInvoiceData(String bookingNum, String token) async {
+    String url = '$baseUrl/checkout/summary?booking_number=$bookingNum';
+
+    try {
+      http.Response response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        // Check if the response contains the necessary data
+        if (responseData.containsKey('data') &&
+            responseData['data'] is Map<String, dynamic>) {
+          Map<String, dynamic> data = responseData['data'];
+
+          setState(() {
+            if (data['booking'] != null) {
+              var bookingData = data['booking'];
+              if (bookingData['location'] != null) {
+                var locationData = bookingData['location'];
+                location = locationData['title'] ?? '';
+                address = locationData['address'] ?? '';
+              }
+            } else {
+              // Handle case where booking data is null
+              print('Booking data is null.');
+              showErrorDialog("ERROR", "Booking data is null.");
+            }
+          });
+        } else {
+          print('Invalid response format: missing or invalid data');
+          showErrorDialog("ERROR", "Invalid response format.");
+        }
+      } else {
+        print(
+            'Failed to FETCH INVOICE DATA. Status code: ${response.statusCode}');
+        showErrorDialog("ERROR",
+            "Failed to FETCH INVOICE DATA. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Error sending FETCH INVOICE DATA request: $e');
+      showErrorDialog("ERROR", "Error sending FETCH INVOICE DATA request: $e");
+    }
+  }
+
+  void checkout() async {
+    String token = await ReadCache.getString(key: "token");
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: myred,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 15),
+                child: Text("Confirm Checkout",
+                    style: nameTitleStyle(context, myWhite)),
+              ),
+            ],
+          ),
+          content: Text("Are you sure you want to checkout?",
+              style: normalTextStyle(context, myWhite)),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+                performCheckout(); // Proceed with checkout
+              },
+              child: Text("Yes", style: normalTextStyle(context, myWhite)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: Text("No", style: normalTextStyle(context, myWhite)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void performCheckout() async {
+    String url = '$baseUrl/park-out';
+    String token = await ReadCache.getString(key: "token");
+
     try {
       http.Response response = await http.post(
         Uri.parse(url),
@@ -48,66 +173,38 @@ class _CheckOutPageState extends State<CheckOutPage> {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        body: jsonEncode(requestData),
-      );
-      if (response.statusCode == 200) {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
-        setState(() {
-          registration_num = responseData['data']['booking_number'];
-          entry_time = responseData['data']['park_in_time'];
-          exit_time = responseData['data']['park_out_time'];
-          ticket_num = responseData['data']['invoice_number'];
-          payment_amount = responseData['data']['sub_total'].toString();
-        });
-      } else {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
-        if (responseData['success'] == false) {
-        // If success is false, show the error dialog
-        showErrorDialog("ERROR", responseData['message']);
-        return;
-      } 
-        print('Failed to CHECKOUT. Status code: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error sending CHECKOUT request: $e');
-    }
-
-    try {
-      http.Response response = await http.get(
-        Uri.parse('$baseUrl/get-booking?booking_number=$bookingNum'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+        body: jsonEncode({"booking_number": widget.booking_num}),
       );
 
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
-        final bookingDetails = data['booking'][0];
-        print('Booking details: $bookingDetails');
-
-        setState(() {
-          location = bookingDetails['location']['title'];
-        });
+        // Handle success
+        print('Checkout successful');
+        // Optionally, navigate to a success page or do other actions
+        Sunmi printer = Sunmi();
+        printer.printInvoice(
+          registration_num,
+          entry_time,
+          exit_time,
+          ticket_num,
+          payment_amount,
+          location,
+          address,
+        );
+        print(registration_num);
+        print("-----------------------");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainPage()),
+        );
       } else {
         print(
-            'Failed to FETCH INVOICE DATA. Status code: ${response.statusCode}');
+            'Failed to perform checkout. Status code: ${response.statusCode}');
+        // Handle error
       }
     } catch (e) {
-      print('Error sending FETCH INVOICE DATA request: $e');
+      print('Error performing checkout: $e');
+      // Handle error
     }
-  }
-
-  void checkout() {
-    Sunmi printer = Sunmi();
-    printer.printInvoice(registration_num, entry_time, exit_time, ticket_num,
-        payment_amount, location, address);
-    print(registration_num);
-    print("-----------------------");
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => MainPage()),
-    );
   }
 
   @override
@@ -152,45 +249,50 @@ class _CheckOutPageState extends State<CheckOutPage> {
   }
 
   showErrorDialog(String title, String description) {
-  // Create button
-  Widget okButton = TextButton(
-    child: Text("OK", style: normalTextStyle(context, myWhite),),
-    onPressed: () {
-      Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => MainPage()),
+    // Create button
+    Widget okButton = TextButton(
+      child: Text(
+        "OK",
+        style: normalTextStyle(context, myWhite),
+      ),
+      onPressed: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainPage()),
+        );
+      },
     );
-    },
-  );
 
-  // Create AlertDialog
-  AlertDialog alert = AlertDialog(
-    backgroundColor: myred,
-    title: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Nameplate(context),
-        Padding(
-          padding: const EdgeInsets.only(top: 15),
-          child: Text(title, style: nameTitleStyle(context, myWhite)),
-        ),
+    // Create AlertDialog
+    AlertDialog alert = AlertDialog(
+      backgroundColor: myred,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Nameplate(context),
+          Padding(
+            padding: const EdgeInsets.only(top: 15),
+            child: Text(title, style: nameTitleStyle(context, myWhite)),
+          ),
+        ],
+      ),
+      content: Text(
+        description,
+        style: normalTextStyle(context, myWhite),
+      ),
+      actions: [
+        okButton,
       ],
-    ),
-    content: Text(description, style: normalTextStyle(context,myWhite ),),
-    actions: [
-      okButton,
-    ],
-  );
+    );
 
-  // show the dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
-}
-
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 }
 
 // Custom HttpOverrides class to bypass SSL certificate validation
