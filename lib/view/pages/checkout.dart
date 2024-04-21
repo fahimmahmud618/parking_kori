@@ -9,6 +9,7 @@ import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/dashboard_info_card.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cache_manager/core/read_cache_service.dart';
 
 class CheckOutPage extends StatefulWidget {
@@ -163,49 +164,62 @@ class _CheckOutPageState extends State<CheckOutPage> {
   }
 
   void performCheckout() async {
-    String url = '$baseUrl/park-out';
-    String token = await ReadCache.getString(key: "token");
+  String url = '$baseUrl/park-out';
+  String token = await ReadCache.getString(key: "token");
 
-    try {
-      http.Response response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({"booking_number": widget.booking_num}),
+  try {
+    http.Response response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({"booking_number": widget.booking_num}),
+    );
+
+    if (response.statusCode == 200) {
+      // Handle success
+      print('Checkout successful');
+      // Optionally, navigate to a success page or do other actions
+      Sunmi printer = Sunmi();
+      printer.printInvoice(
+        registration_num,
+        entry_time,
+        exit_time,
+        ticket_num,
+        payment_amount,
+        location,
+        address,
+      );
+      print(registration_num);
+      print("-----------------------");
+
+      // Show toast message
+      Fluttertoast.showToast(
+        msg: "Thank you for successfully checking out!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.SNACKBAR,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Color.fromRGBO(65, 176, 110,1),
+        textColor: Colors.white,
+        fontSize: 16.0,
       );
 
-      if (response.statusCode == 200) {
-        // Handle success
-        print('Checkout successful');
-        // Optionally, navigate to a success page or do other actions
-        Sunmi printer = Sunmi();
-        printer.printInvoice(
-          registration_num,
-          entry_time,
-          exit_time,
-          ticket_num,
-          payment_amount,
-          location,
-          address,
-        );
-        print(registration_num);
-        print("-----------------------");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MainPage()),
-        );
-      } else {
-        print(
-            'Failed to perform checkout. Status code: ${response.statusCode}');
-        // Handle error
-      }
-    } catch (e) {
-      print('Error performing checkout: $e');
+      // Redirect to MainPage after showing toast
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MainPage()),
+      );
+    } else {
+      print(
+          'Failed to perform checkout. Status code: ${response.statusCode}');
       // Handle error
     }
+  } catch (e) {
+    print('Error performing checkout: $e');
+    // Handle error
   }
+}
 
   @override
   void initState() {
