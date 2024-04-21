@@ -200,6 +200,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       ProfileInfoCard(context, "Income", "$income Taka",2),
+                      
                     ],
                   ),
                 ],
