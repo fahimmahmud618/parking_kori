@@ -28,6 +28,7 @@ dependencies:
   barcode_scan2: ^4.3.0
   path: ^1.9.0
   date_field: ^5.0.1
+  adaptive_scrollbar: ^2.1.2
 
 dev_dependencies:
   flutter_test:
