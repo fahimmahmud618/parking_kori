@@ -5,6 +5,7 @@ import 'package:cache_manager/cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/cache_handler.dart';
+import 'package:parking_kori/view/pages/infocard.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/dateInput.dart';
@@ -28,16 +29,15 @@ class _ProfilePageState extends State<ProfilePage> {
   DateTime startTime = DateTime.now();
   DateTime endTime = DateTime.now();
   int dif = 0;
-  int income = 0;
   int parkin = 0;
   int parkout = 0;
+  List<Map<String, dynamic>> totalIncome = []; // List of agent incomes
 
   String? baseUrl = dotenv.env['BASE_URL'];
 
   Future<void> load_data() async {
     String token = await ReadCache.getString(key: "token");
 
-    // HttpClient with badCertificateCallback to bypass SSL certificate verification
     final client = HttpClient();
     client.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
@@ -56,7 +56,8 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         parkin = responseData['total_park_in'];
         parkout = responseData['total_park_out'];
-        income = responseData['total_income'];
+        totalIncome =
+            List<Map<String, dynamic>>.from(responseData['total_income']);
       });
     } else {
       throw Exception('Failed to load data present park log');
@@ -115,6 +116,52 @@ class _ProfilePageState extends State<ProfilePage> {
     load_data();
   }
 
+  List<Widget> buildAgentIncomeList() {
+  List<Widget> agentIncomeWidgets = [];
+  
+  // Keep track of added agent titles
+  Set<String> addedTitles = Set<String>();
+
+  for (var agentIncome in totalIncome) {
+    // Check if the agent title has already been added
+    if (!addedTitles.contains(agentIncome['agent'])) {
+      agentIncomeWidgets.add(
+        InfoCard(
+          context,
+          "Agent",
+          agentIncome['agent'],
+          "Income",
+          "${agentIncome['income']} Taka",
+        ),
+      );
+
+      // Add the agent title to the set of added titles
+      addedTitles.add(agentIncome['agent']);
+    } else {
+      // If the agent title has already been added, only add the income
+      agentIncomeWidgets.add(
+        InfoCard(
+          context,
+          "", // Empty string for title
+          "",
+          "Income",
+          "${agentIncome['income']} Taka",
+        ),
+      );
+    }
+  }
+
+  return agentIncomeWidgets;
+}
+
+  int calculateTotalIncome() {
+    int total = 0;
+    for (var agentIncome in totalIncome) {
+      total += (agentIncome['income'] as int); // Casting income to int
+    }
+    return total;
+  }
+
   @override
   void initState() {
     fetchDataFromCache();
@@ -130,80 +177,80 @@ class _ProfilePageState extends State<ProfilePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             AppBarWidget(context, "Profile"),
-            Container(
-              padding: EdgeInsets.all(get_screenWidth(context) * 0.1),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: get_screenWidth(context) * 0.02,
-                  ),
-
-            
-
-                  Text(
-                    address,
-                    style: nameTitleStyle(context, myBlack),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    "Agent: $currentUser",
-                    style: normalTextStyle(context, myBlack),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    "Login Time: ${formatTime(DateTime.fromMillisecondsSinceEpoch(loginTime))}",
-                    style: normalTextStyle(context, myBlack),
-                  ),
-                   Text(
-                    "Currrent Time: ${formatTime(currentTime)}",
-                    style: normalTextStyle(context, myBlack),
-                  ),
-                  const SizedBox(
-                    height: 45,
-                  ),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.all(get_screenWidth(context) * 0.1),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      DateInputWidget(
-                        label: 'Select Date',
-                        onDateSelected: _onFromDateSelected,
+                      SizedBox(
+                        height: get_screenWidth(context) * 0.02,
                       ),
-                      InkWell(
-                        onTap: _onGoButtonPressed,
-                        child: Icon(
-                          Icons.arrow_circle_right_sharp,
-                          color: myred,
-                          size: 30,
-                        ),
+                      Text(
+                        address,
+                        style: nameTitleStyle(context, myBlack),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "Agent: $currentUser",
+                        style: normalTextStyle(context, myBlack),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "Login Time: ${formatTime(DateTime.fromMillisecondsSinceEpoch(loginTime))}",
+                        style: normalTextStyle(context, myBlack),
+                      ),
+                      Text(
+                        "Currrent Time: ${formatTime(currentTime)}",
+                        style: normalTextStyle(context, myBlack),
+                      ),
+                      const SizedBox(
+                        height: 45,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          DateInputWidget(
+                            label: 'Select Date',
+                            onDateSelected: _onFromDateSelected,
+                          ),
+                          InkWell(
+                            onTap: _onGoButtonPressed,
+                            child: Icon(
+                              Icons.arrow_circle_right_sharp,
+                              color: myred,
+                              size: 30,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: get_screenWidth(context) * 0.05,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ProfileInfoCard(context, "Park In", "$parkin", 1),
+                          ProfileInfoCard(context, "Park Out", "$parkout", 1),
+                        ],
+                      ),
+                      ...buildAgentIncomeList(),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ProfileInfoCard(context, "Total Income",
+                              "${calculateTotalIncome()} Taka", 1),
+                        ],
                       ),
                     ],
                   ),
-
-                  SizedBox(
-                    height: get_screenWidth(context) * 0.05,
-                  ),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ProfileInfoCard(context, "Park In", "$parkin",1),
-                      ProfileInfoCard(context, "Park Out", "$parkout",1),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ProfileInfoCard(context, "Income", "$income Taka",2),
-                      
-                    ],
-                  ),
-                ],
+                ),
               ),
             ),
           ],
