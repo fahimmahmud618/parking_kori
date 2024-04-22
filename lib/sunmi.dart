@@ -149,9 +149,8 @@ class Sunmi {
   }
 
   String formatDate(DateTime dateTime) {
-  return '${dateTime.day}-${dateTime.month}-${dateTime.year}';
-}
-
+    return '${dateTime.day}-${dateTime.month}-${dateTime.year}';
+  }
 
   Future<void> print_summary(
       String total_park_in,
@@ -161,20 +160,40 @@ class Sunmi {
       DateTime dateTime,
       String address) async {
     // Your existing printing logic here
-
+    await initialize();
     await printHeadline("$address");
-    await printText(formatDate(dateTime)); 
+    await printText(formatDate(dateTime));
     await printText("Total Park In: $total_park_in");
     await printText("Total Park Out: $total_park_out");
+    await printText("Agent Name ");
 
-    // Printing DataTable
+    // Printing DataTable as a table
+    List<List<String>> tableData = [];
+
+// Extracting cell data and formatting as table rows
     for (var row in dataTable.rows) {
+      List<String> rowData = [];
       for (var cell in row.cells) {
-        // Extracting cell data and printing
-        await printText(cell.child.toString());
+        // Extracting cell data and formatting
+        String cellText =
+            (cell.child as Text).data ?? ''; // Extract text from Text widget
+        // Limit cell text to 10 characters and truncate with '...'
+        cellText =
+            cellText.length > 10 ? cellText.substring(0, 7) + '...' : cellText;
+        rowData.add(cellText.padRight(
+            10)); // Pad right with spaces to ensure a fixed length of 10 characters
       }
-      await printText("   ");
+      tableData.add(rowData);
     }
+
+// Printing table
+    for (var rowData in tableData) {
+      String rowString = rowData.join(' | '); // Join cells with ' | ' separator
+      await printText(rowString);
+    }
+
+    // await printText(''); // Empty line after table
+
     await printText("Total Income: $total_income");
     await printText("Developed by ParkingKori.com",
         style: SunmiStyle(
