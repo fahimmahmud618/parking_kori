@@ -17,7 +17,7 @@ import 'package:parking_kori/view/widgets/dateInput.dart';
 import 'package:parking_kori/view/widgets/profile_info_card.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -73,7 +73,6 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> fetchDataFromCache() async {
     try {
       currentUser = await ReadCache.getString(key: "cache");
-      print(currentUser);
       token = await ReadCache.getString(key: "token");
       loginTime = await ReadCache.getInt(key: "loginTime");
       location = await ReadCache.getInt(key: "locationId");
@@ -157,7 +156,7 @@ class _ProfilePageState extends State<ProfilePage> {
     printer.print_summary(total_park_in, total_park_out, total_income, dataTable, startTime, address);
     Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MainPage()),
+        MaterialPageRoute(builder: (context) => const MainPage()),
       );
   }
 
@@ -166,7 +165,7 @@ class _ProfilePageState extends State<ProfilePage> {
     fetchDataFromCache();
     load_data();
     currentTime = DateTime.now();
-    // _startTimer();
+    _startTimer();
     super.initState();
   }
 
@@ -177,7 +176,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         currentTime = DateTime.now();
       });
@@ -217,7 +216,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: get_screenWidth(context) * 0.005,
                       ),
                       Container(
-                        margin: EdgeInsets.all(8.0),
+                        margin: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
                           color: Colors.grey[200],
                           border: Border.all(
@@ -258,7 +257,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: get_screenWidth(context) * 0.05,
                       ),
                       Container(
-                        height: get_screenWidth(context) * 0.7,
+                        height: get_screenWidth(context) * 0.4,
                         width: get_screenWidth(context) * 0.75,
                         decoration: BoxDecoration(
                           border: Border.all(
@@ -268,7 +267,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         child: SingleChildScrollView(
                           child: DataTable(
-                            columns: [
+                            columns: const [
                               DataColumn(label: Text('AGENT')),
                               DataColumn(label: Text('TAKA')),
                             ],
@@ -290,12 +289,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           
                           "${calculateTotalIncome()} Taka",
                           DataTable(
-                            columns: [
+                            columns: const [
                               DataColumn(label: Text('AGENT')),
                               DataColumn(label: Text('TAKA')),
                             ],
                             rows: buildAgentIncomeList(),
-                          ) as DataTable,
+                          ),
                           DateTime.now(),
                          "$address",
                           

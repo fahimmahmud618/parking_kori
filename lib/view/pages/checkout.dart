@@ -35,7 +35,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   //   print("Booking num in checkout page: " + bookingNum);
 
   Future<void> load_data(String bookingNum) async {
-    String url = '$baseUrl/park-out';
+    // String url = '$baseUrl/park-out';
     String token = await ReadCache.getString(key: "token");
 
     try {
@@ -55,7 +55,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
           entry_time = responseData['data']['park_in_time'] ?? '';
           exit_time = responseData['data']['park_out_time'] ?? '';
           ticket_num = responseData['data']['invoice_number'] ?? '';
-          payment_amount = responseData['data']['sub_total'].toString() ?? '';
+          payment_amount = responseData['data']['sub_total'].toString();
         });
 
         // Fetch additional data after successful checkout
@@ -126,7 +126,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   }
 
   void checkout() async {
-    String token = await ReadCache.getString(key: "token");
+    // String token = await ReadCache.getString(key: "token");
 
     showDialog(
       context: context,
