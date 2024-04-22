@@ -7,7 +7,10 @@ import 'package:cache_manager/cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/cache_handler.dart';
+import 'package:parking_kori/sunmi.dart';
 import 'package:parking_kori/view/pages/infocard.dart';
+import 'package:parking_kori/view/pages/main_page.dart';
+import 'package:parking_kori/view/pages/park_out_page.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
@@ -139,6 +142,7 @@ class _ProfilePageState extends State<ProfilePage> {
     //   );
     //   addedTitles.add(agentIncome['agent']);
     // }
+
     return agentIncomeWidgets;
   }
 
@@ -150,8 +154,22 @@ class _ProfilePageState extends State<ProfilePage> {
     return total;
   }
 
-  void print_summary(){
+  void print_summary(
+    String total_park_out,
+    String total_park_in,
+    String total_income,
     
+    DataTable dataTable,
+    DateTime startTime,
+    String address,
+
+  ) async {
+    Sunmi printer = Sunmi();
+    printer.print_summary(total_park_in, total_park_out, total_income, dataTable, startTime, address);
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MainPage()),
+      );
   }
 
   @override
@@ -163,7 +181,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
   }
 
-@override
+  @override
   void dispose() {
     _timer.cancel();
     super.dispose();
@@ -211,7 +229,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       Container(
                         margin: EdgeInsets.all(8.0),
-                        
                         decoration: BoxDecoration(
                           color: Colors.grey[200],
                           border: Border.all(
@@ -262,7 +279,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         child: SingleChildScrollView(
                           child: DataTable(
-                          
                             columns: [
                               DataColumn(label: Text('AGENT')),
                               DataColumn(label: Text('TAKA')),
@@ -275,8 +291,27 @@ class _ProfilePageState extends State<ProfilePage> {
                       //   height: get_screenWidth(context) * 0.05,
                       // ),
                       InfoCard(context, "Total Income",
-                              "${calculateTotalIncome()} Taka"),
-                     ActionButton3(context, "Print", print_summary)
+                          "${calculateTotalIncome()} Taka"),
+                      ActionButton3(
+                        context,
+                        "Print",
+                        () => print_summary(
+                          "$parkin",
+                          "$parkout",
+                          
+                          "${calculateTotalIncome()} Taka",
+                          DataTable(
+                            columns: [
+                              DataColumn(label: Text('AGENT')),
+                              DataColumn(label: Text('TAKA')),
+                            ],
+                            rows: buildAgentIncomeList(),
+                          ) as DataTable,
+                          DateTime.now(),
+                         "$address",
+                          
+                        ),
+                      ),
                     ],
                   ),
                 ),
