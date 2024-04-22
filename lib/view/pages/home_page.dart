@@ -266,6 +266,7 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   children: [
                     regnum(context, registration_number),
+                    
                     InkWell(
                           onTap: do_park_out_with_regNUmber,
                           child: Icon(

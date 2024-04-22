@@ -151,6 +151,7 @@ Widget regnum(BuildContext context, TextEditingController textEditingController)
         width: get_screenWidth(context) * 0.8,
         child: TextField(
           controller: textEditingController,
+          keyboardType: TextInputType.number,
           decoration: InputDecoration(
             hintText: "Enter Registration number here",
             hintStyle: TextStyle(

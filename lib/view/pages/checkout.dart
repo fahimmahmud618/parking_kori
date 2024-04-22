@@ -26,6 +26,8 @@ class _CheckOutPageState extends State<CheckOutPage> {
   String exit_time = '';
   String ticket_num = '';
   String payment_amount = '';
+  String vehicle_reg_number = '';
+  String vehicle_type = '';
   String location = '';
   String address = '';
   String? baseUrl = dotenv.env['BASE_URL'];
@@ -50,6 +52,8 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
         setState(() {
           registration_num = responseData['data']['booking_number'] ?? '';
+          vehicle_reg_number = responseData['data']['booking']['vehicle_reg_number'] ?? '';
+          vehicle_type = responseData['data']['vehicle_type'] ?? '';
           entry_time = responseData['data']['park_in_time'] ?? '';
           exit_time = responseData['data']['park_out_time'] ?? '';
           ticket_num = responseData['data']['invoice_number'] ?? '';
@@ -190,6 +194,8 @@ class _CheckOutPageState extends State<CheckOutPage> {
         payment_amount,
         location,
         address,
+        vehicle_reg_number,
+        vehicle_type
       );
       print(registration_num);
       print("-----------------------");

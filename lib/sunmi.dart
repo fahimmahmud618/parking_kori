@@ -125,12 +125,15 @@ class Sunmi {
       String ticket_num,
       String payment_amount,
       String location,
-      String address) async {
+      String address,
+      String vehicleType,
+      String vehicleRegNumber) async {
     await initialize();
     await printHeadline(location);
     await printText("PARKING Exit Receipt");
     await printText("Entry: $entry_time");
     await printText("Exit: $exit_time");
+    await printText("$vehicleType: $vehicleRegNumber");
     await printHeadline("Parking Bill: $payment_amount");
     await printText("Ticket No: $registration_num");
 
@@ -148,9 +151,15 @@ class Sunmi {
     await closePrinter();
   }
 
-  String formatDate(DateTime dateTime) {
-    return '${dateTime.day}-${dateTime.month}-${dateTime.year}';
-  }
+ String formatDateTime(DateTime dateTime) {
+  String formattedDate = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+  String hour = dateTime.hour > 12 ? (dateTime.hour - 12).toString() : dateTime.hour.toString();
+  String amPm = dateTime.hour >= 12 ? 'PM' : 'AM';
+  String formattedTime = '$hour:${dateTime.minute} $amPm';
+  return '$formattedDate $formattedTime';
+}
+
+
 
   Future<void> print_summary(
       String total_park_in,
@@ -162,10 +171,10 @@ class Sunmi {
     // Your existing printing logic here
     await initialize();
     await printHeadline("$address");
-    await printText(formatDate(dateTime));
+    await printText(formatDateTime(dateTime));
     await printText("Total Park In: $total_park_in");
     await printText("Total Park Out: $total_park_out");
-    await printText("Agent Name ");
+    await printText("Agent Name & Income");
 
     // Printing DataTable as a table
     List<List<String>> tableData = [];
