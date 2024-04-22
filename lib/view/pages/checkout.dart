@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -191,8 +193,6 @@ class _CheckOutPageState extends State<CheckOutPage> {
         location,
         address,
       );
-      print(registration_num);
-      print("-----------------------");
 
       // Show toast message
       Fluttertoast.showToast(
@@ -231,32 +231,30 @@ class _CheckOutPageState extends State<CheckOutPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          child: Column(
-            children: [
-              AppBarWidget(context, "Checkout"),
-              Container(
-                padding: EdgeInsets.all(get_screenWidth(context) * 0.05),
-                child: Expanded(
-                  child: Center(
-                    child: Column(
-                      children: [
-                        DashboardInfoCard(
-                            context, "Booking Number", registration_num),
-                        DashboardInfoCard(
-                            context, "Invoice Number", ticket_num),
-                        DashboardInfoCard(context, "Arrived At", entry_time),
-                        DashboardInfoCard(context, "Exit At", exit_time),
-                        DashboardInfoCard(
-                            context, "Payable Amount", payment_amount),
-                        ActionButton(context, "Checkout", checkout),
-                      ],
-                    ),
+        body: Column(
+          children: [
+            AppBarWidget(context, "Checkout"),
+            Container(
+              padding: EdgeInsets.all(get_screenWidth(context) * 0.05),
+              child: Expanded(
+                child: Center(
+                  child: Column(
+                    children: [
+                      DashboardInfoCard(
+                          context, "Booking Number", registration_num),
+                      DashboardInfoCard(
+                          context, "Invoice Number", ticket_num),
+                      DashboardInfoCard(context, "Arrived At", entry_time),
+                      DashboardInfoCard(context, "Exit At", exit_time),
+                      DashboardInfoCard(
+                          context, "Payable Amount", payment_amount),
+                      ActionButton(context, "Checkout", checkout),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -309,7 +307,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   }
 }
 
-// Custom HttpOverrides class to bypass SSL certificate validation
+
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
