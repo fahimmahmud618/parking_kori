@@ -10,7 +10,6 @@ import 'package:parking_kori/cache_handler.dart';
 import 'package:parking_kori/sunmi.dart';
 import 'package:parking_kori/view/pages/infocard.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
-import 'package:parking_kori/view/pages/park_out_page.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
@@ -133,16 +132,6 @@ class _ProfilePageState extends State<ProfilePage> {
       addedTitles.add(agentIncome['agent']);
     }
 
-    // for (var agentIncome in totalIncome) {
-    //   agentIncomeWidgets.add(
-    //     DataRow(cells: [
-    //       DataCell(Text(agentIncome['agent'])),
-    //       DataCell(Text("${agentIncome['income']} Taka")),
-    //     ]),
-    //   );
-    //   addedTitles.add(agentIncome['agent']);
-    // }
-
     return agentIncomeWidgets;
   }
 
@@ -177,7 +166,7 @@ class _ProfilePageState extends State<ProfilePage> {
     fetchDataFromCache();
     load_data();
     currentTime = DateTime.now();
-    _startTimer();
+    // _startTimer();
     super.initState();
   }
 
@@ -210,22 +199,22 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        height: get_screenWidth(context) * 0.02,
-                      ),
+                      // SizedBox(
+                      //   height: get_screenWidth(context) * 0.005,
+                      // ),
                       Text(
                         "$address ($currentUser)",
                         style: nameTitleStyle(context, myBlack),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        formatTime(currentTime),
-                        style: normalTextStyle(context, myBlack),
-                      ),
+                      // const SizedBox(
+                      //   height: 10,
+                      // ),
+                      // Text(
+                      //   formatTime(currentTime),
+                      //   style: normalTextStyle(context, myBlack),
+                      // ),
                       SizedBox(
-                        height: get_screenWidth(context) * 0.1,
+                        height: get_screenWidth(context) * 0.005,
                       ),
                       Container(
                         margin: EdgeInsets.all(8.0),
@@ -266,10 +255,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
                       SizedBox(
-                        height: get_screenWidth(context) * 0.1,
+                        height: get_screenWidth(context) * 0.05,
                       ),
                       Container(
-                        height: get_screenWidth(context) * 0.4,
+                        height: get_screenWidth(context) * 0.7,
                         width: get_screenWidth(context) * 0.75,
                         decoration: BoxDecoration(
                           border: Border.all(

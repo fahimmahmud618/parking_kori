@@ -10,15 +10,15 @@ Widget ProfileInfoCard(BuildContext context, String title, String data) {
    
   ),
     width: get_screenWidth(context) * 0.3,
-      margin: EdgeInsets.only(top: 20),
-      padding: EdgeInsets.all(20),
+      margin: EdgeInsets.only(top: 10),
+      padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: myred,
         borderRadius: BorderRadius.circular(8),
       ),
     child: Column(children: [
       Text(title, style: normalTextStyle(context, myWhite),),
-      SizedBox(height: 10,),
+      SizedBox(height: 5,),
       Text(data, style: nameTitleStyle(context, myWhite),)
     ],),
   );
