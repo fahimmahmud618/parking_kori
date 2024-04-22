@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -35,7 +37,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   //   print("Booking num in checkout page: " + bookingNum);
 
   Future<void> load_data(String bookingNum) async {
-    String url = '$baseUrl/park-out';
+    // String url = '$baseUrl/park-out';
     String token = await ReadCache.getString(key: "token");
 
     try {
@@ -57,7 +59,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
           entry_time = responseData['data']['park_in_time'] ?? '';
           exit_time = responseData['data']['park_out_time'] ?? '';
           ticket_num = responseData['data']['invoice_number'] ?? '';
-          payment_amount = responseData['data']['sub_total'].toString() ?? '';
+          payment_amount = responseData['data']['sub_total'].toString();
         });
 
         // Fetch additional data after successful checkout
@@ -128,7 +130,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   }
 
   void checkout() async {
-    String token = await ReadCache.getString(key: "token");
+    // String token = await ReadCache.getString(key: "token");
 
     showDialog(
       context: context,
@@ -197,8 +199,6 @@ class _CheckOutPageState extends State<CheckOutPage> {
         vehicle_reg_number,
         vehicle_type
       );
-      print(registration_num);
-      print("-----------------------");
 
       // Show toast message
       Fluttertoast.showToast(
@@ -237,32 +237,30 @@ class _CheckOutPageState extends State<CheckOutPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          child: Column(
-            children: [
-              AppBarWidget(context, "Checkout"),
-              Container(
-                padding: EdgeInsets.all(get_screenWidth(context) * 0.05),
-                child: Expanded(
-                  child: Center(
-                    child: Column(
-                      children: [
-                        DashboardInfoCard(
-                            context, "Booking Number", registration_num),
-                        DashboardInfoCard(
-                            context, "Invoice Number", ticket_num),
-                        DashboardInfoCard(context, "Arrived At", entry_time),
-                        DashboardInfoCard(context, "Exit At", exit_time),
-                        DashboardInfoCard(
-                            context, "Payable Amount", payment_amount),
-                        ActionButton(context, "Checkout", checkout),
-                      ],
-                    ),
+        body: Column(
+          children: [
+            AppBarWidget(context, "Checkout"),
+            Container(
+              padding: EdgeInsets.all(get_screenWidth(context) * 0.05),
+              child: Expanded(
+                child: Center(
+                  child: Column(
+                    children: [
+                      DashboardInfoCard(
+                          context, "Booking Number", registration_num),
+                      DashboardInfoCard(
+                          context, "Invoice Number", ticket_num),
+                      DashboardInfoCard(context, "Arrived At", entry_time),
+                      DashboardInfoCard(context, "Exit At", exit_time),
+                      DashboardInfoCard(
+                          context, "Payable Amount", payment_amount),
+                      ActionButton(context, "Checkout", checkout),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -315,7 +313,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   }
 }
 
-// Custom HttpOverrides class to bypass SSL certificate validation
+
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {

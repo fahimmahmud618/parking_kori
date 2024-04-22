@@ -169,7 +169,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   void do_park_out_with_regNUmber() {
-    print("aaaaa");
     Navigator.push(
         context,
         MaterialPageRoute(
