@@ -38,6 +38,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
   Future<void> load_data(String bookingNum) async {
     // String url = '$baseUrl/park-out';
+    print("Loading data for booking number: $bookingNum");
     String token = await ReadCache.getString(key: "token");
 
     try {
@@ -61,6 +62,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
           ticket_num = responseData['data']['invoice_number'] ?? '';
           payment_amount = responseData['data']['sub_total'].toString();
         });
+        
 
         // Fetch additional data after successful checkout
         await fetchInvoiceData(bookingNum, token);
@@ -228,39 +230,43 @@ class _CheckOutPageState extends State<CheckOutPage> {
 }
 
   @override
-  void initState() {
-    load_data(widget.booking_num);
-    super.initState();
-  }
+void initState() {
+  super.initState();
+  print("Booking number: ${widget.booking_num}");
+  load_data(widget.booking_num);
+}
+
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          children: [
-            AppBarWidget(context, "Checkout"),
-            Container(
-              padding: EdgeInsets.all(get_screenWidth(context) * 0.05),
-              child: Expanded(
-                child: Center(
-                  child: Column(
-                    children: [
-                      DashboardInfoCard(
-                          context, "Booking Number", registration_num),
-                      DashboardInfoCard(
-                          context, "Invoice Number", ticket_num),
-                      DashboardInfoCard(context, "Arrived At", entry_time),
-                      DashboardInfoCard(context, "Exit At", exit_time),
-                      DashboardInfoCard(
-                          context, "Payable Amount", payment_amount),
-                      ActionButton(context, "Checkout", checkout),
-                    ],
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              AppBarWidget(context, "Checkout"),
+              Container(
+                padding: EdgeInsets.all(get_screenWidth(context) * 0.05),
+                child: Expanded(
+                  child: Center(
+                    child: Column(
+                      children: [
+                        DashboardInfoCard(
+                            context, "Booking Number", registration_num),
+                        DashboardInfoCard(
+                            context, "Invoice Number", ticket_num),
+                        DashboardInfoCard(context, "Arrived At", entry_time),
+                        DashboardInfoCard(context, "Exit At", exit_time),
+                        DashboardInfoCard(
+                            context, "Payable Amount", payment_amount),
+                        ActionButton(context, "Checkout", checkout),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -23,34 +23,34 @@ class _ParkOutState extends State<ParkOut> {
     super.initState();
     _scan(); // Start scanning when the widget is initialized
   }
-   void goBack() {
+
+  void goBack() {
     Navigator.pop(context);
   }
 
   Future<void> _scan() async {
-    try {
-      final result = await BarcodeScanner.scan(
-        options: ScanOptions(
-          autoEnableFlash: true, // Enable flashlight automatically
-        ),
-      );
-      setState(() {
-        isQRScanned = true;
-        booking_num = result.rawContent;
-      });
-      // Handle further processing or navigation here
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => CheckOutPage(booking_num: booking_num),
-        ),
-      );
-    } catch (e) {
-      // Handle any errors here
-      print('Error while scanning: $e');
-    }
+  try {
+    final result = await BarcodeScanner.scan(
+      options: ScanOptions(
+        autoEnableFlash: true, // Enable flashlight automatically
+      ),
+    );
+    setState(() {
+      isQRScanned = true;
+      booking_num = result.rawContent;
+    });
+    // Handle further processing or navigation here
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CheckOutPage(booking_num: booking_num),
+      ),
+    );
+  } catch (e) {
+    // Handle any errors here
+    print('Error while scanning: $e');
   }
-
+}
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +72,9 @@ class _ParkOutState extends State<ParkOut> {
             ),
             isQRScanned
                 ? Text("")
-                : Expanded(
+                : Container(
+                    height: 300, // Adjust the height as needed
+                    width: 300, // Adjust the width as needed
                     child: MobileScanner(
                       controller: MobileScannerController(
                         detectionSpeed: DetectionSpeed.noDuplicates,
