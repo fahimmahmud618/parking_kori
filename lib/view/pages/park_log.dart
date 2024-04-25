@@ -1,5 +1,3 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:cache_manager/core/read_cache_service.dart';
@@ -23,7 +21,6 @@ class _ParkLogState extends State<ParkLog> {
   List<Booking> presentBookings = [];
   List<Booking> showableList = [];
   bool isParkedInSelected = true;
-  String next = "";
 
   String? baseUrl = dotenv.env['BASE_URL'];
 
@@ -69,46 +66,44 @@ class _ParkLogState extends State<ParkLog> {
     }
   }
 
-Future<void> handleResponse(HttpClientResponse response, bool isPresent) async {
-  final responseBody = await utf8.decoder.bind(response).join();
-  final responseData = json.decode(responseBody);
-  final bookingsData = responseData['booking']['data'];
+  Future<void> handleResponse(
+      HttpClientResponse response, bool isPresent) async {
+    final responseBody = await utf8.decoder.bind(response).join();
+    final responseData = json.decode(responseBody);
+    final bookingsData = responseData['booking'];
+    for (var bookingData in bookingsData) {
+      String vehicleType = bookingData['vehicle_type_id'].toString();
+      String bookingNumber = bookingData['booking_number'];
+      String registrationNumber = bookingData['vehicle_reg_number'];
+      DateTime inTime = DateTime.parse(bookingData['park_in_time']);
+      String formattedInTime = formatTime(inTime);
+      DateTime outTime = isPresent
+          ? DateTime.now()
+          : DateTime.parse(bookingData['park_out_time']);
+      String formattedOutTime = isPresent ? "" : formatTime(outTime);
 
-  for (var bookingData in bookingsData) {
-    String vehicleType = bookingData['vehicle_type_id'].toString();
-    String bookingNumber = bookingData['booking_number'];
-    String registrationNumber = bookingData['vehicle_reg_number'];
-    DateTime inTime = DateTime.parse(bookingData['park_in_time']);
-    String formattedInTime = formatTime(inTime);
-    DateTime outTime = isPresent
-        ? DateTime.now()
-        : DateTime.parse(bookingData['park_out_time']);
-    String formattedOutTime = isPresent ? "" : formatTime(outTime);
-
-    setState(() {
-      (isPresent ? presentBookings : notPresentBookings).add(
-        Booking(
-          booking_id: bookingNumber,
-          vehicle_type: vehicleType,
-          registration_number: registrationNumber,
-          in_time: formattedInTime,
-          out_time: formattedOutTime,
-          isPresent: isPresent,
-        ),
-      );
-      // next = responseData['booking']['next_page_url'];
-    });
+      setState(() {
+        (isPresent ? presentBookings : notPresentBookings).add(
+          Booking(
+            booking_id: bookingNumber,
+            vehicle_type: vehicleType,
+            registration_number: registrationNumber,
+            in_time: formattedInTime,
+            out_time: formattedOutTime,
+            isPresent: isPresent,
+          ),
+        );
+      });
+    }
   }
-}
 
   void _runFilter(String enteredKeyword) {
     List<Booking> results = [];
     if (enteredKeyword.isEmpty) {
-      if (isParkedInSelected) {
+      if (isParkedInSelected)
         results = presentBookings;
-      } else {
+      else
         results = notPresentBookings;
-      }
       // results = todoList;
     } else {
       if (isParkedInSelected) {
@@ -159,12 +154,14 @@ Future<void> handleResponse(HttpClientResponse response, bool isPresent) async {
                 future: load_data(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Container(
-                      height: 100,
-                      width: 100,
-                      child: LoadingAnimationWidget.fourRotatingDots(
-                        color: myred,
-                        size: 50,
+                    return Center(
+                      child: Container(
+                        height: 100,
+                        width: 100,
+                        child: LoadingAnimationWidget.fourRotatingDots(
+                          color: myred,
+                          size: 50,
+                        ),
                       ),
                     );
                   } else if (snapshot.hasError) {
