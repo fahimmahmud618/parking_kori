@@ -18,9 +18,9 @@ import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AddVehicle extends StatefulWidget {
-  final String vehicleType;
+  final String? vehicleType;
 
-  const AddVehicle({Key? key, required this.vehicleType}) : super(key: key);
+  const AddVehicle({Key? key, this.vehicleType}) : super(key: key);
 
   @override
   State<AddVehicle> createState() => _AddVehicleState();
