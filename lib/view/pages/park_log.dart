@@ -1,5 +1,3 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:cache_manager/core/read_cache_service.dart';
@@ -23,6 +21,37 @@ class _ParkLogState extends State<ParkLog> {
   List<Booking> presentBookings = [];
   List<Booking> showableList = [];
   bool isParkedInSelected = true;
+  int currentPage = 1;
+  int perPage = 10; // Number of items per page
+  bool isLoading = false;
+  Future<void> loadNextPage() async {
+    if (isLoading) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    String token = await ReadCache.getString(key: "token");
+    final client = HttpClient();
+    client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+
+    final request = await client.getUrl(
+      Uri.parse('$baseUrl/get-booking?status=park-out&page=$currentPage&per_page=$perPage'),
+    );
+    request.headers.add('Authorization', 'Bearer $token');
+    final response = await request.close();
+
+    if (response.statusCode == 200) {
+      await handleResponse(response, false);
+      currentPage++; // Increment page number for next request
+    } else {
+      // Handle error
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   String? baseUrl = dotenv.env['BASE_URL'];
 
@@ -38,34 +67,33 @@ class _ParkLogState extends State<ParkLog> {
   }
 
   Future<void> load_data() async {
-    String token = await ReadCache.getString(key: "token");
+    if (isLoading) return;
 
-    // HttpClient with badCertificateCallback to bypass SSL certificate verification
+    String token = await ReadCache.getString(key: "token");
+    setState(() {
+      isLoading = true;
+    });
+
     final client = HttpClient();
     client.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
 
-    final requestParkin = await client.getUrl(
-      Uri.parse('$baseUrl/get-booking?status=pending'),
+    final request = await client.getUrl(
+      Uri.parse('$baseUrl/get-booking?status=park-out&page=$currentPage&per_page=$perPage'),
     );
-    requestParkin.headers.add('Authorization', 'Bearer $token');
-    final responseParkin = await requestParkin.close();
-    if (responseParkin.statusCode == 200) {
-      await handleResponse(responseParkin, true);
+    request.headers.add('Authorization', 'Bearer $token');
+    final response = await request.close();
+
+    if (response.statusCode == 200) {
+      await handleResponse(response, false);
+      currentPage++; // Increment page number for next request
     } else {
-      throw Exception('Failed to load data present park log');
+      // Handle error
     }
 
-    final requestParkOut = await client.getUrl(
-      Uri.parse('$baseUrl/get-booking?status=park-out'),
-    );
-    requestParkOut.headers.add('Authorization', 'Bearer $token');
-    final responseParkOut = await requestParkOut.close();
-    if (responseParkOut.statusCode == 200) {
-      await handleResponse(responseParkOut, false);
-    } else {
-      throw Exception('Failed to load data park-out park log');
-    }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future<void> handleResponse(
@@ -82,8 +110,7 @@ class _ParkLogState extends State<ParkLog> {
       DateTime outTime = isPresent
           ? DateTime.now()
           : DateTime.parse(bookingData['park_out_time']);
-      String formattedOutTime =
-          isPresent ? "" : formatTime(outTime);
+      String formattedOutTime = isPresent ? "" : formatTime(outTime);
 
       setState(() {
         (isPresent ? presentBookings : notPresentBookings).add(
@@ -157,27 +184,27 @@ class _ParkLogState extends State<ParkLog> {
                 future: load_data(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Container(
-                      height: 100,
-                      width: 100,
-                      child: LoadingAnimationWidget.fourRotatingDots(
-                        color: myred,
-                        size: 50,
+                    return Center(
+                      child: Container(
+                        height: 100,
+                        width: 100,
+                        child: LoadingAnimationWidget.fourRotatingDots(
+                          color: myred,
+                          size: 50,
+                        ),
                       ),
                     );
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
                     return Container(
-                      padding: EdgeInsets.all(
-                          get_screenWidth(context) * 0.1),
+                      padding: EdgeInsets.all(get_screenWidth(context) * 0.1),
                       child: Column(
                         children: [
                           Container(
                             margin: EdgeInsets.only(bottom: 10),
                             child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 InkWell(
                                   onTap: () {
@@ -189,23 +216,18 @@ class _ParkLogState extends State<ParkLog> {
                                   child: Container(
                                     alignment: Alignment.center,
                                     constraints: BoxConstraints(
-                                        minWidth: get_screenWidth(
-                                            context) *
-                                            0.35),
-                                    padding:
-                                    EdgeInsets.all(get_screenWidth(
-                                        context) *
-                                        0.02),
+                                        minWidth:
+                                            get_screenWidth(context) * 0.35),
+                                    padding: EdgeInsets.all(
+                                        get_screenWidth(context) * 0.02),
                                     decoration: isParkedInSelected
                                         ? selectedBox(context)
                                         : unselectedBox(context),
                                     child: Text(
                                       "Parked In",
                                       style: isParkedInSelected
-                                          ? boldTextStyle(
-                                          context, myWhite)
-                                          : boldTextStyle(
-                                          context, myBlack),
+                                          ? boldTextStyle(context, myWhite)
+                                          : boldTextStyle(context, myBlack),
                                     ),
                                   ),
                                 ),
@@ -213,32 +235,24 @@ class _ParkLogState extends State<ParkLog> {
                                   onTap: () {
                                     setState(() {
                                       isParkedInSelected = false;
-                                      showableList =
-                                          notPresentBookings;
+                                      showableList = notPresentBookings;
                                     });
                                   },
                                   child: Container(
                                     alignment: Alignment.center,
                                     constraints: BoxConstraints(
-                                        minWidth: get_screenWidth(
-                                            context) *
-                                            0.35),
-                                    padding:
-                                    EdgeInsets.all(get_screenWidth(
-                                        context) *
-                                        0.02),
-                                    decoration:
-                                    !isParkedInSelected
+                                        minWidth:
+                                            get_screenWidth(context) * 0.35),
+                                    padding: EdgeInsets.all(
+                                        get_screenWidth(context) * 0.02),
+                                    decoration: !isParkedInSelected
                                         ? selectedBox(context)
                                         : unselectedBox(context),
                                     child: Text(
                                       "Parked Out",
-                                      style:
-                                      !isParkedInSelected
-                                          ? boldTextStyle(
-                                          context, myWhite)
-                                          : boldTextStyle(
-                                          context, myBlack),
+                                      style: !isParkedInSelected
+                                          ? boldTextStyle(context, myWhite)
+                                          : boldTextStyle(context, myBlack),
                                     ),
                                   ),
                                 ),
@@ -247,11 +261,15 @@ class _ParkLogState extends State<ParkLog> {
                           ),
                           Column(
                             children: showableList
-                                .map((e) =>
-                                ParkLogHistoryCard(
-                                    context, e))
+                                .map((e) => ParkLogHistoryCard(context, e))
                                 .toList(),
-                          )
+                          ),
+                          if (isLoading)
+                            CircularProgressIndicator(), // Show loading indicator while loading next page
+                          ElevatedButton(
+                            onPressed: loadNextPage,
+                            child: Text('Load Next Page'),
+                          ),
                         ],
                       ),
                     );
@@ -268,19 +286,14 @@ class _ParkLogState extends State<ParkLog> {
   Widget searchBox() {
     return Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.fromLTRB(
-          2, 0, 1, 2),
-      margin: EdgeInsets.fromLTRB(
-          20 * get_scale_factor(context),
-          15 * get_scale_factor(context),
-          20 * get_scale_factor(context),
-          0),
+      padding: EdgeInsets.fromLTRB(2, 0, 1, 2),
+      margin: EdgeInsets.fromLTRB(20 * get_scale_factor(context),
+          15 * get_scale_factor(context), 20 * get_scale_factor(context), 0),
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(17),
         border: Border.all(
-          color: myred.withOpacity(
-              0.5), // Set the desired border color
+          color: myred.withOpacity(0.5), // Set the desired border color
           width: 2, // Set the desired border width
         ),
       ),
@@ -288,8 +301,7 @@ class _ParkLogState extends State<ParkLog> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
-            padding: EdgeInsets.fromLTRB(
-                10, 8, 0, 0),
+            padding: EdgeInsets.fromLTRB(10, 8, 0, 0),
             child: Icon(
               Icons.search,
               color: myred,
@@ -301,13 +313,10 @@ class _ParkLogState extends State<ParkLog> {
                   get_scale_factor(context)), // Adjust the spacing as needed
           Expanded(
             child: TextField(
-              onChanged: (value) =>
-                  _runFilter(value),
+              onChanged: (value) => _runFilter(value),
               decoration: InputDecoration(
-                hintText:
-                "Search Booking number or Registration number",
-                hintStyle: hintTextStyle(
-                    context, myBlack.withOpacity(0.6)),
+                hintText: "Search Booking number or Registration number",
+                hintStyle: hintTextStyle(context, myBlack.withOpacity(0.6)),
                 contentPadding: EdgeInsets.all(0),
                 border: InputBorder.none,
               ),
