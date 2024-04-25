@@ -21,7 +21,6 @@ class _ParkLogState extends State<ParkLog> {
   List<Booking> presentBookings = [];
   List<Booking> showableList = [];
   bool isParkedInSelected = true;
-  String next = "";
 
   String? baseUrl = dotenv.env['BASE_URL'];
 
@@ -37,75 +36,74 @@ class _ParkLogState extends State<ParkLog> {
   }
 
   Future<void> load_data() async {
-    if (isLoading) return;
-
     String token = await ReadCache.getString(key: "token");
-    setState(() {
-      isLoading = true;
-    });
 
+    // HttpClient with badCertificateCallback to bypass SSL certificate verification
     final client = HttpClient();
     client.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
 
-    final request = await client.getUrl(
-      Uri.parse('$baseUrl/get-booking?status=park-out&page=$currentPage&per_page=$perPage'),
+    final requestParkin = await client.getUrl(
+      Uri.parse('$baseUrl/get-booking?status=pending'),
     );
-    request.headers.add('Authorization', 'Bearer $token');
-    final response = await request.close();
-
-    if (response.statusCode == 200) {
-      await handleResponse(response, false);
-      currentPage++; // Increment page number for next request
+    requestParkin.headers.add('Authorization', 'Bearer $token');
+    final responseParkin = await requestParkin.close();
+    if (responseParkin.statusCode == 200) {
+      await handleResponse(responseParkin, true);
     } else {
-      // Handle error
+      throw Exception('Failed to load data present park log');
     }
 
-    setState(() {
-      isLoading = false;
-    });
+    final requestParkOut = await client.getUrl(
+      Uri.parse('$baseUrl/get-booking?status=park-out'),
+    );
+    requestParkOut.headers.add('Authorization', 'Bearer $token');
+    final responseParkOut = await requestParkOut.close();
+    if (responseParkOut.statusCode == 200) {
+      await handleResponse(responseParkOut, false);
+    } else {
+      throw Exception('Failed to load data park-out park log');
+    }
   }
 
-Future<void> handleResponse(HttpClientResponse response, bool isPresent) async {
-  final responseBody = await utf8.decoder.bind(response).join();
-  final responseData = json.decode(responseBody);
-  final bookingsData = responseData['booking']['data'];
+  Future<void> handleResponse(
+      HttpClientResponse response, bool isPresent) async {
+    final responseBody = await utf8.decoder.bind(response).join();
+    final responseData = json.decode(responseBody);
+    final bookingsData = responseData['booking'];
+    for (var bookingData in bookingsData) {
+      String vehicleType = bookingData['vehicle_type_id'].toString();
+      String bookingNumber = bookingData['booking_number'];
+      String registrationNumber = bookingData['vehicle_reg_number'];
+      DateTime inTime = DateTime.parse(bookingData['park_in_time']);
+      String formattedInTime = formatTime(inTime);
+      DateTime outTime = isPresent
+          ? DateTime.now()
+          : DateTime.parse(bookingData['park_out_time']);
+      String formattedOutTime = isPresent ? "" : formatTime(outTime);
 
-  for (var bookingData in bookingsData) {
-    String vehicleType = bookingData['vehicle_type_id'].toString();
-    String bookingNumber = bookingData['booking_number'];
-    String registrationNumber = bookingData['vehicle_reg_number'];
-    DateTime inTime = DateTime.parse(bookingData['park_in_time']);
-    String formattedInTime = formatTime(inTime);
-    DateTime outTime = isPresent
-        ? DateTime.now()
-        : DateTime.parse(bookingData['park_out_time']);
-    String formattedOutTime = isPresent ? "" : formatTime(outTime);
-
-    setState(() {
-      (isPresent ? presentBookings : notPresentBookings).add(
-        Booking(
-          booking_id: bookingNumber,
-          vehicle_type: vehicleType,
-          registration_number: registrationNumber,
-          in_time: formattedInTime,
-          out_time: formattedOutTime,
-          isPresent: isPresent,
-        ),
-      );
-      next = responseData['booking']['next_page_url'];
-    });
+      setState(() {
+        (isPresent ? presentBookings : notPresentBookings).add(
+          Booking(
+            booking_id: bookingNumber,
+            vehicle_type: vehicleType,
+            registration_number: registrationNumber,
+            in_time: formattedInTime,
+            out_time: formattedOutTime,
+            isPresent: isPresent,
+          ),
+        );
+      });
+    }
   }
-}
 
   void _runFilter(String enteredKeyword) {
     List<Booking> results = [];
     if (enteredKeyword.isEmpty) {
-      if (isParkedInSelected) {
+      if (isParkedInSelected)
         results = presentBookings;
-      } else {
+      else
         results = notPresentBookings;
-      }
       // results = todoList;
     } else {
       if (isParkedInSelected) {
@@ -235,13 +233,7 @@ Future<void> handleResponse(HttpClientResponse response, bool isPresent) async {
                             children: showableList
                                 .map((e) => ParkLogHistoryCard(context, e))
                                 .toList(),
-                          ),
-                          if (isLoading)
-                            CircularProgressIndicator(), // Show loading indicator while loading next page
-                          ElevatedButton(
-                            onPressed: loadNextPage,
-                            child: Text('Load Next Page'),
-                          ),
+                          )
                         ],
                       ),
                     );
