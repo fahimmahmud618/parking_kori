@@ -2,9 +2,7 @@
 
 import 'dart:io';
 import 'package:cache_manager/core/read_cache_service.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:parking_kori/view/image_file.dart';
@@ -51,21 +49,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchData() async {
-    await fetchVehicleData('Car');
-    await fetchVehicleData('Motor Cycle');
-    await fetchVehicleData('CNG');
-    await fetchVehicleData('Cycle');
-    await fetchVehicleData('Pickup');
-    await fetchVehicleData('Others');
+    await fetchVehicleData('car');
+    await fetchVehicleData('motor-cycle');
+    await fetchVehicleData('cng');
+    await fetchVehicleData('cycle');
+    await fetchVehicleData('pickup');
+    await fetchVehicleData('others');
   }
 
   Future<void> fetchVehicleData(String vehicleType) async {
     try {
-      authToken = await ReadCache.getString(key: "token");
+      final authToken = await ReadCache.getString(key: "token");
+      final baseUrl = dotenv.env['BASE_URL'];
 
       final client = HttpClient();
-
-      // Set the badCertificateCallback to ignore SSL certificate validation errors
       client.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
 
@@ -76,124 +73,127 @@ class _HomePageState extends State<HomePage> {
 
       final response = await request.close();
 
-      // Read and decode the response
-      final responseBody = await response.transform(utf8.decoder).join();
-      // final List<dynamic> data = json.decode(responseBody);
       if (response.statusCode == 200) {
+        final responseBody = await response.transform(utf8.decoder).join();
         final List<dynamic> data = json.decode(responseBody);
-        final vehicleData = data.firstWhere(
-          (element) => element['vehicle_type']['slug'] == vehicleType,
-          orElse: () => null,
-        );
-        if (vehicleData != null) {
-          setState(() {
-            switch (vehicleType) {
-              case 'car':
-                currentCarNumber = vehicleData['remaining_capacity'];
-                carCapacity = vehicleData['capacity']['capacity'];
-                currentCarNumber = carCapacity - currentCarNumber;
-                break;
-              case 'motor-cycle':
-                currentMotorCycleNumber = vehicleData['remaining_capacity'];
-                MotorCycleCapacity = vehicleData['capacity']['capacity'];
-                currentMotorCycleNumber =
-                    MotorCycleCapacity - currentMotorCycleNumber;
-                break;
-              case 'cycle':
-                currentCycleNumber = vehicleData['remaining_capacity'];
-                cycleCapacity = vehicleData['capacity']['capacity'];
-                currentCycleNumber = cycleCapacity - currentCycleNumber;
-                break;
-              case 'cng':
-                currentCNGNumber = vehicleData['remaining_capacity'];
-                cngCapacity = vehicleData['capacity']['capacity'];
-                currentCNGNumber = cngCapacity - currentCNGNumber;
-                break;
-              case 'pickup':
-                currentPickUpNumber = vehicleData['remaining_capacity'];
-                pickUpCapacity = vehicleData['capacity']['capacity'];
-                currentPickUpNumber = pickUpCapacity - currentPickUpNumber;
-                break;
-              case 'others':
-                currentothersNumber = vehicleData['remaining_capacity'];
-                othersCapacity = vehicleData['capacity']['capacity'];
-                currentothersNumber = othersCapacity - currentothersNumber;
-                break;
-              default:
-                break;
-            }
-          });
+
+        // Iterate over each element in the data list
+        for (final vehicleData in data) {
+          // Extract vehicle type slug
+          final vehicleTypeSlug = vehicleData['vehicle_type']['slug'];
+// print(vehicleTypeSlug);
+          // Check if the current vehicle type matches the requested type
+          if (vehicleTypeSlug == vehicleType) {
+            
+            setState(() {
+              switch (vehicleType) {
+                case 'car':
+                  currentCarNumber = vehicleData['remaining_capacity'];
+                  carCapacity = vehicleData['capacity']['capacity'];
+                  currentCarNumber = carCapacity - currentCarNumber;
+                  break;
+                case 'motor-cycle':
+                  currentMotorCycleNumber = vehicleData['remaining_capacity'];
+                  MotorCycleCapacity = vehicleData['capacity']['capacity'];
+                  currentMotorCycleNumber =
+                      MotorCycleCapacity - currentMotorCycleNumber;
+                  break;
+                case 'cycle':
+                  currentCycleNumber = vehicleData['remaining_capacity'];
+                  cycleCapacity = vehicleData['capacity']['capacity'];
+                  currentCycleNumber = cycleCapacity - currentCycleNumber;
+                  break;
+                case 'cng':
+                  currentCNGNumber = vehicleData['remaining_capacity'];
+                  cngCapacity = vehicleData['capacity']['capacity'];
+                  currentCNGNumber = cngCapacity - currentCNGNumber;
+                  break;
+                case 'pickup':
+                  currentPickUpNumber = vehicleData['remaining_capacity'];
+                  pickUpCapacity = vehicleData['capacity']['capacity'];
+                  currentPickUpNumber = pickUpCapacity - currentPickUpNumber;
+                  break;
+                case 'others':
+                  currentothersNumber = vehicleData['remaining_capacity'];
+                  othersCapacity = vehicleData['capacity']['capacity'];
+                  currentothersNumber = othersCapacity - currentothersNumber;
+                  break;
+                default:
+                  break;
+              }
+            });
+            // Exit the loop once the vehicle data is found
+            break;
+          }
         }
       } else {
         throw Exception('Failed to load data for $vehicleType');
       }
 
-      // Close the client after the request
       client.close();
     } catch (e) {
       print('Error fetching data: $e');
     }
   }
 
-  void add_car(int capacity) {
-  if (carCapacity > 0) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddVehicle()));
-  } else {
-    showCapacityAlert("Car");
+  void add_car() {
+    if (carCapacity > 0) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => AddVehicle()));
+    } else {
+      showCapacityAlert("Car");
+    }
   }
-}
 
-void add_bike() {
-  if (MotorCycleCapacity > 0) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddVehicle()));
-  } else {
-    showCapacityAlert("Motor Cycle");
+  void add_bike() {
+    if (MotorCycleCapacity > 0) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => AddVehicle()));
+    } else {
+      showCapacityAlert("Motor Cycle");
+    }
   }
-}
 
-void add_cng() {
-  if (cngCapacity > 0) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddVehicle()));
-  } else {
-    showCapacityAlert("CNG");
+  void add_cng() {
+    if (cngCapacity > 0) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => AddVehicle()));
+    } else {
+      showCapacityAlert("CNG");
+    }
   }
-}
 
-void add_cycle() {
-  if (cycleCapacity > 0) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddVehicle()));
-  } else {
-    showCapacityAlert("Cycle");
+  void add_cycle() {
+    if (cycleCapacity > 0) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => AddVehicle()));
+    } else {
+      showCapacityAlert("Cycle");
+    }
   }
-}
 
-void add_pickup() {
-  if (pickUpCapacity > 0) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddVehicle()));
-  } else {
-    showCapacityAlert("Pickup/Truck");
+  void add_pickup() {
+    if (pickUpCapacity > 0) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => AddVehicle()));
+    } else {
+      showCapacityAlert("Pickup/Truck");
+    }
   }
-}
 
-void add_others() {
-  if (othersCapacity > 0) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddVehicle()));
-  } else {
-    showCapacityAlert("others");
+  void add_others() {
+    if (othersCapacity > 0) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => AddVehicle()));
+    } else {
+      showCapacityAlert("others");
+    }
   }
-}
 
-void showCapacityAlert(String title) {
-  myAlertDialog("$title Capacity is 0",
-      "Sorry, you can't add any vehicle.", context);
-}
-
+  void showCapacityAlert(String title) {
+    myAlertDialog(
+        "$title Capacity is 0", "Sorry, you can't add any vehicle.", context);
+  }
 
   void go_to_park_out() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => ParkOut()));
@@ -222,7 +222,7 @@ void showCapacityAlert(String title) {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ParkingInfoCard(context, carLogo, "Car", currentCarNumber,
-                        carCapacity, add_car),
+                      carCapacity, add_car),
                   ParkingInfoCard(context, bikeLogo, "Bike",
                       currentMotorCycleNumber, MotorCycleCapacity, add_bike),
                   ParkingInfoCard(context, cycleLogo, "Cycle",
@@ -246,7 +246,7 @@ void showCapacityAlert(String title) {
               SizedBox(
                 height: get_screenWidth(context) * 0.005,
               ),
-              
+
               SizedBox(
                 height: get_screenWidth(context) * 0.005,
               ),
@@ -290,32 +290,35 @@ void showCapacityAlert(String title) {
               //     ],
               //   ),
               // ),
-             Text("Park out with Registration Number", style: boldTextStyle(context, myBlack),),
+              Text(
+                "Park out with Registration Number",
+                style: boldTextStyle(context, myBlack),
+              ),
               Padding(
-                padding:  EdgeInsets.symmetric(horizontal: get_screenWidth(context)*0.05),
+                padding: EdgeInsets.symmetric(
+                    horizontal: get_screenWidth(context) * 0.05),
                 child: Container(
                   margin: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          border: Border.all(
-                            color: myBlack.withOpacity(0.2),
-                            width: 1,
-                          ),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    border: Border.all(
+                      color: myBlack.withOpacity(0.2),
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       regnum(context, registration_number),
-                      
                       InkWell(
-                            onTap: do_park_out_with_regNUmber,
-                            child: Icon(
-                              Icons.arrow_circle_right_sharp,
-                              color: myred,
-                              size: 40,
-                            ),
-                          ),
+                        onTap: do_park_out_with_regNUmber,
+                        child: Icon(
+                          Icons.arrow_circle_right_sharp,
+                          color: myred,
+                          size: 40,
+                        ),
+                      ),
                     ],
                   ),
                 ),

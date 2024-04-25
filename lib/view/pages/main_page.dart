@@ -38,7 +38,7 @@ class _MainPageState extends State<MainPage> {
     DateTime savedDateTime = DateTime.fromMillisecondsSinceEpoch(savedTime);
     Duration difference = currentTime.difference(savedDateTime);
 
-    if (difference.inMinutes > 2) {
+    if (difference.inHours > 12) {
       DeleteCache.deleteKey("cache");
       DeleteCache.deleteKey("token");
       DeleteCache.deleteKey("id");

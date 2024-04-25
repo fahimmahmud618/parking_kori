@@ -21,37 +21,7 @@ class _ParkLogState extends State<ParkLog> {
   List<Booking> presentBookings = [];
   List<Booking> showableList = [];
   bool isParkedInSelected = true;
-  int currentPage = 1;
-  int perPage = 10; // Number of items per page
-  bool isLoading = false;
-  Future<void> loadNextPage() async {
-    if (isLoading) return;
-
-    setState(() {
-      isLoading = true;
-    });
-
-    String token = await ReadCache.getString(key: "token");
-    final client = HttpClient();
-    client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-
-    final request = await client.getUrl(
-      Uri.parse('$baseUrl/get-booking?status=park-out&page=$currentPage&per_page=$perPage'),
-    );
-    request.headers.add('Authorization', 'Bearer $token');
-    final response = await request.close();
-
-    if (response.statusCode == 200) {
-      await handleResponse(response, false);
-      currentPage++; // Increment page number for next request
-    } else {
-      // Handle error
-    }
-
-    setState(() {
-      isLoading = false;
-    });
-  }
+  String next = "";
 
   String? baseUrl = dotenv.env['BASE_URL'];
 
@@ -96,44 +66,46 @@ class _ParkLogState extends State<ParkLog> {
     });
   }
 
-  Future<void> handleResponse(
-      HttpClientResponse response, bool isPresent) async {
-    final responseBody = await utf8.decoder.bind(response).join();
-    final responseData = json.decode(responseBody);
-    final bookingsData = responseData['booking'];
-    for (var bookingData in bookingsData) {
-      String vehicleType = bookingData['vehicle_type_id'].toString();
-      String bookingNumber = bookingData['booking_number'];
-      String registrationNumber = bookingData['vehicle_reg_number'];
-      DateTime inTime = DateTime.parse(bookingData['park_in_time']);
-      String formattedInTime = formatTime(inTime);
-      DateTime outTime = isPresent
-          ? DateTime.now()
-          : DateTime.parse(bookingData['park_out_time']);
-      String formattedOutTime = isPresent ? "" : formatTime(outTime);
+Future<void> handleResponse(HttpClientResponse response, bool isPresent) async {
+  final responseBody = await utf8.decoder.bind(response).join();
+  final responseData = json.decode(responseBody);
+  final bookingsData = responseData['booking']['data'];
 
-      setState(() {
-        (isPresent ? presentBookings : notPresentBookings).add(
-          Booking(
-            booking_id: bookingNumber,
-            vehicle_type: vehicleType,
-            registration_number: registrationNumber,
-            in_time: formattedInTime,
-            out_time: formattedOutTime,
-            isPresent: isPresent,
-          ),
-        );
-      });
-    }
+  for (var bookingData in bookingsData) {
+    String vehicleType = bookingData['vehicle_type_id'].toString();
+    String bookingNumber = bookingData['booking_number'];
+    String registrationNumber = bookingData['vehicle_reg_number'];
+    DateTime inTime = DateTime.parse(bookingData['park_in_time']);
+    String formattedInTime = formatTime(inTime);
+    DateTime outTime = isPresent
+        ? DateTime.now()
+        : DateTime.parse(bookingData['park_out_time']);
+    String formattedOutTime = isPresent ? "" : formatTime(outTime);
+
+    setState(() {
+      (isPresent ? presentBookings : notPresentBookings).add(
+        Booking(
+          booking_id: bookingNumber,
+          vehicle_type: vehicleType,
+          registration_number: registrationNumber,
+          in_time: formattedInTime,
+          out_time: formattedOutTime,
+          isPresent: isPresent,
+        ),
+      );
+      next = responseData['booking']['next_page_url'];
+    });
   }
+}
 
   void _runFilter(String enteredKeyword) {
     List<Booking> results = [];
     if (enteredKeyword.isEmpty) {
-      if (isParkedInSelected)
+      if (isParkedInSelected) {
         results = presentBookings;
-      else
+      } else {
         results = notPresentBookings;
+      }
       // results = todoList;
     } else {
       if (isParkedInSelected) {
