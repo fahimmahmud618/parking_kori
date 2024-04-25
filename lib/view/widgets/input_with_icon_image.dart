@@ -137,18 +137,8 @@ Widget InputWIthIconImage3(
 
 Widget regnum(BuildContext context, TextEditingController textEditingController){
   return Container(
-      decoration: BoxDecoration(
-        border: Border(
-              bottom: BorderSide(
-                color:
-                    Colors.black.withOpacity(0.7), // Specify your desired color
-                width: 1, // Specify your desired width
-              ),
-            ),
-      ),
-      child: Container(
-        
-        width: get_screenWidth(context) * 0.8,
+     padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+        width: get_screenWidth(context) * 0.6,
         child: TextField(
           controller: textEditingController,
           keyboardType: TextInputType.number,
@@ -165,7 +155,6 @@ Widget regnum(BuildContext context, TextEditingController textEditingController)
           ),
           
         ),
-      ),
     );
 }
 

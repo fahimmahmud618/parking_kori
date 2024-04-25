@@ -11,7 +11,7 @@ Widget InfoCard(BuildContext context, String data1, String data2) {
     padding: const EdgeInsets.all(10),
     decoration: BoxDecoration(
       color: myred,
-      // borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(8),
     ),
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,

@@ -146,18 +146,17 @@ class _ProfilePageState extends State<ProfilePage> {
     String total_park_out,
     String total_park_in,
     String total_income,
-    
     DataTable dataTable,
     DateTime startTime,
     String address,
-
   ) async {
     Sunmi printer = Sunmi();
-    printer.print_summary(total_park_in, total_park_out, total_income, dataTable, startTime, address);
+    printer.print_summary(total_park_in, total_park_out, total_income,
+        dataTable, startTime, address);
     Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainPage()),
-      );
+      context,
+      MaterialPageRoute(builder: (context) => const MainPage()),
+    );
   }
 
   @override
@@ -218,9 +217,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       Container(
                         margin: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
-                          color: Colors.grey[200],
+                          color: Colors.grey[100],
                           border: Border.all(
-                            color: Colors.black.withOpacity(0.7),
+                            color: myBlack.withOpacity(0.2),
                             width: 1,
                           ),
                           borderRadius: BorderRadius.circular(8.0),
@@ -256,25 +255,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       SizedBox(
                         height: get_screenWidth(context) * 0.05,
                       ),
-                      Container(
-                        height: get_screenWidth(context) * 0.4,
-                        width: get_screenWidth(context) * 0.75,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
-                          ),
-                          // borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: SingleChildScrollView(
-                          child: DataTable(
-                            columns: const [
-                              DataColumn(label: Text('AGENT')),
-                              DataColumn(label: Text('TAKA')),
-                            ],
-                            rows: buildAgentIncomeList(),
-                          ),
-                        ),
-                      ),
+                      agentTable(context),
                       // SizedBox(
                       //   height: get_screenWidth(context) * 0.05,
                       // ),
@@ -286,7 +267,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         () => print_summary(
                           "$parkin",
                           "$parkout",
-                          
                           "${calculateTotalIncome()} Taka",
                           DataTable(
                             columns: const [
@@ -296,8 +276,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             rows: buildAgentIncomeList(),
                           ),
                           DateTime.now(),
-                         "$address",
-                          
+                          "$address",
                         ),
                       ),
                     ],
@@ -309,5 +288,33 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+  }
+
+  Container agentTable(BuildContext context) {
+    return Container(
+                      height: get_screenWidth(context) * 0.39,
+                      width: get_screenWidth(context) * 0.75,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: SingleChildScrollView(
+                        child: DataTable(
+                          columnSpacing: 20,
+                          columns: [
+                            DataColumn(
+                                label: Text('AGENT',
+                                    style: boldTextStyle(context, myBlack))),
+                            DataColumn(
+                                label: Text('TAKA',
+                                    style: boldTextStyle(context, myBlack))),
+                          ],
+                          rows: buildAgentIncomeList(),
+                        ),
+                      ),
+                    
+                    );
   }
 }

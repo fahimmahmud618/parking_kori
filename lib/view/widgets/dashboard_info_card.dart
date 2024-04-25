@@ -10,9 +10,11 @@ Widget DashboardInfoCard(BuildContext context, String title, String data){
       borderRadius: BorderRadius.circular(8),
     ),
     child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(flex:1, child: Text("$title ", style: boldTextStyle(context, myWhite),)),
-        Expanded(flex:1, child: Text(": $data", style: normalTextStyle(context, myWhite.withOpacity(0.8)),)),
+        Text("$title ", style: boldTextStyle(context, myWhite),),
+        // Text(":", style: boldTextStyle(context, myWhite),),
+        Text("$data", style: normalTextStyle(context, myWhite.withOpacity(0.8)),),
       ],
     ),
   );

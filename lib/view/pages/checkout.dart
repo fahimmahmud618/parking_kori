@@ -241,32 +241,26 @@ void initState() {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              AppBarWidget(context, "Checkout"),
-              Container(
-                padding: EdgeInsets.all(get_screenWidth(context) * 0.05),
-                child: Expanded(
-                  child: Center(
-                    child: Column(
-                      children: [
-                        DashboardInfoCard(
-                            context, "Booking Number", registration_num),
-                        DashboardInfoCard(
-                            context, "Invoice Number", ticket_num),
-                        DashboardInfoCard(context, "Arrived At", entry_time),
-                        DashboardInfoCard(context, "Exit At", exit_time),
-                        DashboardInfoCard(
-                            context, "Payable Amount", payment_amount),
-                        ActionButton(context, "Checkout", checkout),
-                      ],
-                    ),
-                  ),
-                ),
+        body: Column(
+          children: [
+            AppBarWidget(context, "Checkout"),
+            Container(
+              padding: EdgeInsets.all(get_screenWidth(context) * 0.05),
+              child: Column(
+                children: [
+                  DashboardInfoCard(
+                      context, "Booking Number", registration_num),
+                  DashboardInfoCard(
+                      context, "Invoice Number", ticket_num),
+                  DashboardInfoCard(context, "Arrived At", entry_time),
+                  DashboardInfoCard(context, "Exit At", exit_time),
+                  DashboardInfoCard(
+                      context, "Payable Amount", payment_amount),
+                  ActionButton(context, "Checkout", checkout),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
