@@ -78,7 +78,7 @@ class Sunmi {
         final String responseBody =
             await response.transform(utf8.decoder).join();
         final Map<String, dynamic> data = json.decode(responseBody);
-        final bookingDetails = data['booking'][0];
+        final bookingDetails = data['data'][0];
 
         if (bookingDetails != null) {
           String vehicleRegNumber = bookingDetails['vehicle_reg_number'] ?? '';
