@@ -9,6 +9,7 @@ import 'package:parking_kori/model/booking.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/park_log_history_card.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ParkLog extends StatefulWidget {
   const ParkLog({Key? key}) : super(key: key);
@@ -146,104 +147,140 @@ class _ParkLogState extends State<ParkLog> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            AppBarWidget(context, "Park Log"),
-            searchBox(),
-            Container(
-              padding: EdgeInsets.all(get_screenWidth(context) * 0.1),
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(bottom: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              isParkedInSelected = true;
-                              showableList = presentBookings;
-                            });
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            constraints: BoxConstraints(
-                                minWidth: get_screenWidth(context) * 0.35),
-                            padding:
-                                EdgeInsets.all(get_screenWidth(context) * 0.02),
-                            decoration: isParkedInSelected
-                                ? selectedBox(context)
-                                : unselectedBox(context),
-                            child: Text(
-                              "Parked In",
-                              style: isParkedInSelected
-                                  ? boldTextStyle(context, myWhite)
-                                  : boldTextStyle(context, myBlack),
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              AppBarWidget(context, "Park Log"),
+              searchBox(),
+              FutureBuilder<void>(
+                future: load_data(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(
+                      height: 100,
+                      width: 100,
+                      child: LoadingAnimationWidget.fourRotatingDots(
+                        color: myred,
+                        size: 50,
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return Container(
+                      padding: EdgeInsets.all(
+                          get_screenWidth(context) * 0.1),
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(bottom: 10),
+                            child: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.center,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      isParkedInSelected = true;
+                                      showableList = presentBookings;
+                                    });
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    constraints: BoxConstraints(
+                                        minWidth: get_screenWidth(
+                                            context) *
+                                            0.35),
+                                    padding:
+                                    EdgeInsets.all(get_screenWidth(
+                                        context) *
+                                        0.02),
+                                    decoration: isParkedInSelected
+                                        ? selectedBox(context)
+                                        : unselectedBox(context),
+                                    child: Text(
+                                      "Parked In",
+                                      style: isParkedInSelected
+                                          ? boldTextStyle(
+                                          context, myWhite)
+                                          : boldTextStyle(
+                                          context, myBlack),
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      isParkedInSelected = false;
+                                      showableList =
+                                          notPresentBookings;
+                                    });
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    constraints: BoxConstraints(
+                                        minWidth: get_screenWidth(
+                                            context) *
+                                            0.35),
+                                    padding:
+                                    EdgeInsets.all(get_screenWidth(
+                                        context) *
+                                        0.02),
+                                    decoration:
+                                    !isParkedInSelected
+                                        ? selectedBox(context)
+                                        : unselectedBox(context),
+                                    child: Text(
+                                      "Parked Out",
+                                      style:
+                                      !isParkedInSelected
+                                          ? boldTextStyle(
+                                          context, myWhite)
+                                          : boldTextStyle(
+                                          context, myBlack),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              isParkedInSelected = false;
-                              showableList = notPresentBookings;
-                            });
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            constraints: BoxConstraints(
-                                minWidth: get_screenWidth(context) * 0.35),
-                            padding:
-                                EdgeInsets.all(get_screenWidth(context) * 0.02),
-                            decoration: !isParkedInSelected
-                                ? selectedBox(context)
-                                : unselectedBox(context),
-                            child: Text(
-                              "Parked Out",
-                              style: !isParkedInSelected
-                                  ? boldTextStyle(context, myWhite)
-                                  : boldTextStyle(context, myBlack),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    children: showableList
-                        .map((e) => ParkLogHistoryCard(context, e))
-                        .toList(),
-                    // children: isParkedInSelected
-                    //     ? presentBookings
-                    //         .map((e) => ParkLogHistoryCard(context, e))
-                    //         .toList()
-                    //     : notPresentBookings
-                    //         .map((e) => ParkLogHistoryCard(context, e))
-                    //         .toList(),
-                  )
-                ],
+                          Column(
+                            children: showableList
+                                .map((e) =>
+                                ParkLogHistoryCard(
+                                    context, e))
+                                .toList(),
+                          )
+                        ],
+                      ),
+                    );
+                  }
+                },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 
   Widget searchBox() {
     return Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.fromLTRB(2, 0, 1, 2),
-      margin: EdgeInsets.fromLTRB(20 * get_scale_factor(context),
-          15 * get_scale_factor(context), 20 * get_scale_factor(context), 0),
+      padding: EdgeInsets.fromLTRB(
+          2, 0, 1, 2),
+      margin: EdgeInsets.fromLTRB(
+          20 * get_scale_factor(context),
+          15 * get_scale_factor(context),
+          20 * get_scale_factor(context),
+          0),
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(17),
         border: Border.all(
-          color: myred.withOpacity(0.5), // Set the desired border color
+          color: myred.withOpacity(
+              0.5), // Set the desired border color
           width: 2, // Set the desired border width
         ),
       ),
@@ -251,7 +288,8 @@ class _ParkLogState extends State<ParkLog> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
-            padding: EdgeInsets.fromLTRB(10, 8, 0, 0),
+            padding: EdgeInsets.fromLTRB(
+                10, 8, 0, 0),
             child: Icon(
               Icons.search,
               color: myred,
@@ -263,10 +301,13 @@ class _ParkLogState extends State<ParkLog> {
                   get_scale_factor(context)), // Adjust the spacing as needed
           Expanded(
             child: TextField(
-              onChanged: (value) => _runFilter(value),
+              onChanged: (value) =>
+                  _runFilter(value),
               decoration: InputDecoration(
-                hintText: "Search Booking number or Registration number",
-                hintStyle: hintTextStyle(context, myBlack.withOpacity(0.6)),
+                hintText:
+                "Search Booking number or Registration number",
+                hintStyle: hintTextStyle(
+                    context, myBlack.withOpacity(0.6)),
                 contentPadding: EdgeInsets.all(0),
                 border: InputBorder.none,
               ),

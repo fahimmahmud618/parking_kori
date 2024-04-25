@@ -13,6 +13,7 @@ import 'package:parking_kori/view/pages/checkout.dart';
 import 'package:parking_kori/view/pages/park_out_page.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
+import 'package:parking_kori/view/widgets/alert_dialog.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/input_with_icon_image.dart';
 import 'package:parking_kori/view/widgets/parking_info_card.dart';
@@ -87,33 +88,33 @@ class _HomePageState extends State<HomePage> {
         if (vehicleData != null) {
           setState(() {
             switch (vehicleType) {
-              case 'Car':
+              case 'car':
                 currentCarNumber = vehicleData['remaining_capacity'];
                 carCapacity = vehicleData['capacity']['capacity'];
                 currentCarNumber = carCapacity - currentCarNumber;
                 break;
-              case 'Motor Cycle':
+              case 'motor-cycle':
                 currentMotorCycleNumber = vehicleData['remaining_capacity'];
                 MotorCycleCapacity = vehicleData['capacity']['capacity'];
                 currentMotorCycleNumber =
                     MotorCycleCapacity - currentMotorCycleNumber;
                 break;
-              case 'Cycle':
+              case 'cycle':
                 currentCycleNumber = vehicleData['remaining_capacity'];
                 cycleCapacity = vehicleData['capacity']['capacity'];
                 currentCycleNumber = cycleCapacity - currentCycleNumber;
                 break;
-              case 'CNG':
+              case 'cng':
                 currentCNGNumber = vehicleData['remaining_capacity'];
                 cngCapacity = vehicleData['capacity']['capacity'];
                 currentCNGNumber = cngCapacity - currentCNGNumber;
                 break;
-              case 'Pickup':
+              case 'pickup':
                 currentPickUpNumber = vehicleData['remaining_capacity'];
                 pickUpCapacity = vehicleData['capacity']['capacity'];
                 currentPickUpNumber = pickUpCapacity - currentPickUpNumber;
                 break;
-              case 'Others':
+              case 'others':
                 currentothersNumber = vehicleData['remaining_capacity'];
                 othersCapacity = vehicleData['capacity']['capacity'];
                 currentothersNumber = othersCapacity - currentothersNumber;
@@ -134,35 +135,65 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void add_car() {
+  void add_car(int capacity) {
+  if (carCapacity > 0) {
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "1")));
+        MaterialPageRoute(builder: (context) => AddVehicle()));
+  } else {
+    showCapacityAlert("Car");
   }
+}
 
-  void add_bike() {
+void add_bike() {
+  if (MotorCycleCapacity > 0) {
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "2")));
+        MaterialPageRoute(builder: (context) => AddVehicle()));
+  } else {
+    showCapacityAlert("Motor Cycle");
   }
+}
 
-  void add_cng() {
+void add_cng() {
+  if (cngCapacity > 0) {
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "3")));
+        MaterialPageRoute(builder: (context) => AddVehicle()));
+  } else {
+    showCapacityAlert("CNG");
   }
+}
 
-  void add_cycle() {
+void add_cycle() {
+  if (cycleCapacity > 0) {
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "4")));
+        MaterialPageRoute(builder: (context) => AddVehicle()));
+  } else {
+    showCapacityAlert("Cycle");
   }
+}
 
-  void add_pickup() {
+void add_pickup() {
+  if (pickUpCapacity > 0) {
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "5")));
+        MaterialPageRoute(builder: (context) => AddVehicle()));
+  } else {
+    showCapacityAlert("Pickup/Truck");
   }
+}
 
-  void add_others() {
+void add_others() {
+  if (othersCapacity > 0) {
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "6")));
+        MaterialPageRoute(builder: (context) => AddVehicle()));
+  } else {
+    showCapacityAlert("others");
   }
+}
+
+void showCapacityAlert(String title) {
+  myAlertDialog("$title Capacity is 0",
+      "Sorry, you can't add any vehicle.", context);
+}
+
 
   void go_to_park_out() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => ParkOut()));
@@ -191,7 +222,7 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ParkingInfoCard(context, carLogo, "Car", currentCarNumber,
-                      carCapacity, add_car),
+                        carCapacity, add_car),
                   ParkingInfoCard(context, bikeLogo, "Bike",
                       currentMotorCycleNumber, MotorCycleCapacity, add_bike),
                   ParkingInfoCard(context, cycleLogo, "Cycle",
@@ -223,12 +254,12 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: get_screenWidth(context) * 0.005,
               ),
-              // Text(" "),
+              Text(" | "),
               Text(
                 "OR",
                 style: nameTitleStyle(context, myBlack),
               ),
-              // Text(" "),
+              Text(" | "),
               SizedBox(
                 height: get_screenWidth(context) * 0.005,
               ),
