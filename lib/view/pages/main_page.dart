@@ -2,6 +2,7 @@
 
 import 'package:cache_manager/cache_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:parking_kori/view/pages/flash_page.dart';
 import 'package:parking_kori/view/pages/home_page.dart';
 import 'package:parking_kori/view/pages/park_log.dart';
 import 'package:parking_kori/view/pages/profile.dart';
@@ -37,14 +38,16 @@ class _MainPageState extends State<MainPage> {
     DateTime savedDateTime = DateTime.fromMillisecondsSinceEpoch(savedTime);
     Duration difference = currentTime.difference(savedDateTime);
 
-    if (difference.inHours > 12) {
+    if (difference.inMinutes > 2) {
       DeleteCache.deleteKey("cache");
       DeleteCache.deleteKey("token");
       DeleteCache.deleteKey("id");
       DeleteCache.deleteKey("locationId");
       DeleteCache.deleteKey("loginTime");
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => FlashPage()));
     }
-    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,12 +58,12 @@ class _MainPageState extends State<MainPage> {
         // When the back button is pressed, the controller.currentIndex.value will be 0 and that screen will show
         if (myIndex != 0) {
           setState(() {
-              myIndex = 0;
-            });
+            myIndex = 0;
+          });
         } else {
-         
           Navigator.pop(context);
-        }},
+        }
+      },
       child: Scaffold(
         body: Container(
           child: widgetList[myIndex],
@@ -87,7 +90,8 @@ class _MainPageState extends State<MainPage> {
                 ),
                 backgroundColor: myred),
             //  BottomNavigationBarItem(label: "Shift", icon: Icon(Icons.dataset_outlined), backgroundColor: myred),
-            BottomNavigationBarItem(label: "Park log", icon: Icon(Icons.history)),
+            BottomNavigationBarItem(
+                label: "Park log", icon: Icon(Icons.history)),
             //  BottomNavigationBarItem(label: "Dashboard", icon: Icon(Icons.dashboard)),
             BottomNavigationBarItem(label: "Profile", icon: Icon(Icons.person)),
           ],

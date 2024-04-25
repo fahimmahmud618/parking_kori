@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io'; // Import 'dart:io' for HttpClient
-import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:cache_manager/core/write_cache_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -97,7 +96,6 @@ class _LoginPageState extends State<LoginPage> {
     WriteCache.setInt(
         key: "loginTime", value: currentTime.millisecondsSinceEpoch);
 
-    print(ReadCache.getString(key: "id"));
   }
 
   @override
