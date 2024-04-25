@@ -103,10 +103,11 @@ class _ParkLogState extends State<ParkLog> {
   void _runFilter(String enteredKeyword) {
     List<Booking> results = [];
     if (enteredKeyword.isEmpty) {
-      if (isParkedInSelected)
+      if (isParkedInSelected) {
         results = presentBookings;
-      else
+      } else {
         results = notPresentBookings;
+      }
       // results = todoList;
     } else {
       if (isParkedInSelected) {

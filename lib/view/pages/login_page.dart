@@ -11,7 +11,6 @@ import 'package:parking_kori/view/widgets/input_with_icon_image.dart';
 import 'package:parking_kori/view/widgets/page_title.dart';
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/styles.dart';
-import 'package:parking_kori/service/database.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -57,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
       final httpResponse = await response.close();
 
       if (httpResponse.statusCode == 200) {
+        
         Map<String, dynamic> responseData =
             jsonDecode(await httpResponse.transform(utf8.decoder).join());
         token = responseData['token'];
@@ -65,7 +65,9 @@ class _LoginPageState extends State<LoginPage> {
         myAddress = responseData['data'][0]['location']['title'];
 
         saveCache(username, password, token, id, locationId, myAddress);
-        await DatabaseHelper().loadParkLogDataFromRemoteDB();
+        // await DatabaseHelper().loadParkLogDataFromRemoteDB();
+
+        // print("Logged in properly");
 
         Navigator.push(
           context,
@@ -84,8 +86,8 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void saveCache(
-      String username, String password, String token, int id, int locationId, String myAddress) {
+  void saveCache(String username, String password, String token, int id,
+      int locationId, String myAddress) {
     final cacheValue = caesarCipherEncode(makeCache(username, password), 2);
     WriteCache.setString(key: "cache", value: cacheValue);
     WriteCache.setString(key: "token", value: token);
@@ -95,7 +97,6 @@ class _LoginPageState extends State<LoginPage> {
     DateTime currentTime = DateTime.now();
     WriteCache.setInt(
         key: "loginTime", value: currentTime.millisecondsSinceEpoch);
-
   }
 
   @override

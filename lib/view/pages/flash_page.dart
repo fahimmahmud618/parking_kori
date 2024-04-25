@@ -5,7 +5,6 @@ import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/pages/login_page.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/styles.dart';
-import 'package:parking_kori/view/widgets/alert_dialog.dart';
 
 class FlashPage extends StatefulWidget {
   const FlashPage({super.key});
