@@ -96,7 +96,7 @@ Future<void> handleResponse(HttpClientResponse response, bool isPresent) async {
           isPresent: isPresent,
         ),
       );
-      next = responseData['booking']['next_page_url'];
+      // next = responseData['booking']['next_page_url'];
     });
   }
 }
