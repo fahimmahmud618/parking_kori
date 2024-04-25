@@ -206,7 +206,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
       Fluttertoast.showToast(
         msg: "Thank you for checking out!",
         toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.SNACKBAR,
+        gravity: ToastGravity.TOP,
         timeInSecForIosWeb: 1,
         backgroundColor: Color.fromRGBO(65, 176, 110,1),
         textColor: Colors.white,
