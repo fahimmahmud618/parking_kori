@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:parking_kori/view/styles.dart';
 
@@ -62,10 +64,9 @@ Widget ActionButton2(BuildContext context, String text, action) {
   );
 }
 
-
-Widget ActionButton3(BuildContext context, String text, action) {
+Widget ActionButton3(BuildContext context, String text, action,double size) {
   return Container(
-    width: get_screenWidth(context)*0.4,
+    width: get_screenWidth(context)*size,
     constraints: BoxConstraints(minWidth: get_screenWidth(context) * 0.3),
     margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
     padding: EdgeInsets.all(2),
@@ -89,3 +90,32 @@ Widget ActionButton3(BuildContext context, String text, action) {
     ),
   );
 }
+
+Widget ActionButton4(BuildContext context, String text, action,double size) {
+  return Container(
+    width: get_screenWidth(context)*size,
+    padding: EdgeInsets.all(2),
+    decoration: BoxDecoration(
+        color: myred,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+      BoxShadow(
+        color: Colors.grey.withOpacity(0.5), // Shadow color
+        spreadRadius: 1, // Spread radius
+        blurRadius: 8, // Blur radius
+        offset: Offset(0, 3), // Offset in x and y directions
+      ),
+    ],),
+    child: TextButton(
+      onPressed: action,
+      child: Text(
+        text,
+        style: boldTextStyle(context, myWhite),
+      ),
+    ),
+  );
+}
+
+
+
+

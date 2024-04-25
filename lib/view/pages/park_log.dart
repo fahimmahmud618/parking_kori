@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/model/booking.dart';
 import 'package:parking_kori/view/styles.dart';
+import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/park_log_history_card.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -17,12 +18,18 @@ class ParkLog extends StatefulWidget {
 }
 
 class _ParkLogState extends State<ParkLog> {
-  List<Booking> notPresentBookings = [];
   List<Booking> presentBookings = [];
+  List<Booking> notPresentBookings = [];
   List<Booking> showableList = [];
   bool isParkedInSelected = true;
 
   String? baseUrl = dotenv.env['BASE_URL'];
+  // String? finalURL = '$baseUrl/get-booking';
+  String firstPageURL = '';
+  String lastPageURL = '';
+  String prevPageURL = '';
+  String nextPageURL = '';
+  int lastPageNum = 1;
 
   String formatTime(DateTime dateTime) {
     String hour = (dateTime.hour > 12)
@@ -35,102 +42,130 @@ class _ParkLogState extends State<ParkLog> {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year}   $hour:$minute:$second $amPm';
   }
 
- Future<void> load_data() async {
-  try {
-    String token = await ReadCache.getString(key: "token");
+  Future<void> loadParkInData(String url) async {
+    try {
+      String token = await ReadCache.getString(key: "token");
 
-    // HttpClient with badCertificateCallback to bypass SSL certificate verification
-    final client = HttpClient();
-    client.badCertificateCallback =
-        (X509Certificate cert, String host, int port) => true;
+      final client = HttpClient();
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
 
-    final requestParkin = await client.getUrl(
-      Uri.parse('$baseUrl/get-booking?status=pending'),
-    );
-    requestParkin.headers.set('Authorization', 'Bearer $token'); // Use set instead of add
-    final responseParkin = await requestParkin.close();
-    if (responseParkin.statusCode == 200) {
-      await handleResponse(responseParkin, true);
-    } else {
-      throw Exception('Failed to load data present park log');
+      final requestParkIn = await client.getUrl(
+        Uri.parse('$url?status=pending'),
+      );
+      requestParkIn.headers.set('Authorization', 'Bearer $token');
+      final responseParkIn = await requestParkIn.close();
+      if (responseParkIn.statusCode == 200) {
+        await handleResponse(responseParkIn, true);
+      } else {
+        throw Exception('Failed to load park in data');
+      }
+    } catch (e) {
+      print('Error loading park in data: $e');
     }
-
-    final requestParkOut = await client.getUrl(
-      Uri.parse('$baseUrl/get-booking?status=park-out'),
-    );
-    requestParkOut.headers.set('Authorization', 'Bearer $token'); // Use set instead of add
-    final responseParkOut = await requestParkOut.close();
-    if (responseParkOut.statusCode == 200) {
-      await handleResponse(responseParkOut, false);
-    } else {
-      throw Exception('Failed to load data park-out park log');
-    }
-  } catch (e) {
-    print('Error loading data: $e');
   }
-}
 
-Future<void> handleResponse(HttpClientResponse response, bool isPresent) async {
-  final responseBody = await utf8.decoder.bind(response).join();
-  final responseData = json.decode(responseBody);
-  final bookingsData = responseData['booking']['data']; // Access the 'data' key
-  for (var bookingData in bookingsData) {
-    String vehicleType = bookingData['vehicle_type_id'].toString();
-    String bookingNumber = bookingData['booking_number'];
-    String registrationNumber = bookingData['vehicle_reg_number'];
-    DateTime inTime = DateTime.parse(bookingData['park_in_time']);
-    String formattedInTime = formatTime(inTime);
-    DateTime outTime = isPresent
-        ? DateTime.now()
-        : DateTime.parse(bookingData['park_out_time']);
-    String formattedOutTime = isPresent ? "" : formatTime(outTime);
+  Future<void> loadParkOutData(String url) async {
+    try {
+      String token = await ReadCache.getString(key: "token");
+
+      final client = HttpClient();
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+      final requestParkOut = await client.getUrl(
+        Uri.parse('$url?status=park-out'),
+      );
+      requestParkOut.headers.set('Authorization', 'Bearer $token');
+      final responseParkOut = await requestParkOut.close();
+      if (responseParkOut.statusCode == 200) {
+        await handleResponse(responseParkOut, false);
+      } else {
+        throw Exception('Failed to load park out data');
+      }
+    } catch (e) {
+      print('Error loading park out data: $e');
+    }
+  }
+
+  Future<void> handleResponse(
+      HttpClientResponse response, bool isPresent) async {
+    final responseBody = await utf8.decoder.bind(response).join();
+    final responseData = json.decode(responseBody);
+    final bookingsData = responseData['booking']['data'];
+
+    for (var bookingData in bookingsData) {
+      String vehicleType = bookingData['vehicle_type_id'].toString();
+      String bookingNumber = bookingData['booking_number'];
+      String registrationNumber = bookingData['vehicle_reg_number'];
+      DateTime inTime = DateTime.parse(bookingData['park_in_time']);
+      String formattedInTime = formatTime(inTime);
+      DateTime outTime = isPresent
+          ? DateTime.now()
+          : DateTime.parse(bookingData['park_out_time']);
+      String formattedOutTime = isPresent ? "" : formatTime(outTime);
+
+      setState(() {
+        (isPresent ? presentBookings : notPresentBookings).add(
+          Booking(
+            booking_id: bookingNumber,
+            vehicle_type: vehicleType,
+            registration_number: registrationNumber,
+            in_time: formattedInTime,
+            out_time: formattedOutTime,
+            isPresent: isPresent,
+          ),
+        );
+      });
+    }
 
     setState(() {
-      (isPresent ? presentBookings : notPresentBookings).add(
-        Booking(
-          booking_id: bookingNumber,
-          vehicle_type: vehicleType,
-          registration_number: registrationNumber,
-          in_time: formattedInTime,
-          out_time: formattedOutTime,
-          isPresent: isPresent,
-        ),
-      );
+      firstPageURL = responseData['booking']['first_page_url'];
+      lastPageURL = responseData['booking']['last_page_url'];
+      prevPageURL = responseData['booking']['prev_page_url'];
+      nextPageURL = responseData['booking']['next_page_url'];
+      lastPageNum = responseData['booking']['last_page'];
+      print("........................$lastPageNum");
     });
   }
-}
+
+  void firstPageLoader() {
+    loadParkInData(firstPageURL);
+    loadParkOutData(firstPageURL);
+  }
+
+  void lastPageLoader() {
+    loadParkInData(lastPageURL);
+    loadParkOutData(lastPageURL);
+  }
+
+  void prevPageLoader() {
+    loadParkInData(prevPageURL);
+    loadParkOutData(prevPageURL);
+  }
+
+  void nextPageLoader() {
+    loadParkInData(nextPageURL);
+    loadParkOutData(nextPageURL);
+  }
 
   void _runFilter(String enteredKeyword) {
     List<Booking> results = [];
+    List<Booking> sourceList =
+        isParkedInSelected ? presentBookings : notPresentBookings;
+
     if (enteredKeyword.isEmpty) {
-      if (isParkedInSelected) {
-        results = presentBookings;
-      } else {
-        results = notPresentBookings;
-      }
-      // results = todoList;
+      results = sourceList;
     } else {
-      if (isParkedInSelected) {
-        results = presentBookings
-            .where((element) =>
-                element.booking_id
-                    .toLowerCase()
-                    .contains(enteredKeyword.toLowerCase()) ||
-                element.registration_number
-                    .toLowerCase()
-                    .contains(enteredKeyword.toLowerCase()))
-            .toList();
-      } else {
-        results = notPresentBookings
-            .where((element) =>
-                element.booking_id
-                    .toLowerCase()
-                    .contains(enteredKeyword.toLowerCase()) ||
-                element.registration_number
-                    .toLowerCase()
-                    .contains(enteredKeyword.toLowerCase()))
-            .toList();
-      }
+      results = sourceList
+          .where((element) =>
+              element.booking_id
+                  .toLowerCase()
+                  .contains(enteredKeyword.toLowerCase()) ||
+              element.registration_number
+                  .toLowerCase()
+                  .contains(enteredKeyword.toLowerCase()))
+          .toList();
     }
 
     setState(() {
@@ -140,7 +175,8 @@ Future<void> handleResponse(HttpClientResponse response, bool isPresent) async {
 
   @override
   void initState() {
-    load_data();
+    loadParkInData('$baseUrl/get-booking');
+    loadParkOutData('$baseUrl/get-booking');
     showableList = presentBookings;
     super.initState();
   }
@@ -154,96 +190,98 @@ Future<void> handleResponse(HttpClientResponse response, bool isPresent) async {
             children: [
               AppBarWidget(context, "Park Log"),
               searchBox(),
-              FutureBuilder<void>(
-                future: load_data(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: Container(
-                        height: 100,
-                        width: 100,
-                        child: LoadingAnimationWidget.fourRotatingDots(
-                          color: myred,
-                          size: 50,
-                        ),
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    return Container(
-                      padding: EdgeInsets.all(get_screenWidth(context) * 0.1),
-                      child: Column(
+              if (showableList.isEmpty)
+                Center(
+                  child: Container(
+                    height: get_screenWidth(context) * 1.5,
+                    width: get_screenWidth(context),
+                    child: LoadingAnimationWidget.fourRotatingDots(
+                      color: myred,
+                      size: 50,
+                    ),
+                  ),
+                )
+              else
+                Column(
+                  children: [
+                    // Displaying Park In and Park Out tabs
+                    Container(
+                      margin: EdgeInsets.only(bottom: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            margin: EdgeInsets.only(bottom: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      isParkedInSelected = true;
-                                      showableList = presentBookings;
-                                    });
-                                  },
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    constraints: BoxConstraints(
-                                        minWidth:
-                                            get_screenWidth(context) * 0.35),
-                                    padding: EdgeInsets.all(
-                                        get_screenWidth(context) * 0.02),
-                                    decoration: isParkedInSelected
-                                        ? selectedBox(context)
-                                        : unselectedBox(context),
-                                    child: Text(
-                                      "Parked In",
-                                      style: isParkedInSelected
-                                          ? boldTextStyle(context, myWhite)
-                                          : boldTextStyle(context, myBlack),
-                                    ),
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      isParkedInSelected = false;
-                                      showableList = notPresentBookings;
-                                    });
-                                  },
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    constraints: BoxConstraints(
-                                        minWidth:
-                                            get_screenWidth(context) * 0.35),
-                                    padding: EdgeInsets.all(
-                                        get_screenWidth(context) * 0.02),
-                                    decoration: !isParkedInSelected
-                                        ? selectedBox(context)
-                                        : unselectedBox(context),
-                                    child: Text(
-                                      "Parked Out",
-                                      style: !isParkedInSelected
-                                          ? boldTextStyle(context, myWhite)
-                                          : boldTextStyle(context, myBlack),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                isParkedInSelected = true;
+                                showableList = presentBookings;
+                              });
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              constraints: BoxConstraints(
+                                minWidth: get_screenWidth(context) * 0.35,
+                              ),
+                              padding: EdgeInsets.all(
+                                  get_screenWidth(context) * 0.02),
+                              decoration: isParkedInSelected
+                                  ? selectedBox(context)
+                                  : unselectedBox(context),
+                              child: Text(
+                                "Parked In",
+                                style: isParkedInSelected
+                                    ? boldTextStyle(context, myWhite)
+                                    : boldTextStyle(context, myBlack),
+                              ),
                             ),
                           ),
-                          Column(
-                            children: showableList
-                                .map((e) => ParkLogHistoryCard(context, e))
-                                .toList(),
-                          )
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                isParkedInSelected = false;
+                                showableList = notPresentBookings;
+                              });
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              constraints: BoxConstraints(
+                                minWidth: get_screenWidth(context) * 0.35,
+                              ),
+                              padding: EdgeInsets.all(
+                                  get_screenWidth(context) * 0.02),
+                              decoration: !isParkedInSelected
+                                  ? selectedBox(context)
+                                  : unselectedBox(context),
+                              child: Text(
+                                "Parked Out",
+                                style: !isParkedInSelected
+                                    ? boldTextStyle(context, myWhite)
+                                    : boldTextStyle(context, myBlack),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                    );
-                  }
-                },
-              ),
+                    ),
+                    // Displaying Park Log History Cards
+                    Column(
+                      children: showableList
+                          .map((e) => ParkLogHistoryCard(context, e))
+                          .toList(),
+                    ),
+                    // Displaying Pagination buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ActionButton4(context, "1", firstPageLoader, 0.1),
+                        ActionButton4(context, "<", prevPageLoader, 0.1),
+                        ActionButton4(context, ">", nextPageLoader, 0.1),
+                        ActionButton4(context, lastPageNum.toString(),
+                            lastPageLoader, 0.1),
+                      ],
+                    )
+                  ],
+                ),
             ],
           ),
         ),
@@ -277,8 +315,8 @@ Future<void> handleResponse(HttpClientResponse response, bool isPresent) async {
             ),
           ),
           SizedBox(
-              width: 10 *
-                  get_scale_factor(context)), // Adjust the spacing as needed
+            width: 10 * get_scale_factor(context),
+          ), // Adjust the spacing as needed
           Expanded(
             child: TextField(
               onChanged: (value) => _runFilter(value),
