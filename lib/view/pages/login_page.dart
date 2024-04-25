@@ -97,6 +97,8 @@ class _LoginPageState extends State<LoginPage> {
     DateTime currentTime = DateTime.now();
     WriteCache.setInt(
         key: "loginTime", value: currentTime.millisecondsSinceEpoch);
+
+    //print(ReadCache.getString(key: "id"));
   }
 
   @override
