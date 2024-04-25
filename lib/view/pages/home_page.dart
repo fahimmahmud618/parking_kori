@@ -293,19 +293,31 @@ void showCapacityAlert(String title) {
              Text("Park out with Registration Number", style: boldTextStyle(context, myBlack),),
               Padding(
                 padding:  EdgeInsets.symmetric(horizontal: get_screenWidth(context)*0.05),
-                child: Row(
-                  children: [
-                    regnum(context, registration_number),
-                    
-                    InkWell(
-                          onTap: do_park_out_with_regNUmber,
-                          child: Icon(
-                            Icons.arrow_circle_right_sharp,
-                            color: myred,
-                            size: 30,
+                child: Container(
+                  margin: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          border: Border.all(
+                            color: myBlack.withOpacity(0.2),
+                            width: 1,
                           ),
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
-                  ],
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      regnum(context, registration_number),
+                      
+                      InkWell(
+                            onTap: do_park_out_with_regNUmber,
+                            child: Icon(
+                              Icons.arrow_circle_right_sharp,
+                              color: myred,
+                              size: 40,
+                            ),
+                          ),
+                    ],
+                  ),
                 ),
               )
             ],
