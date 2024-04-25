@@ -21,7 +21,7 @@ class _FlashPageState extends State<FlashPage> {
         key: "cache",
         valueType: ValueType.StringValue,
         actionIfNull: (){
-          myAlertDialog("Info", "No data found, please log in", context);
+          // myAlertDialog("Info", "No data found, please log in", context);
           Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
         },
         actionIfNotNull: (){
