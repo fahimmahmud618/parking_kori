@@ -23,6 +23,7 @@ class _ParkLogState extends State<ParkLog> {
   List<Booking> presentBookings = [];
   List<Booking> showableList = [];
   bool isParkedInSelected = true;
+  String next = "";
 
   String? baseUrl = dotenv.env['BASE_URL'];
 
@@ -68,37 +69,37 @@ class _ParkLogState extends State<ParkLog> {
     }
   }
 
-  Future<void> handleResponse(
-      HttpClientResponse response, bool isPresent) async {
-    final responseBody = await utf8.decoder.bind(response).join();
-    final responseData = json.decode(responseBody);
-    final bookingsData = responseData['booking'];
-    for (var bookingData in bookingsData) {
-      String vehicleType = bookingData['vehicle_type_id'].toString();
-      String bookingNumber = bookingData['booking_number'];
-      String registrationNumber = bookingData['vehicle_reg_number'];
-      DateTime inTime = DateTime.parse(bookingData['park_in_time']);
-      String formattedInTime = formatTime(inTime);
-      DateTime outTime = isPresent
-          ? DateTime.now()
-          : DateTime.parse(bookingData['park_out_time']);
-      String formattedOutTime =
-          isPresent ? "" : formatTime(outTime);
+Future<void> handleResponse(HttpClientResponse response, bool isPresent) async {
+  final responseBody = await utf8.decoder.bind(response).join();
+  final responseData = json.decode(responseBody);
+  final bookingsData = responseData['booking']['data'];
 
-      setState(() {
-        (isPresent ? presentBookings : notPresentBookings).add(
-          Booking(
-            booking_id: bookingNumber,
-            vehicle_type: vehicleType,
-            registration_number: registrationNumber,
-            in_time: formattedInTime,
-            out_time: formattedOutTime,
-            isPresent: isPresent,
-          ),
-        );
-      });
-    }
+  for (var bookingData in bookingsData) {
+    String vehicleType = bookingData['vehicle_type_id'].toString();
+    String bookingNumber = bookingData['booking_number'];
+    String registrationNumber = bookingData['vehicle_reg_number'];
+    DateTime inTime = DateTime.parse(bookingData['park_in_time']);
+    String formattedInTime = formatTime(inTime);
+    DateTime outTime = isPresent
+        ? DateTime.now()
+        : DateTime.parse(bookingData['park_out_time']);
+    String formattedOutTime = isPresent ? "" : formatTime(outTime);
+
+    setState(() {
+      (isPresent ? presentBookings : notPresentBookings).add(
+        Booking(
+          booking_id: bookingNumber,
+          vehicle_type: vehicleType,
+          registration_number: registrationNumber,
+          in_time: formattedInTime,
+          out_time: formattedOutTime,
+          isPresent: isPresent,
+        ),
+      );
+      next = responseData['booking']['next_page_url'];
+    });
   }
+}
 
   void _runFilter(String enteredKeyword) {
     List<Booking> results = [];
@@ -170,15 +171,13 @@ class _ParkLogState extends State<ParkLog> {
                     return Text('Error: ${snapshot.error}');
                   } else {
                     return Container(
-                      padding: EdgeInsets.all(
-                          get_screenWidth(context) * 0.1),
+                      padding: EdgeInsets.all(get_screenWidth(context) * 0.1),
                       child: Column(
                         children: [
                           Container(
                             margin: EdgeInsets.only(bottom: 10),
                             child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 InkWell(
                                   onTap: () {
@@ -190,23 +189,18 @@ class _ParkLogState extends State<ParkLog> {
                                   child: Container(
                                     alignment: Alignment.center,
                                     constraints: BoxConstraints(
-                                        minWidth: get_screenWidth(
-                                            context) *
-                                            0.35),
-                                    padding:
-                                    EdgeInsets.all(get_screenWidth(
-                                        context) *
-                                        0.02),
+                                        minWidth:
+                                            get_screenWidth(context) * 0.35),
+                                    padding: EdgeInsets.all(
+                                        get_screenWidth(context) * 0.02),
                                     decoration: isParkedInSelected
                                         ? selectedBox(context)
                                         : unselectedBox(context),
                                     child: Text(
                                       "Parked In",
                                       style: isParkedInSelected
-                                          ? boldTextStyle(
-                                          context, myWhite)
-                                          : boldTextStyle(
-                                          context, myBlack),
+                                          ? boldTextStyle(context, myWhite)
+                                          : boldTextStyle(context, myBlack),
                                     ),
                                   ),
                                 ),
@@ -214,32 +208,24 @@ class _ParkLogState extends State<ParkLog> {
                                   onTap: () {
                                     setState(() {
                                       isParkedInSelected = false;
-                                      showableList =
-                                          notPresentBookings;
+                                      showableList = notPresentBookings;
                                     });
                                   },
                                   child: Container(
                                     alignment: Alignment.center,
                                     constraints: BoxConstraints(
-                                        minWidth: get_screenWidth(
-                                            context) *
-                                            0.35),
-                                    padding:
-                                    EdgeInsets.all(get_screenWidth(
-                                        context) *
-                                        0.02),
-                                    decoration:
-                                    !isParkedInSelected
+                                        minWidth:
+                                            get_screenWidth(context) * 0.35),
+                                    padding: EdgeInsets.all(
+                                        get_screenWidth(context) * 0.02),
+                                    decoration: !isParkedInSelected
                                         ? selectedBox(context)
                                         : unselectedBox(context),
                                     child: Text(
                                       "Parked Out",
-                                      style:
-                                      !isParkedInSelected
-                                          ? boldTextStyle(
-                                          context, myWhite)
-                                          : boldTextStyle(
-                                          context, myBlack),
+                                      style: !isParkedInSelected
+                                          ? boldTextStyle(context, myWhite)
+                                          : boldTextStyle(context, myBlack),
                                     ),
                                   ),
                                 ),
@@ -248,9 +234,7 @@ class _ParkLogState extends State<ParkLog> {
                           ),
                           Column(
                             children: showableList
-                                .map((e) =>
-                                ParkLogHistoryCard(
-                                    context, e))
+                                .map((e) => ParkLogHistoryCard(context, e))
                                 .toList(),
                           )
                         ],
@@ -269,19 +253,14 @@ class _ParkLogState extends State<ParkLog> {
   Widget searchBox() {
     return Container(
       alignment: Alignment.center,
-      padding: EdgeInsets.fromLTRB(
-          2, 0, 1, 2),
-      margin: EdgeInsets.fromLTRB(
-          20 * get_scale_factor(context),
-          15 * get_scale_factor(context),
-          20 * get_scale_factor(context),
-          0),
+      padding: EdgeInsets.fromLTRB(2, 0, 1, 2),
+      margin: EdgeInsets.fromLTRB(20 * get_scale_factor(context),
+          15 * get_scale_factor(context), 20 * get_scale_factor(context), 0),
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(17),
         border: Border.all(
-          color: myred.withOpacity(
-              0.5), // Set the desired border color
+          color: myred.withOpacity(0.5), // Set the desired border color
           width: 2, // Set the desired border width
         ),
       ),
@@ -289,8 +268,7 @@ class _ParkLogState extends State<ParkLog> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
-            padding: EdgeInsets.fromLTRB(
-                10, 8, 0, 0),
+            padding: EdgeInsets.fromLTRB(10, 8, 0, 0),
             child: Icon(
               Icons.search,
               color: myred,
@@ -302,13 +280,10 @@ class _ParkLogState extends State<ParkLog> {
                   get_scale_factor(context)), // Adjust the spacing as needed
           Expanded(
             child: TextField(
-              onChanged: (value) =>
-                  _runFilter(value),
+              onChanged: (value) => _runFilter(value),
               decoration: InputDecoration(
-                hintText:
-                "Search Booking number or Registration number",
-                hintStyle: hintTextStyle(
-                    context, myBlack.withOpacity(0.6)),
+                hintText: "Search Booking number or Registration number",
+                hintStyle: hintTextStyle(context, myBlack.withOpacity(0.6)),
                 contentPadding: EdgeInsets.all(0),
                 border: InputBorder.none,
               ),
