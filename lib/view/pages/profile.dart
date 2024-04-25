@@ -33,6 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
   late DateTime currentTime;
   DateTime startTime = DateTime.now();
   DateTime endTime = DateTime.now();
+  DateTime selectedDate = DateTime.now();
   int dif = 0;
   int parkin = 0;
   int parkout = 0;
@@ -275,7 +276,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ],
                             rows: buildAgentIncomeList(),
                           ),
-                          DateTime.now(),
+                          '$startTime' as DateTime,
                           "$address",
                         ),
                       ),
