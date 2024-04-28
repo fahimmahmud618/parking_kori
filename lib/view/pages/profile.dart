@@ -276,7 +276,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ],
                             rows: buildAgentIncomeList(),
                           ),
-                          '$startTime' as DateTime,
+                          startTime ,
                           "$address",
                         ),
                         0.4
