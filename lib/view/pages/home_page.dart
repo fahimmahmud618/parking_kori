@@ -139,7 +139,7 @@ class _HomePageState extends State<HomePage> {
   void add_car() {
     if (carCapacity > 0) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => AddVehicle()));
+          context, MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "1",)));
     } else {
       showCapacityAlert("Car");
     }
@@ -148,25 +148,16 @@ class _HomePageState extends State<HomePage> {
   void add_bike() {
     if (MotorCycleCapacity > 0) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => AddVehicle()));
+          context, MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "2",)));
     } else {
       showCapacityAlert("Motor Cycle");
-    }
-  }
-
-  void add_cng() {
-    if (cngCapacity > 0) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => AddVehicle()));
-    } else {
-      showCapacityAlert("CNG");
     }
   }
 
   void add_cycle() {
     if (cycleCapacity > 0) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => AddVehicle()));
+          context, MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "3",)));
     } else {
       showCapacityAlert("Cycle");
     }
@@ -175,7 +166,7 @@ class _HomePageState extends State<HomePage> {
   void add_pickup() {
     if (pickUpCapacity > 0) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => AddVehicle()));
+          context, MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "4",)));
     } else {
       showCapacityAlert("Pickup/Truck");
     }
@@ -184,12 +175,21 @@ class _HomePageState extends State<HomePage> {
   void add_others() {
     if (othersCapacity > 0) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => AddVehicle()));
+          context, MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "5",)));
     } else {
       showCapacityAlert("others");
     }
   }
 
+   void add_cng() {
+    if (cngCapacity > 0) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => AddVehicle(vehicleType: "6",)));
+    } else {
+      showCapacityAlert("CNG");
+    }
+  }
+  
   void showCapacityAlert(String title) {
     myAlertDialog(
         "$title Capacity is 0", "Sorry, you can't add any vehicle.", context);

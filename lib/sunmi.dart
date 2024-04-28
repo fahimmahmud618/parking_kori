@@ -60,10 +60,10 @@ class Sunmi {
   }
 
   Future<void> printReceipt(String bookingNumber) async {
-    String authToken = await ReadCache.getString(key: "token");
-    String? baseUrl = dotenv.env['BASE_URL'];
-    // String url = '$baseUrl/park-out';
     try {
+      String authToken = await ReadCache.getString(key: "token");
+      String? baseUrl = dotenv.env['BASE_URL'];
+
       final client = HttpClient();
       client.badCertificateCallback =
           (X509Certificate cert, String host, int port) =>
@@ -75,18 +75,29 @@ class Sunmi {
       final response = await request.close();
 
       if (response.statusCode == 200) {
+        print('Booking details fetched successfully');
         final String responseBody =
             await response.transform(utf8.decoder).join();
         final Map<String, dynamic> data = json.decode(responseBody);
-        final bookingDetails = data['data'][0];
 
-        if (bookingDetails != null) {
+        if (data.containsKey('booking')) {
+          final Map<String, dynamic> bookingDetails = data['booking']['data'][0];
+
+          // Extract booking details
           String vehicleRegNumber = bookingDetails['vehicle_reg_number'] ?? '';
           String parkInTime = bookingDetails['park_in_time'] ?? '';
           String address = bookingDetails['location']['title'] ?? '';
           String num = bookingDetails['booking_number'] ?? '';
           String vehicleType = bookingDetails['vehicle_type']['title'] ?? '';
 
+          // Print the extracted booking details for debugging
+          print('Vehicle Reg Number: $vehicleRegNumber');
+          print('Park In Time: $parkInTime');
+          print('Address: $address');
+          print('Booking Number: $num');
+          print('Vehicle Type: $vehicleType');
+
+          // Proceed with printing
           await initialize();
           await printHeadline(" $address");
           await printText("PARKING Entry Receipt");
@@ -94,24 +105,23 @@ class Sunmi {
           await printText("Entry: $parkInTime");
           await printText("Ticket No: $num");
           await printQRCode(num);
-
+          // Print additional information
           await printText("Developed by ParkingKori.com",
               style: SunmiStyle(
                 fontSize: SunmiFontSize.MD,
                 bold: true,
                 align: SunmiPrintAlign.CENTER,
               ));
-          // await printText("   ");
           await printText("   ");
           await printText("   ");
           await printText("   ");
-
           await closePrinter();
         } else {
-          throw Exception('Booking details not found');
+          throw Exception('Invalid or empty booking data');
         }
       } else {
-        throw Exception('Failed to load booking details');
+        throw Exception(
+            'Failed to fetch booking details. Status code: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching booking details: $e');
@@ -151,15 +161,15 @@ class Sunmi {
     await closePrinter();
   }
 
- String formatDateTime(DateTime dateTime) {
-  String formattedDate = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
-  String hour = dateTime.hour > 12 ? (dateTime.hour - 12).toString() : dateTime.hour.toString();
-  String amPm = dateTime.hour >= 12 ? 'PM' : 'AM';
-  String formattedTime = '$hour:${dateTime.minute} $amPm';
-  return '$formattedDate $formattedTime';
-}
-
-
+  String formatDateTime(DateTime dateTime) {
+    String formattedDate = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+    String hour = dateTime.hour > 12
+        ? (dateTime.hour - 12).toString()
+        : dateTime.hour.toString();
+    String amPm = dateTime.hour >= 12 ? 'PM' : 'AM';
+    String formattedTime = '$hour:${dateTime.minute} $amPm';
+    return '$formattedDate $formattedTime';
+  }
 
   Future<void> print_summary(
       String total_park_in,

@@ -20,7 +20,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class AddVehicle extends StatefulWidget {
   final String? vehicleType;
 
-  const AddVehicle({Key? key, this.vehicleType}) : super(key: key);
+  const AddVehicle({Key? key, required this.vehicleType}) : super(key: key);
 
   @override
   State<AddVehicle> createState() => _AddVehicleState();
@@ -91,16 +91,23 @@ class _AddVehicleState extends State<AddVehicle> {
         });
 
         // Print the QR code only if it hasn't been printed yet
+        print("Entering Printing in addvehicle page");
+        print("-------------------------------------");
         if (!isPrinting) {
+          print("Entered Printing in addvehicle page");
           Sunmi printer = Sunmi();
           printer.printReceipt(bookingNumber);
+          print("Booking number $bookingNumber");
           isPrinting = true; // Set the flag to true to indicate printing
         }
 
         navigateToNewPage(context);
       } else {
+        // print(
+        //     'Failed to send registration number. Status code: ${response.statusCode}');
         print(
             'Failed to send registration number. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
       }
     } catch (e) {
       print('Error sending registration number: $e');
