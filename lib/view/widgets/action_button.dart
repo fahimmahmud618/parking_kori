@@ -116,6 +116,29 @@ Widget ActionButton4(BuildContext context, String text, action,double size) {
   );
 }
 
-
+Widget ActionButtonDisabled(BuildContext context, String text, action,double size) {
+  return Container(
+    width: get_screenWidth(context)*size,
+    padding: EdgeInsets.all(2),
+    decoration: BoxDecoration(
+        color: myred.withOpacity(0.6),
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+      BoxShadow(
+        color: Colors.grey.withOpacity(0.5), // Shadow color
+        spreadRadius: 1, // Spread radius
+        blurRadius: 8, // Blur radius
+        offset: Offset(0, 3), // Offset in x and y directions
+      ),
+    ],),
+    child: TextButton(
+      onPressed: action,
+      child: Text(
+        text,
+        style: boldTextStyle(context, myWhite),
+      ),
+    ),
+  );
+}
 
 

@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/model/booking.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
+import 'package:parking_kori/view/widgets/alert_dialog.dart';
 import 'package:parking_kori/view/widgets/appbar.dart';
 import 'package:parking_kori/view/widgets/park_log_history_card.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -24,12 +25,21 @@ class _ParkLogState extends State<ParkLog> {
   bool isParkedInSelected = true;
 
   String? baseUrl = dotenv.env['BASE_URL'];
+  String url = '';
   // String? finalURL = '$baseUrl/get-booking';
-  String firstPageURL = '';
-  String lastPageURL = '';
-  String prevPageURL = '';
-  String nextPageURL = '';
-  int lastPageNum = 1;
+  String firstPageURLIn = '';
+  String lastPageURLIn = '';
+  String? prevPageURLIn;
+  String? nextPageURLIn;
+  int lastPageNumIn = 1;
+  int currentPageIn = 0;
+
+  String firstPageURLOut = '';
+  String lastPageURLOut = '';
+  String? prevPageURLOut;
+  String? nextPageURLOut;
+  int lastPageNumOut = 1;
+  int currentPageOut = 0;
 
   String formatTime(DateTime dateTime) {
     String hour = (dateTime.hour > 12)
@@ -44,6 +54,7 @@ class _ParkLogState extends State<ParkLog> {
 
   Future<void> loadParkInData(String url) async {
     try {
+      presentBookings.clear();
       String token = await ReadCache.getString(key: "token");
 
       final client = HttpClient();
@@ -51,12 +62,15 @@ class _ParkLogState extends State<ParkLog> {
           (X509Certificate cert, String host, int port) => true;
 
       final requestParkIn = await client.getUrl(
-        Uri.parse('$url?status=pending'),
+        Uri.parse('$url&status=pending'),
       );
       requestParkIn.headers.set('Authorization', 'Bearer $token');
       final responseParkIn = await requestParkIn.close();
       if (responseParkIn.statusCode == 200) {
-        await handleResponse(responseParkIn, true);
+        if (mounted) {
+          // Check if the widget is still mounted
+          await handleResponseIn(responseParkIn, true);
+        }
       } else {
         throw Exception('Failed to load park in data');
       }
@@ -67,6 +81,7 @@ class _ParkLogState extends State<ParkLog> {
 
   Future<void> loadParkOutData(String url) async {
     try {
+      notPresentBookings.clear();
       String token = await ReadCache.getString(key: "token");
 
       final client = HttpClient();
@@ -74,12 +89,18 @@ class _ParkLogState extends State<ParkLog> {
           (X509Certificate cert, String host, int port) => true;
 
       final requestParkOut = await client.getUrl(
-        Uri.parse('$url?status=park-out'),
+        Uri.parse('$url&status=park-out'),
       );
       requestParkOut.headers.set('Authorization', 'Bearer $token');
       final responseParkOut = await requestParkOut.close();
       if (responseParkOut.statusCode == 200) {
-        await handleResponse(responseParkOut, false);
+       
+        if (mounted) {
+          // Check if the widget is still mounted
+         
+          await handleResponseOut(responseParkOut, false);
+        
+        }
       } else {
         throw Exception('Failed to load park out data');
       }
@@ -88,7 +109,7 @@ class _ParkLogState extends State<ParkLog> {
     }
   }
 
-  Future<void> handleResponse(
+  Future<void> handleResponseIn(
       HttpClientResponse response, bool isPresent) async {
     final responseBody = await utf8.decoder.bind(response).join();
     final responseData = json.decode(responseBody);
@@ -100,10 +121,7 @@ class _ParkLogState extends State<ParkLog> {
       String registrationNumber = bookingData['vehicle_reg_number'];
       DateTime inTime = DateTime.parse(bookingData['park_in_time']);
       String formattedInTime = formatTime(inTime);
-      DateTime outTime = isPresent
-          ? DateTime.now()
-          : DateTime.parse(bookingData['park_out_time']);
-      String formattedOutTime = isPresent ? "" : formatTime(outTime);
+      String formattedOutTime = "";
 
       setState(() {
         (isPresent ? presentBookings : notPresentBookings).add(
@@ -120,33 +138,112 @@ class _ParkLogState extends State<ParkLog> {
     }
 
     setState(() {
-      firstPageURL = responseData['booking']['first_page_url'];
-      lastPageURL = responseData['booking']['last_page_url'];
-      prevPageURL = responseData['booking']['prev_page_url'];
-      nextPageURL = responseData['booking']['next_page_url'];
-      lastPageNum = responseData['booking']['last_page'];
-      print("........................$lastPageNum");
+      firstPageURLIn = responseData['booking']['first_page_url'];
+      // print("First page url: ${firstPageURLIn}");
+      lastPageURLIn = responseData['booking']['last_page_url'];
+      // print("last page url: ${lastPageURLIn}");
+
+      prevPageURLIn = responseData['booking']['prev_page_url'];
+      // print("Prev page url: ${prevPageURLIn}");
+      nextPageURLIn = responseData['booking']['next_page_url'];
+      // print("Next page url: ${nextPageURLIn}");
+
+      lastPageNumIn = responseData['booking']['last_page'];
+
+      currentPageIn = responseData['booking']['current_page'];
+      print("Current Page Park In:   $currentPageIn");
+    });
+  }
+
+  Future<void> handleResponseOut(
+      HttpClientResponse response, bool isPresent) async {
+    final responseBody = await utf8.decoder.bind(response).join();
+    final responseData = json.decode(responseBody);
+    final bookingsData = responseData['booking']['data'];
+
+    for (var bookingData in bookingsData) {
+      String vehicleType = bookingData['vehicle_type_id'].toString();
+      String bookingNumber = bookingData['booking_number'];
+      String registrationNumber = bookingData['vehicle_reg_number'];
+
+      DateTime inTime = DateTime.parse(bookingData['park_in_time']);
+      String formattedInTime = formatTime(inTime);
+      DateTime? outTime = bookingData['park_out_time'] != null
+          ? DateTime.parse(bookingData['park_out_time'])
+          : null;
+
+      String formattedOutTime = outTime != null ? formatTime(outTime) : "";
+
+      setState(() {
+        (isPresent ? presentBookings : notPresentBookings).add(
+          Booking(
+            booking_id: bookingNumber,
+            vehicle_type: vehicleType,
+            registration_number: registrationNumber,
+            in_time: formattedInTime,
+            out_time: formattedOutTime,
+            isPresent: isPresent,
+          ),
+        );
+      });
+    }
+
+    setState(() {
+      firstPageURLOut = responseData['booking']['first_page_url'];
+      // print("First page url: ${firstPageURLOut}");
+      lastPageURLOut = responseData['booking']['last_page_url'];
+      // print("last page url: ${lastPageURLOut}");
+
+      prevPageURLOut = responseData['booking']['prev_page_url'];
+      // print("Prev page url: ${prevPageURLOut}");
+      nextPageURLOut = responseData['booking']['next_page_url'];
+      // print("Next page url: ${nextPageURLOut}");
+      lastPageNumOut = responseData['booking']['last_page'];
+      currentPageOut = responseData['booking']['current_page'];
+      print("Current Page Park Out:   $currentPageOut");
     });
   }
 
   void firstPageLoader() {
-    loadParkInData(firstPageURL);
-    loadParkOutData(firstPageURL);
+    loadParkInData(firstPageURLIn);
+    loadParkOutData(firstPageURLOut);
   }
 
   void lastPageLoader() {
-    loadParkInData(lastPageURL);
-    loadParkOutData(lastPageURL);
+    loadParkInData(lastPageURLIn);
+    loadParkOutData(lastPageURLOut);
   }
 
-  void prevPageLoader() {
-    loadParkInData(prevPageURL);
-    loadParkOutData(prevPageURL);
+  void prevPageLoaderIn() {
+    if (prevPageURLIn != null) {
+      loadParkInData(prevPageURLIn!);
+    } else {
+      pageNotFound();
+    }
   }
 
-  void nextPageLoader() {
-    loadParkInData(nextPageURL);
-    loadParkOutData(nextPageURL);
+  void nextPageLoaderIn() {
+    if (nextPageURLIn != null) {
+      loadParkInData(nextPageURLIn!);
+    } else {
+      pageNotFound();
+    }
+  }
+
+  void prevPageLoaderOut() {
+    if (prevPageURLOut != null) {
+      loadParkOutData(prevPageURLOut!);
+    } else {
+      pageNotFound();
+    }
+  }
+
+  void nextPageLoaderOut() {
+    if (nextPageURLOut != null) {
+      loadParkOutData(nextPageURLOut!);
+    } else {
+      pageNotFound();
+    }
   }
 
   void _runFilter(String enteredKeyword) {
@@ -175,10 +272,22 @@ class _ParkLogState extends State<ParkLog> {
 
   @override
   void initState() {
-    loadParkInData('$baseUrl/get-booking');
-    loadParkOutData('$baseUrl/get-booking');
+    setState(() {
+      url = '$baseUrl/get-booking';
+    });
+    loadParkInData('${url}?page=1');
+    loadParkOutData('${url}?page=1');
     showableList = presentBookings;
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void pageNotFound() {
+    myAlertDialog("Parking Kori", "Page Not Found", context);
   }
 
   @override
@@ -202,85 +311,105 @@ class _ParkLogState extends State<ParkLog> {
                   ),
                 )
               else
-                Column(
-                  children: [
-                    // Displaying Park In and Park Out tabs
-                    Container(
-                      margin: EdgeInsets.only(bottom: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                isParkedInSelected = true;
-                                showableList = presentBookings;
-                              });
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              constraints: BoxConstraints(
-                                minWidth: get_screenWidth(context) * 0.35,
-                              ),
-                              padding: EdgeInsets.all(
-                                  get_screenWidth(context) * 0.02),
-                              decoration: isParkedInSelected
-                                  ? selectedBox(context)
-                                  : unselectedBox(context),
-                              child: Text(
-                                "Parked In",
-                                style: isParkedInSelected
-                                    ? boldTextStyle(context, myWhite)
-                                    : boldTextStyle(context, myBlack),
-                              ),
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                isParkedInSelected = false;
-                                showableList = notPresentBookings;
-                              });
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              constraints: BoxConstraints(
-                                minWidth: get_screenWidth(context) * 0.35,
-                              ),
-                              padding: EdgeInsets.all(
-                                  get_screenWidth(context) * 0.02),
-                              decoration: !isParkedInSelected
-                                  ? selectedBox(context)
-                                  : unselectedBox(context),
-                              child: Text(
-                                "Parked Out",
-                                style: !isParkedInSelected
-                                    ? boldTextStyle(context, myWhite)
-                                    : boldTextStyle(context, myBlack),
+                Padding(
+                  padding: EdgeInsets.all(get_screenWidth(context) * 0.05),
+                  child: Column(
+                    children: [
+                      // Displaying Park In and Park Out tabs
+                      Container(
+                        margin: EdgeInsets.all(10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  isParkedInSelected = true;
+                                  showableList = presentBookings;
+                                });
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                constraints: BoxConstraints(
+                                  minWidth: get_screenWidth(context) * 0.35,
+                                ),
+                                padding: EdgeInsets.all(
+                                    get_screenWidth(context) * 0.02),
+                                decoration: isParkedInSelected
+                                    ? selectedBox(context)
+                                    : unselectedBox(context),
+                                child: Text(
+                                  "Parked In",
+                                  style: isParkedInSelected
+                                      ? boldTextStyle(context, myWhite)
+                                      : boldTextStyle(context, myBlack),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  isParkedInSelected = false;
+                                  showableList = notPresentBookings;
+                                });
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                constraints: BoxConstraints(
+                                  minWidth: get_screenWidth(context) * 0.35,
+                                ),
+                                padding: EdgeInsets.all(
+                                    get_screenWidth(context) * 0.02),
+                                decoration: !isParkedInSelected
+                                    ? selectedBox(context)
+                                    : unselectedBox(context),
+                                child: Text(
+                                  "Parked Out",
+                                  style: !isParkedInSelected
+                                      ? boldTextStyle(context, myWhite)
+                                      : boldTextStyle(context, myBlack),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    // Displaying Park Log History Cards
-                    Column(
-                      children: showableList
-                          .map((e) => ParkLogHistoryCard(context, e))
-                          .toList(),
-                    ),
-                    // Displaying Pagination buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        ActionButton4(context, "1", firstPageLoader, 0.1),
-                        ActionButton4(context, "<", prevPageLoader, 0.1),
-                        ActionButton4(context, ">", nextPageLoader, 0.1),
-                        ActionButton4(context, lastPageNum.toString(),
-                            lastPageLoader, 0.1),
-                      ],
-                    )
-                  ],
+                      // Displaying Park Log History Cards
+                      Column(
+                        children: showableList
+                            .map((e) => ParkLogHistoryCard(context, e))
+                            .toList(),
+                      ),
+                      // Displaying Pagination buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ActionButton4(context, "1", firstPageLoader, 0.1),
+                          ActionButton4(
+                              context,
+                              "<",
+                              isParkedInSelected
+                                  ? prevPageLoaderIn
+                                  : prevPageLoaderOut,
+                              0.1),
+                          ActionButton4(
+                              context,
+                              ">",
+                              isParkedInSelected
+                                  ? nextPageLoaderIn
+                                  : nextPageLoaderOut,
+                              0.1),
+                          ActionButton4(
+                              context,
+                              isParkedInSelected
+                                  ? lastPageNumIn.toString()
+                                  : lastPageNumOut.toString(),
+                              lastPageLoader,
+                              0.1),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
             ],
           ),
