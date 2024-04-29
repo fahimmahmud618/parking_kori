@@ -94,12 +94,10 @@ class _ParkLogState extends State<ParkLog> {
       requestParkOut.headers.set('Authorization', 'Bearer $token');
       final responseParkOut = await requestParkOut.close();
       if (responseParkOut.statusCode == 200) {
-       
         if (mounted) {
           // Check if the widget is still mounted
-         
+
           await handleResponseOut(responseParkOut, false);
-        
         }
       } else {
         throw Exception('Failed to load park out data');
@@ -151,7 +149,7 @@ class _ParkLogState extends State<ParkLog> {
       lastPageNumIn = responseData['booking']['last_page'];
 
       currentPageIn = responseData['booking']['current_page'];
-      print("Current Page Park In:   $currentPageIn");
+      // print("Current Page Park In:   $currentPageIn");
     });
   }
 
@@ -200,7 +198,7 @@ class _ParkLogState extends State<ParkLog> {
       // print("Next page url: ${nextPageURLOut}");
       lastPageNumOut = responseData['booking']['last_page'];
       currentPageOut = responseData['booking']['current_page'];
-      print("Current Page Park Out:   $currentPageOut");
+      // print("Current Page Park Out:   $currentPageOut");
     });
   }
 
@@ -384,30 +382,44 @@ class _ParkLogState extends State<ParkLog> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          ActionButton4(context, "1", firstPageLoader, 0.1),
                           ActionButton4(
-                              context,
-                              "<",
-                              isParkedInSelected
-                                  ? prevPageLoaderIn
-                                  : prevPageLoaderOut,
-                              0.1),
+                              context, "1", firstPageLoader, 0.1, false),
                           ActionButton4(
-                              context,
-                              ">",
-                              isParkedInSelected
-                                  ? nextPageLoaderIn
-                                  : nextPageLoaderOut,
-                              0.1),
+                            context,
+                            "<",
+                            isParkedInSelected
+                                ? prevPageLoaderIn
+                                : prevPageLoaderOut,
+                            0.1,
+                            (isParkedInSelected && prevPageURLIn == null) ||
+                                (!isParkedInSelected && prevPageURLOut == null),
+                          ),
+                          ActionButton4(
+                            context,
+                            ">",
+                            isParkedInSelected
+                                ? nextPageLoaderIn
+                                : nextPageLoaderOut,
+                            0.1,
+                            (isParkedInSelected && nextPageURLIn == null) ||
+                                (!isParkedInSelected && nextPageURLOut == null),
+                          ),
                           ActionButton4(
                               context,
                               isParkedInSelected
                                   ? lastPageNumIn.toString()
                                   : lastPageNumOut.toString(),
                               lastPageLoader,
-                              0.1),
+                              0.1,
+                              false),
                         ],
-                      )
+                      ),
+                      SizedBox(height: 10 * get_scale_factor(context),),
+                      isParkedInSelected
+                          ? Text("Showing page $currentPageIn out of $lastPageNumIn",
+                              style: normalTextStyle(context, myBlack))
+                          : Text("Showing page $currentPageOut out of $lastPageNumOut",
+                              style: normalTextStyle(context, myBlack)),
                     ],
                   ),
                 ),

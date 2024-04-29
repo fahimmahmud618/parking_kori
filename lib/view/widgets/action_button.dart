@@ -91,53 +91,32 @@ Widget ActionButton3(BuildContext context, String text, action,double size) {
   );
 }
 
-Widget ActionButton4(BuildContext context, String text, action,double size) {
+Widget ActionButton4(BuildContext context, String text, Function()? action, double size, bool isDisable) {
   return Container(
-    width: get_screenWidth(context)*size,
-    padding: EdgeInsets.all(2),
+    width: get_screenWidth(context) * size,
+    // padding: EdgeInsets.all(1),
     decoration: BoxDecoration(
-        color: myred,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-      BoxShadow(
-        color: Colors.grey.withOpacity(0.5), // Shadow color
-        spreadRadius: 1, // Spread radius
-        blurRadius: 8, // Blur radius
-        offset: Offset(0, 3), // Offset in x and y directions
-      ),
-    ],),
-    child: TextButton(
-      onPressed: action,
+      color: isDisable ? myred.withOpacity(0.7) : myred, // Adjust opacity based on isDisable
+      borderRadius: BorderRadius.circular(8),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.5),
+          spreadRadius: 1,
+          blurRadius: 8,
+          offset: Offset(0, 4), // Offset in x and y directions
+        ),
+      ],
+    ),
+    child: action != null ? TextButton(
+      onPressed: isDisable ? null : action, // Disable onPressed based on isDisable
       child: Text(
         text,
         style: boldTextStyle(context, myWhite),
       ),
-    ),
-  );
-}
-
-Widget ActionButtonDisabled(BuildContext context, String text, action,double size) {
-  return Container(
-    width: get_screenWidth(context)*size,
-    padding: EdgeInsets.all(2),
-    decoration: BoxDecoration(
-        color: myred.withOpacity(0.6),
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-      BoxShadow(
-        color: Colors.grey.withOpacity(0.5), // Shadow color
-        spreadRadius: 1, // Spread radius
-        blurRadius: 8, // Blur radius
-        offset: Offset(0, 3), // Offset in x and y directions
-      ),
-    ],),
-    child: TextButton(
-      onPressed: action,
-      child: Text(
+    ) : Text(
         text,
         style: boldTextStyle(context, myWhite),
       ),
-    ),
   );
 }
 
