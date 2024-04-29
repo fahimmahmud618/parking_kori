@@ -167,8 +167,8 @@ class Sunmi {
     String hour = (time.hour > 12)
         ? (time.hour - 12).toString()
         : time.hour.toString();
-    String minute = dateTime.minute.toString().padLeft(2, '0');
-    String amPm = (dateTime.hour >= 12) ? 'PM' : 'AM';
+    String minute = time.minute.toString().padLeft(2, '0');
+    String amPm = (time.hour >= 12) ? 'PM' : 'AM';
     String formattedTime = '$hour:$minute $amPm';
     return '$formattedDate $formattedTime';
   }
