@@ -91,17 +91,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  String formatTime(DateTime dateTime) {
-    String hour = (dateTime.hour > 12)
-        ? (dateTime.hour - 12).toString()
-        : dateTime.hour.toString();
-    String minute = dateTime.minute.toString().padLeft(2, '0');
-    String second = dateTime.second.toString().padLeft(2, '0');
-    String amPm = (dateTime.hour >= 12) ? 'PM' : 'AM';
-
-    return '$hour:$minute:$second $amPm';
-  }
-
   String formatDate(DateTime dateTime) {
     return '${dateTime.day}-${dateTime.month}-${dateTime.year}';
   }
@@ -152,6 +141,7 @@ class _ProfilePageState extends State<ProfilePage> {
     String address,
   ) async {
     Sunmi printer = Sunmi();
+    
     printer.print_summary(total_park_in, total_park_out, total_income,
         dataTable, startTime, address);
     Navigator.pushReplacement(
@@ -277,6 +267,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             rows: buildAgentIncomeList(),
                           ),
                           startTime ,
+                          
                           "$address",
                         ),
                         0.4

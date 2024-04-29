@@ -162,12 +162,14 @@ class Sunmi {
   }
 
   String formatDateTime(DateTime dateTime) {
+    DateTime time = DateTime.now();
     String formattedDate = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
-    String hour = dateTime.hour > 12
-        ? (dateTime.hour - 12).toString()
-        : dateTime.hour.toString();
-    String amPm = dateTime.hour >= 12 ? 'PM' : 'AM';
-    String formattedTime = '$hour:${dateTime.minute} $amPm';
+    String hour = (time.hour > 12)
+        ? (time.hour - 12).toString()
+        : time.hour.toString();
+    String minute = dateTime.minute.toString().padLeft(2, '0');
+    String amPm = (dateTime.hour >= 12) ? 'PM' : 'AM';
+    String formattedTime = '$hour:$minute $amPm';
     return '$formattedDate $formattedTime';
   }
 
@@ -177,6 +179,7 @@ class Sunmi {
       String total_income,
       DataTable dataTable,
       DateTime dateTime,
+      
       String address) async {
     // Your existing printing logic here
     await initialize();
