@@ -16,7 +16,11 @@ Widget AppBarWidget(BuildContext context, String title) {
           style: nameTitleStyle(context, myWhite),
         ),
         TextButton.icon(
-          onPressed: () {
+          onPressed: () async {
+            
+print("...................................");
+String ghorardim = await ReadCache.getString(key: "token");
+    print(ghorardim);
             DeleteCache.deleteKey("cache");
             DeleteCache.deleteKey("token");
             DeleteCache.deleteKey("id");

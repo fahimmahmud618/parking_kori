@@ -50,7 +50,7 @@ class _AddVehicleState extends State<AddVehicle> {
   void navigateToNewPage(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MainPage()),
+      MaterialPageRoute(builder: (context) => const MainPage()),
     );
   }
 
@@ -90,24 +90,16 @@ class _AddVehicleState extends State<AddVehicle> {
           booking_num = bookingNumber;
         });
 
-        // Print the QR code only if it hasn't been printed yet
-        print("Entering Printing in addvehicle page");
-        print("-------------------------------------");
         if (!isPrinting) {
-          print("Entered Printing in addvehicle page");
           Sunmi printer = Sunmi();
           printer.printReceipt(bookingNumber);
-          print("Booking number $bookingNumber");
           isPrinting = true; // Set the flag to true to indicate printing
         }
 
         navigateToNewPage(context);
       } else {
-        // print(
-        //     'Failed to send registration number. Status code: ${response.statusCode}');
         print(
             'Failed to send registration number. Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
       }
     } catch (e) {
       print('Error sending registration number: $e');

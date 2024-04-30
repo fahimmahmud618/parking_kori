@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io'; // Import 'dart:io' for HttpClient
+import 'package:cache_manager/core/delete_cache_service.dart';
+import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:cache_manager/core/write_cache_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -56,7 +58,11 @@ class _LoginPageState extends State<LoginPage> {
       final httpResponse = await response.close();
 
       if (httpResponse.statusCode == 200) {
-        
+        DeleteCache.deleteKey("cache");
+        DeleteCache.deleteKey("token");
+        DeleteCache.deleteKey("id");
+        DeleteCache.deleteKey("location_id");
+
         Map<String, dynamic> responseData =
             jsonDecode(await httpResponse.transform(utf8.decoder).join());
         token = responseData['token'];
@@ -66,8 +72,6 @@ class _LoginPageState extends State<LoginPage> {
 
         saveCache(username, password, token, id, locationId, myAddress);
         // await DatabaseHelper().loadParkLogDataFromRemoteDB();
-
-        // print("Logged in properly");
 
         Navigator.push(
           context,
@@ -86,8 +90,8 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void saveCache(String username, String password, String token, int id,
-      int locationId, String myAddress) {
+  Future<void> saveCache(String username, String password, String token, int id,
+      int locationId, String myAddress) async {
     final cacheValue = caesarCipherEncode(makeCache(username, password), 2);
     WriteCache.setString(key: "cache", value: cacheValue);
     WriteCache.setString(key: "token", value: token);
@@ -97,8 +101,10 @@ class _LoginPageState extends State<LoginPage> {
     DateTime currentTime = DateTime.now();
     WriteCache.setInt(
         key: "loginTime", value: currentTime.millisecondsSinceEpoch);
-
-    //print(ReadCache.getString(key: "id"));
+        
+print("...................................");
+String ghorardim = await ReadCache.getString(key: "token");
+    print(ghorardim);
   }
 
   @override

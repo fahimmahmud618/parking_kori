@@ -78,6 +78,8 @@ class _ProfilePageState extends State<ProfilePage> {
       loginTime = await ReadCache.getInt(key: "loginTime");
       location = await ReadCache.getInt(key: "locationId");
       address = await ReadCache.getString(key: "address");
+      
+    print(token);
 
       setState(() {
         currentUser = getUserNameFromChache(caesarCipherDecode(currentUser, 2));

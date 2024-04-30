@@ -40,6 +40,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
     // String url = '$baseUrl/park-out';
     print("Loading data for booking number: $bookingNum");
     String token = await ReadCache.getString(key: "token");
+    print(token);
 
     try {
       http.Response response = await http.get(
@@ -49,20 +50,20 @@ class _CheckOutPageState extends State<CheckOutPage> {
           'Authorization': 'Bearer $token',
         },
       );
-
+      print(response.body.toString());
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = jsonDecode(response.body);
 
         setState(() {
           registration_num = responseData['data']['booking_number'] ?? '';
-          vehicle_reg_number = responseData['data']['booking']['vehicle_reg_number'] ?? '';
+          vehicle_reg_number =
+              responseData['data']['booking']['vehicle_reg_number'] ?? '';
           vehicle_type = responseData['data']['vehicle_type'] ?? '';
           entry_time = responseData['data']['park_in_time'] ?? '';
           exit_time = responseData['data']['park_out_time'] ?? '';
           ticket_num = responseData['data']['invoice_number'] ?? '';
           payment_amount = responseData['data']['sub_total'].toString();
         });
-        
 
         // Fetch additional data after successful checkout
         await fetchInvoiceData(bookingNum, token);
@@ -132,8 +133,6 @@ class _CheckOutPageState extends State<CheckOutPage> {
   }
 
   void checkout() async {
-    // String token = await ReadCache.getString(key: "token");
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -172,70 +171,64 @@ class _CheckOutPageState extends State<CheckOutPage> {
   }
 
   void performCheckout() async {
-  String url = '$baseUrl/park-out';
-  String token = await ReadCache.getString(key: "token");
+    String url = '$baseUrl/park-out';
+    String token = await ReadCache.getString(key: "token");
 
-  try {
-    http.Response response = await http.post(
-      Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({"booking_number": widget.booking_num}),
-    );
-
-    if (response.statusCode == 200) {
-      // Handle success
-      print('Checkout successful');
-      // Optionally, navigate to a success page or do other actions
-      Sunmi printer = Sunmi();
-      printer.printInvoice(
-        registration_num,
-        entry_time,
-        exit_time,
-        ticket_num,
-        payment_amount,
-        location,
-        address,
-        vehicle_reg_number,
-        vehicle_type
+    try {
+      http.Response response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({"booking_number": widget.booking_num}),
       );
 
-      // Show toast message
-      Fluttertoast.showToast(
-        msg: "Thank you for checking out!",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.TOP,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Color.fromRGBO(65, 176, 110,1),
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+      if (response.statusCode == 200) {
+        Sunmi printer = Sunmi();
+        printer.printInvoice(
+            registration_num,
+            entry_time,
+            exit_time,
+            ticket_num,
+            payment_amount,
+            location,
+            address,
+            vehicle_reg_number,
+            vehicle_type);
 
-      // Redirect to MainPage after showing toast
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => MainPage()),
-      );
-    } else {
-      print(
-          'Failed to perform checkout. Status code: ${response.statusCode}');
+        // Show toast message
+        Fluttertoast.showToast(
+          msg: "Thank you for checking out!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Color.fromRGBO(65, 176, 110, 1),
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+
+        // Redirect to MainPage after showing toast
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainPage()),
+        );
+      } else {
+        print(
+            'Failed to perform checkout. Status code: ${response.statusCode}');
+        // Handle error
+      }
+    } catch (e) {
+      print('Error performing checkout: $e');
       // Handle error
     }
-  } catch (e) {
-    print('Error performing checkout: $e');
-    // Handle error
   }
-}
 
   @override
-void initState() {
-  super.initState();
-  print("Booking number: ${widget.booking_num}");
-  load_data(widget.booking_num);
-}
-
+  void initState() {
+    super.initState();
+    load_data(widget.booking_num);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -250,12 +243,10 @@ void initState() {
                 children: [
                   DashboardInfoCard(
                       context, "Booking Number", registration_num),
-                  DashboardInfoCard(
-                      context, "Invoice Number", ticket_num),
+                  DashboardInfoCard(context, "Invoice Number", ticket_num),
                   DashboardInfoCard(context, "Arrived At", entry_time),
                   DashboardInfoCard(context, "Exit At", exit_time),
-                  DashboardInfoCard(
-                      context, "Payable Amount", payment_amount),
+                  DashboardInfoCard(context, "Payable Amount", payment_amount),
                   ActionButton(context, "Checkout", checkout),
                 ],
               ),
@@ -312,7 +303,6 @@ void initState() {
     );
   }
 }
-
 
 class MyHttpOverrides extends HttpOverrides {
   @override
