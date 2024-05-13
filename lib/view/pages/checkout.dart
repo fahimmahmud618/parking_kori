@@ -211,7 +211,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
             address,
             vehicle_reg_number,
             vehicle_type,
-            );
+            duration);
 
         // Show toast message
         Fluttertoast.showToast(

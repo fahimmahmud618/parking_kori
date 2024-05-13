@@ -137,7 +137,8 @@ class Sunmi {
       String location,
       String address,
       String vehicleType,
-      String vehicleRegNumber) async {
+      String vehicleRegNumber,
+      String duration) async {
     await initialize();
     await printHeadline(location);
     await printText("PARKING Exit Receipt");
@@ -146,6 +147,7 @@ class Sunmi {
     await printText("$vehicleType: $vehicleRegNumber");
     await printHeadline("Parking Bill: $payment_amount");
     await printText("Ticket No: $registration_num");
+     await printText("Duration: $duration");
 
     await printText("Developed by ParkingKori.com",
         style: SunmiStyle(
