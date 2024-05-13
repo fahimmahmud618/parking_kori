@@ -414,11 +414,15 @@ class _ParkLogState extends State<ParkLog> {
                               false),
                         ],
                       ),
-                      SizedBox(height: 10 * get_scale_factor(context),),
+                      SizedBox(
+                        height: 10 * get_scale_factor(context),
+                      ),
                       isParkedInSelected
-                          ? Text("Showing page $currentPageIn out of $lastPageNumIn",
+                          ? Text(
+                              "Showing page $currentPageIn out of $lastPageNumIn",
                               style: normalTextStyle(context, myBlack))
-                          : Text("Showing page $currentPageOut out of $lastPageNumOut",
+                          : Text(
+                              "Showing page $currentPageOut out of $lastPageNumOut",
                               style: normalTextStyle(context, myBlack)),
                     ],
                   ),

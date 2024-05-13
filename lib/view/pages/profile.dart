@@ -42,6 +42,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   String? baseUrl = dotenv.env['BASE_URL'];
 
+
   Future<void> load_data() async {
     String token = await ReadCache.getString(key: "token");
 
@@ -78,8 +79,8 @@ class _ProfilePageState extends State<ProfilePage> {
       loginTime = await ReadCache.getInt(key: "loginTime");
       location = await ReadCache.getInt(key: "locationId");
       address = await ReadCache.getString(key: "address");
-      
-    print(token);
+
+      print(token);
 
       setState(() {
         currentUser = getUserNameFromChache(caesarCipherDecode(currentUser, 2));
@@ -143,7 +144,7 @@ class _ProfilePageState extends State<ProfilePage> {
     String address,
   ) async {
     Sunmi printer = Sunmi();
-    
+
     printer.print_summary(total_park_in, total_park_out, total_income,
         dataTable, startTime, address);
     Navigator.pushReplacement(
@@ -255,25 +256,23 @@ class _ProfilePageState extends State<ProfilePage> {
                       InfoCard(context, "Total Income",
                           "${calculateTotalIncome()} Taka"),
                       ActionButton3(
-                        context,
-                        "Print",
-                        () => print_summary(
-                          "$parkin",
-                          "$parkout",
-                          "${calculateTotalIncome()} Taka",
-                          DataTable(
-                            columns: const [
-                              DataColumn(label: Text('AGENT')),
-                              DataColumn(label: Text('TAKA')),
-                            ],
-                            rows: buildAgentIncomeList(),
-                          ),
-                          startTime ,
-                          
-                          "$address",
-                        ),
-                        0.4
-                      ),
+                          context,
+                          "Print",
+                          () => print_summary(
+                                "$parkin",
+                                "$parkout",
+                                "${calculateTotalIncome()} Taka",
+                                DataTable(
+                                  columns: const [
+                                    DataColumn(label: Text('AGENT')),
+                                    DataColumn(label: Text('TAKA')),
+                                  ],
+                                  rows: buildAgentIncomeList(),
+                                ),
+                                startTime,
+                                "$address",
+                              ),
+                          0.4),
                     ],
                   ),
                 ),
@@ -287,29 +286,26 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Container agentTable(BuildContext context) {
     return Container(
-                      height: get_screenWidth(context) * 0.39,
-                      width: get_screenWidth(context) * 0.75,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey,
-                        ),
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: SingleChildScrollView(
-                        child: DataTable(
-                          columnSpacing: 20,
-                          columns: [
-                            DataColumn(
-                                label: Text('AGENT',
-                                    style: boldTextStyle(context, myBlack))),
-                            DataColumn(
-                                label: Text('TAKA',
-                                    style: boldTextStyle(context, myBlack))),
-                          ],
-                          rows: buildAgentIncomeList(),
-                        ),
-                      ),
-                    
-                    );
+      height: get_screenWidth(context) * 0.39,
+      width: get_screenWidth(context) * 0.75,
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.grey,
+        ),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: SingleChildScrollView(
+        child: DataTable(
+          columnSpacing: 20,
+          columns: [
+            DataColumn(
+                label: Text('AGENT', style: boldTextStyle(context, myBlack))),
+            DataColumn(
+                label: Text('TAKA', style: boldTextStyle(context, myBlack))),
+          ],
+          rows: buildAgentIncomeList(),
+        ),
+      ),
+    );
   }
 }

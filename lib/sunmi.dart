@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, non_constant_identifier_names
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:cache_manager/core/read_cache_service.dart';
@@ -81,7 +83,8 @@ class Sunmi {
         final Map<String, dynamic> data = json.decode(responseBody);
 
         if (data.containsKey('booking')) {
-          final Map<String, dynamic> bookingDetails = data['booking']['data'][0];
+          final Map<String, dynamic> bookingDetails =
+              data['booking']['data'][0];
 
           // Extract booking details
           String vehicleRegNumber = bookingDetails['vehicle_reg_number'] ?? '';
@@ -129,23 +132,25 @@ class Sunmi {
   }
 
   Future<void> printInvoice(
-      String registration_num,
-      String entry_time,
-      String exit_time,
-      String ticket_num,
-      String payment_amount,
+      String registrationNum,
+      String entryTime,
+      String exitTime,
+      String ticketNum,
+      String paymentAmount,
       String location,
       String address,
       String vehicleType,
-      String vehicleRegNumber) async {
+      String vehicleRegNumber,
+      String duration) async {
     await initialize();
     await printHeadline(location);
     await printText("PARKING Exit Receipt");
-    await printText("Entry: $entry_time");
-    await printText("Exit: $exit_time");
+    await printText("Entry: $entryTime");
+    await printText("Exit: $exitTime");
+    await printText("Parking Duration: $duration");
     await printText("$vehicleType: $vehicleRegNumber");
-    await printHeadline("Parking Bill: $payment_amount");
-    await printText("Ticket No: $registration_num");
+    await printHeadline("Parking Bill: $paymentAmount");
+    await printText("Ticket No: $registrationNum");
 
     await printText("Developed by ParkingKori.com",
         style: SunmiStyle(
@@ -162,11 +167,15 @@ class Sunmi {
   }
 
   String formatDateTime(DateTime dateTime) {
-    DateTime time = DateTime.now();
     String formattedDate = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
-    String hour = (time.hour > 12)
-        ? (time.hour - 12).toString()
-        : time.hour.toString();
+    return formattedDate;
+  }
+
+    String formatDate(DateTime dateTime) {
+    DateTime time = DateTime.now();
+    String formattedDate = '${time.day}/${time.month}/${time.year}';
+    String hour =
+        (time.hour > 12) ? (time.hour - 12).toString() : time.hour.toString();
     String minute = time.minute.toString().padLeft(2, '0');
     String amPm = (time.hour >= 12) ? 'PM' : 'AM';
     String formattedTime = '$hour:$minute $amPm';
@@ -174,19 +183,19 @@ class Sunmi {
   }
 
   Future<void> print_summary(
-      String total_park_in,
-      String total_park_out,
-      String total_income,
+      String totalParkIn,
+      String totalParkOut,
+      String totalIncome,
       DataTable dataTable,
       DateTime dateTime,
-      
       String address) async {
     // Your existing printing logic here
     await initialize();
-    await printHeadline("$address");
-    await printText(formatDateTime(dateTime));
-    await printText("Total Park In: $total_park_in");
-    await printText("Total Park Out: $total_park_out");
+    await printHeadline(address);
+    await printText("Shift date: ${formatDateTime(dateTime)}");
+    await printText("Printed On: ${formatDate(dateTime)}");
+    await printText("Total Park In: $totalParkIn");
+    await printText("Total Park Out: $totalParkOut");
     await printText("Agent Name & Income");
 
     // Printing DataTable as a table
@@ -216,7 +225,7 @@ class Sunmi {
 
     // await printText(''); // Empty line after table
 
-    await printText("Total Income: $total_income");
+    await printText("Total Income: $totalIncome");
     await printText("Developed by ParkingKori.com",
         style: SunmiStyle(
           fontSize: SunmiFontSize.MD,

@@ -33,8 +33,20 @@ class _CheckOutPageState extends State<CheckOutPage> {
   String location = '';
   String address = '';
   String? baseUrl = dotenv.env['BASE_URL'];
+  DateTime entry = DateTime.now();
+  DateTime exit = DateTime.now();
+  String duration = '';
   // String token = await ReadCache.getString(key: "token");
   //   print("Booking num in checkout page: " + bookingNum);
+
+  String calcDuration(DateTime parkIn, DateTime parkOut) {
+    Duration duration = parkOut.difference(parkIn);
+
+    int hours = duration.inHours;
+    int minutes = duration.inMinutes % 60;
+
+    return '${hours.toString().padLeft(2, '0')}h ${minutes.toString().padLeft(2, '0')}m';
+  }
 
   Future<void> load_data(String bookingNum) async {
     // String url = '$baseUrl/park-out';
@@ -60,9 +72,12 @@ class _CheckOutPageState extends State<CheckOutPage> {
               responseData['data']['booking']['vehicle_reg_number'] ?? '';
           vehicle_type = responseData['data']['vehicle_type'] ?? '';
           entry_time = responseData['data']['park_in_time'] ?? '';
+          entry = DateTime.parse(entry_time);
           exit_time = responseData['data']['park_out_time'] ?? '';
+          exit = DateTime.parse(exit_time);
           ticket_num = responseData['data']['invoice_number'] ?? '';
           payment_amount = responseData['data']['sub_total'].toString();
+          duration = calcDuration(entry, exit);
         });
 
         // Fetch additional data after successful checkout
@@ -195,7 +210,8 @@ class _CheckOutPageState extends State<CheckOutPage> {
             location,
             address,
             vehicle_reg_number,
-            vehicle_type);
+            vehicle_type,
+            duration);
 
         // Show toast message
         Fluttertoast.showToast(
