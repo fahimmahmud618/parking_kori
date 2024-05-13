@@ -7,7 +7,7 @@ import 'package:cache_manager/cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/cache_handler.dart';
-import 'package:parking_kori/sunmi.dart';
+import 'package:parking_kori/printing/sunmi.dart';
 import 'package:parking_kori/view/pages/infocard.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/styles.dart';
@@ -37,6 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
   int dif = 0;
   int parkin = 0;
   int parkout = 0;
+  int total_time = 0;
   List<Map<String, dynamic>> totalIncome = [];
   late Timer _timer;
 
@@ -64,6 +65,9 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         parkin = responseData['total_park_in'];
         parkout = responseData['total_park_out'];
+        total_time = responseData['transaction']['parking_duration'];
+        print("--------------------------------------");
+        print(total_time);
         totalIncome =
             List<Map<String, dynamic>>.from(responseData['total_income']);
       });

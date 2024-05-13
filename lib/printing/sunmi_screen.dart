@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parking_kori/sunmi.dart';
+import 'package:parking_kori/printing/sunmi.dart';
 
 class SunmiScreen extends StatefulWidget {
   const SunmiScreen({Key? key}) : super(key: key);
