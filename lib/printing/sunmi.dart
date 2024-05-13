@@ -187,6 +187,7 @@ class Sunmi {
     await printText(formatDateTime(dateTime));
     await printText("Total Park In: $total_park_in");
     await printText("Total Park Out: $total_park_out");
+    
     await printText("Agent Name & Income");
 
     // Printing DataTable as a table
