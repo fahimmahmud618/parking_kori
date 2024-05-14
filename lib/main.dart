@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:parking_kori/printing/bluetooth.dart';
 import 'package:parking_kori/view/pages/flash_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/view/styles.dart';
@@ -14,6 +15,6 @@ void main() async {
       primaryColor: myred, 
     ),
     debugShowCheckedModeBanner: false,
-    home: const FlashPage(),
+    home: BluetoothPage(),
   ));
 }
