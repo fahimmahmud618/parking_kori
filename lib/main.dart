@@ -15,6 +15,6 @@ void main() async {
       primaryColor: myred, 
     ),
     debugShowCheckedModeBanner: false,
-    home: BluetoothPage(),
+    home: FlashPage(),
   ));
 }

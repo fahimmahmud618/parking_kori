@@ -32,6 +32,9 @@ class _FlashPageState extends State<FlashPage> {
     print("Manufacturer: ${data.manufacturer}");
     print("Product: ${data.product}");
     print("Version: ${data.version.release.toString()}");
+    print("Fingerprint: ${data.fingerprint}");
+    print("ID: ${data.id}"); //uniquely identifies a device
+    print("Serial Number: ${data.serialNumber}");
   }
 
   Future<void> sendDeviceInfo(AndroidDeviceInfo androidInfo) async {
@@ -44,6 +47,7 @@ class _FlashPageState extends State<FlashPage> {
         'model': androidInfo.model,
         'manufacturer': androidInfo.manufacturer,
         'product': androidInfo.product,
+        'id': androidInfo.id,
         'version': androidInfo.version.release.toString(),
       };
 
