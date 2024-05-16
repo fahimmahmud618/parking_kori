@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:cache_manager/cache_manager.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,7 @@ class _FlashPageState extends State<FlashPage> {
   Future<void> sendDeviceInfo(AndroidDeviceInfo androidInfo) async {
     try {
       String? baseUrl = dotenv.env['BASE_URL'];
-      String url = '$baseUrl/get-device-data';
+      String url = '$baseUrl/store/device';
       Map<String, dynamic> requestData = {
         'brand': androidInfo.brand,
         'device': androidInfo.device,
@@ -52,6 +53,8 @@ class _FlashPageState extends State<FlashPage> {
         'serial_number' : androidInfo.serialNumber,
       };
 
+    HttpOverrides.global = MyHttpOverrides2();
+
       http.Response response = await http.post(
         Uri.parse(url),
         headers: {
@@ -60,7 +63,7 @@ class _FlashPageState extends State<FlashPage> {
         body: jsonEncode(requestData),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201 || response.statusCode == 200) {
         print('Device info sent successfully');
       } else {
         print(
@@ -113,5 +116,15 @@ class _FlashPageState extends State<FlashPage> {
         ));
       },
     )));
+  }
+}
+
+// Custom HttpOverrides class to handle SSL certificate verification errors
+class MyHttpOverrides2 extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }
