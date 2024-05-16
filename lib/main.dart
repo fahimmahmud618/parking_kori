@@ -16,6 +16,6 @@ void main() async {
       primaryColor: myred, 
     ),
     debugShowCheckedModeBanner: false,
-    home: PrintPage(),
+    home: FlashPage(),
   ));
 }

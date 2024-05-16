@@ -49,6 +49,7 @@ class _FlashPageState extends State<FlashPage> {
         'product': androidInfo.product,
         'id': androidInfo.id,
         'version': androidInfo.version.release.toString(),
+        'serial_number' : androidInfo.serialNumber,
       };
 
       http.Response response = await http.post(
