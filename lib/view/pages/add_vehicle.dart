@@ -5,7 +5,7 @@ import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:parking_kori/printing/bluetooth.dart';
+import 'package:parking_kori/printing/bluetooth_receipt.dart';
 import 'package:parking_kori/printing/sunmi.dart';
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/pages/flash_page.dart';

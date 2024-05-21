@@ -181,7 +181,6 @@ class Sunmi {
       String total_income,
       DataTable dataTable,
       DateTime dateTime,
-      
       String address) async {
     // Your existing printing logic here
     await initialize();

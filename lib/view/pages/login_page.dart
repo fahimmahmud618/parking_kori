@@ -165,16 +165,4 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-
-// navigateToBluetoothPageInvoice(registration_num,
-//             entry_time,
-//             exit_time,
-//             ticket_num,
-//             payment_amount,
-//             location,
-//             address,
-//             vehicle_reg_number,
-//             vehicle_type,
-//             duration);
-
             

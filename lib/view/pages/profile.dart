@@ -7,6 +7,7 @@ import 'package:cache_manager/cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/cache_handler.dart';
+import 'package:parking_kori/printing/bluetooth_summary.dart';
 import 'package:parking_kori/printing/sunmi.dart';
 import 'package:parking_kori/view/pages/infocard.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
@@ -42,7 +43,6 @@ class _ProfilePageState extends State<ProfilePage> {
   late Timer _timer;
 
   String? baseUrl = dotenv.env['BASE_URL'];
-
 
   Future<void> load_data() async {
     String token = await ReadCache.getString(key: "token");
@@ -139,6 +139,31 @@ class _ProfilePageState extends State<ProfilePage> {
     return total;
   }
 
+  void navigateToBluetoothPageSummary(
+    String total_park_out,
+    String total_park_in,
+    String total_income,
+    DataTable dataTable,
+    DateTime startTime,
+    String address,
+  ) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BluetoothPageSummary(
+            total_park_in: total_park_in,
+            total_park_out: total_park_out,
+            total_income: total_income,
+            dataTable: dataTable,
+            dateTime: startTime,
+            address: address,
+          ),
+        ),
+      );
+    });
+  }
+
   void print_summary(
     String total_park_out,
     String total_park_in,
@@ -147,10 +172,22 @@ class _ProfilePageState extends State<ProfilePage> {
     DateTime startTime,
     String address,
   ) async {
-    Sunmi printer = Sunmi();
-
-    printer.print_summary(total_park_in, total_park_out, total_income,
-        dataTable, startTime, address);
+    String brand = await ReadCache.getString(key: "brand");
+    print(brand);
+    if (brand.toLowerCase() == 'sunmi') {
+      Sunmi printer = Sunmi();
+      printer.print_summary(total_park_in, total_park_out, total_income,
+          dataTable, startTime, address);
+    } else {
+      navigateToBluetoothPageSummary(
+        total_park_out,
+        total_park_in,
+        total_income,
+        dataTable,
+        startTime,
+        address,
+      );
+    }
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const MainPage()),
