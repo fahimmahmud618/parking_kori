@@ -102,9 +102,6 @@ class _LoginPageState extends State<LoginPage> {
     WriteCache.setInt(
         key: "loginTime", value: currentTime.millisecondsSinceEpoch);
         
-print("...................................");
-String ghorardim = await ReadCache.getString(key: "token");
-    print(ghorardim);
   }
 
   @override
@@ -167,3 +164,17 @@ String ghorardim = await ReadCache.getString(key: "token");
     );
   }
 }
+
+
+// navigateToBluetoothPageInvoice(registration_num,
+//             entry_time,
+//             exit_time,
+//             ticket_num,
+//             payment_amount,
+//             location,
+//             address,
+//             vehicle_reg_number,
+//             vehicle_type,
+//             duration);
+
+            

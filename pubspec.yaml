@@ -31,7 +31,9 @@ dependencies:
   fluttertoast: ^8.2.5
   table_sticky_headers: ^2.0.5
   loading_animation_widget: ^1.2.1
-  flutter_esc_pos_utils: ^1.0.1
+  get: ^4.6.5
+  blue_thermal_printer: ^1.2.3
+  
   
 
 dev_dependencies:

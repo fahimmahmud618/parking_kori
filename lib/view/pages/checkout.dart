@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:parking_kori/printing/bluetooth_invoice.dart';
 import 'package:parking_kori/printing/sunmi.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/styles.dart';
@@ -185,6 +186,38 @@ class _CheckOutPageState extends State<CheckOutPage> {
     );
   }
 
+
+  void navigateToBluetoothPageInvoice(String registration_num,
+      String entry_time,
+      String exit_time,
+      String ticket_num,
+      String payment_amount,
+      String location,
+      String address,
+      String vehicleType,
+      String vehicleRegNumber,
+      String duration) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BluetoothPageInvoice(
+            registration_num: registration_num,
+            entry_time: entry_time,
+            exit_time: exit_time,
+            ticket_num: ticket_num,
+            payment_amount: payment_amount,
+            location: location,
+            address: address,
+            vehicleType: vehicleType,
+            vehicleRegNumber: vehicleRegNumber,
+            duration: duration,
+          ),
+        ),
+      );
+    });
+  }
+  
   void performCheckout() async {
     String url = '$baseUrl/park-out';
     String token = await ReadCache.getString(key: "token");
@@ -200,9 +233,34 @@ class _CheckOutPageState extends State<CheckOutPage> {
       );
 
       if (response.statusCode == 200) {
-        Sunmi printer = Sunmi();
-        printer.printInvoice(
-            registration_num,
+        String brand = await ReadCache.getString(key: "brand");
+          print(brand);
+          if (brand.toLowerCase() == 'sunmi') {
+            Sunmi printer = Sunmi();
+            printer.printInvoice(
+                registration_num,
+                entry_time,
+                exit_time,
+                ticket_num,
+                payment_amount,
+                location,
+                address,
+                vehicle_reg_number,
+                vehicle_type,
+                duration);
+                Fluttertoast.showToast(
+          msg: "Thank you for checking out!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Color.fromRGBO(65, 176, 110, 1),
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+          }
+          else{
+            
+          navigateToBluetoothPageInvoice(registration_num,
             entry_time,
             exit_time,
             ticket_num,
@@ -212,23 +270,15 @@ class _CheckOutPageState extends State<CheckOutPage> {
             vehicle_reg_number,
             vehicle_type,
             duration);
-
-        // Show toast message
-        Fluttertoast.showToast(
-          msg: "Thank you for checking out!",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.TOP,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Color.fromRGBO(65, 176, 110, 1),
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+          }
 
         // Redirect to MainPage after showing toast
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => MainPage()),
+          
         );
+        
       } else {
         print(
             'Failed to perform checkout. Status code: ${response.statusCode}');

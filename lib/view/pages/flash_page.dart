@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cache_manager/cache_manager.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:cache_manager/core/write_cache_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/view/image_file.dart';
 import 'package:parking_kori/view/pages/login_page.dart';
@@ -27,6 +28,7 @@ class _FlashPageState extends State<FlashPage> {
 
   void showAll(AndroidDeviceInfo data) {
     print("Brand: ${data.brand}");
+    WriteCache.setString(key: "brand", value: data.brand);
     print("Device: ${data.device}");
     print("Model: ${data.model}");
     print("Manufacturer: ${data.manufacturer}");

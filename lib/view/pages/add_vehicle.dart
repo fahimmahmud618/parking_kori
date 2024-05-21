@@ -1,13 +1,14 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:cache_manager/core/read_cache_service.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:parking_kori/printing/bluetooth.dart';
 import 'package:parking_kori/printing/sunmi.dart';
 import 'package:parking_kori/view/image_file.dart';
+import 'package:parking_kori/view/pages/flash_page.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/widgets/action_button.dart';
 import 'package:parking_kori/view/widgets/back_button.dart';
@@ -47,11 +48,22 @@ class _AddVehicleState extends State<AddVehicle> {
     Navigator.pop(context);
   }
 
-  void navigateToNewPage(BuildContext context) {
+  void navigateToMainPage(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const MainPage()),
     );
+  }
+
+  void navigateToBluetoothPageReceipt(String bookingNumber) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BluetoothPageReceipt(bookingNumber: bookingNumber),
+        ),
+      );
+    });
   }
 
   void send_registration_number_and_get_booking_number(String r) async {
@@ -91,15 +103,26 @@ class _AddVehicleState extends State<AddVehicle> {
         });
 
         if (!isPrinting) {
-          Sunmi printer = Sunmi();
-          printer.printReceipt(bookingNumber);
-          isPrinting = true; // Set the flag to true to indicate printing
+          String brand = await ReadCache.getString(key: "brand");
+          print(brand);
+          if (brand.toLowerCase() == 'sunmi') {
+            Sunmi printer = Sunmi();
+            printer.printReceipt(bookingNumber);
+            setState(() {
+              isPrinting = true; // Set the flag to true to indicate printing
+            });
+          } else {
+            print("-------------------------------");
+            setState(() {
+              isPrinting = true;
+            });
+            navigateToBluetoothPageReceipt(bookingNumber);
+          }
         }
 
-        navigateToNewPage(context);
+        navigateToMainPage(context);
       } else {
-        print(
-            'Failed to send registration number. Status code: ${response.statusCode}');
+        print('Failed to send registration number. Status code: ${response.statusCode}');
       }
     } catch (e) {
       print('Error sending registration number: $e');
@@ -114,8 +137,12 @@ class _AddVehicleState extends State<AddVehicle> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(get_screenWidth(context) * 0.1,
-                  get_screenWidth(context) * 0.1, 0, 0),
+              padding: EdgeInsets.fromLTRB(
+                get_screenWidth(context) * 0.1,
+                get_screenWidth(context) * 0.1,
+                0,
+                0,
+              ),
               child: BackOption(context, go_back),
             ),
             SizedBox(
@@ -124,7 +151,8 @@ class _AddVehicleState extends State<AddVehicle> {
             Center(
               child: Container(
                 padding: EdgeInsets.symmetric(
-                    horizontal: get_screenWidth(context) * 0.1),
+                  horizontal: get_screenWidth(context) * 0.1,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -171,7 +199,6 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }

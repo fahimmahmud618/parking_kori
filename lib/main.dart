@@ -6,7 +6,7 @@ import 'package:parking_kori/view/pages/flash_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:parking_kori/view/styles.dart';
 import 'package:parking_kori/view/pages/checkout.dart';
-import 'package:parking_kori/printing/test.dart';
+import 'package:parking_kori/printing/bluetooth.dart';
 
 void main() async {
   await dotenv.load(fileName: "lib/.env");
@@ -16,6 +16,6 @@ void main() async {
       primaryColor: myred, 
     ),
     debugShowCheckedModeBanner: false,
-    home: PrintPage(),
+    home: FlashPage(),
   ));
 }
