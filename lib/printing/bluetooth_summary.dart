@@ -16,7 +16,7 @@ class BluetoothPageSummary extends StatefulWidget {
   final String? total_income;
   final DataTable dataTable;
   final DateTime? dateTime; 
-  final String? address;
+  final String address;
 
   const BluetoothPageSummary({
     Key? key,
@@ -54,6 +54,7 @@ class _BluetoothPageState extends State<BluetoothPageSummary> {
     total_income = widget.total_income;
     dataTable = widget.dataTable;
     dateTime = widget.dateTime;
+    address = widget.address;
   }
 
   void initPrinter() async {
