@@ -40,7 +40,6 @@ class _ProfilePageState extends State<ProfilePage> {
   int parkout = 0;
   int total_time = 0;
   List<Map<String, dynamic>> totalIncome = [];
-  late Timer _timer;
 
   String? baseUrl = dotenv.env['BASE_URL'];
 
@@ -65,11 +64,12 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         parkin = responseData['total_park_in'];
         parkout = responseData['total_park_out'];
-        total_time = responseData['transaction']['parking_duration'];
+        // total_time = responseData['transaction']['parking_duration'];
         print("--------------------------------------");
-        print(total_time);
+        // print(total_time);
         totalIncome =
             List<Map<String, dynamic>>.from(responseData['total_income']);
+        // print(totalIncome);
       });
     } else {
       throw Exception('Failed to load data present park log');
@@ -199,22 +199,12 @@ class _ProfilePageState extends State<ProfilePage> {
     fetchDataFromCache();
     load_data();
     currentTime = DateTime.now();
-    _startTimer();
     super.initState();
   }
 
   @override
   void dispose() {
-    _timer.cancel();
     super.dispose();
-  }
-
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        currentTime = DateTime.now();
-      });
-    });
   }
 
   @override
