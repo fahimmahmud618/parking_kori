@@ -120,7 +120,7 @@ class _BluetoothPageState extends State<BluetoothPageInvoice> {
       printer.printCustom("Entry: $entry_time", 1, 1);
       printer.printCustom("Exit: $exit_time", 1, 1);
       printer.printCustom("$vehicleType: $vehicleRegNumber", 1, 1);
-      printer.printCustom("Parking Bill: $payment_amount", 1, 2);
+      printer.printCustom("Parking Bill: $payment_amount", 1, 1);
       printer.printCustom("Ticket No: $registration_num", 1, 1);
       printer.printCustom("Duration: $duration", 1, 1);
       printer.printCustom("Developed by ParkingKori.com", 1, 1);
