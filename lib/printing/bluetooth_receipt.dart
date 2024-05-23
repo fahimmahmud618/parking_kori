@@ -9,6 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/styles.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class BluetoothPageReceipt extends StatefulWidget {
   final String? bookingNumber;
@@ -28,6 +29,7 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
     super.initState();
     initPrinter();
     bookingNumber = widget.bookingNumber;
+    checkBluetoothOnInit();
   }
 
   void initPrinter() async {
@@ -50,6 +52,7 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
   }
 
  void connectToDevice(BluetoothDevice device) async {
+  // await bluetoothOnCheck();
     try {
       bool? connected = await printer.connect(device);
       if (connected == true) {
@@ -74,6 +77,7 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
   }
 
   Future<void> printReceipt() async {
+    // await bluetoothOnCheck();
     if (bookingNumber == null) {
       print('Booking number is null');
       return;
@@ -131,8 +135,31 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
     }
   }
 
+  Future<bool> isDeviceBluetoothEnabled() async {
+  var status = await Permission.bluetooth.status;
+  return status == PermissionStatus.granted;
+}
+ void checkBluetoothOnInit() async {
+    bool isBluetoothEnabled = await isDeviceBluetoothEnabled();
+    if (!isBluetoothEnabled) {
+      showBluetoothToast();
+    }
+  }
+ void showBluetoothToast() {
+  
+    Fluttertoast.showToast(
+      msg: "Please enable Bluetooth!",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.TOP,
+      timeInSecForIosWeb: 1,
+      backgroundColor: myred,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
   Widget actionButton(
       BuildContext context, String text, VoidCallback action, double size) {
+        // bluetoothOnCheck();
     return Container(
       width: get_screenWidth(context) * size,
       constraints: BoxConstraints(minWidth: get_screenWidth(context) * 0.3),
@@ -241,6 +268,7 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
       ),
       body: Column(
         children: [
+          
           actionButton(
             context,
             'Scan for Devices',

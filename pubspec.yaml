@@ -33,6 +33,7 @@ dependencies:
   loading_animation_widget: ^1.2.1
   get: ^4.6.5
   blue_thermal_printer: ^1.2.3
+  permission_handler: ^11.3.1
   
   
 
