@@ -1,14 +1,13 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/material.dart';
-import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:parking_kori/view/pages/alert_bluetooth.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/styles.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' as blue_plus;
+import 'package:blue_thermal_printer/blue_thermal_printer.dart' as blue_thermal;
+
 
 class BluetoothPageSummary extends StatefulWidget {
   final String? total_park_in;
@@ -33,9 +32,9 @@ class BluetoothPageSummary extends StatefulWidget {
 }
 
 class _BluetoothPageState extends State<BluetoothPageSummary> {
-  BlueThermalPrinter printer = BlueThermalPrinter.instance;
-  List<BluetoothDevice> devicesList = [];
-  BluetoothDevice? selectedDevice;
+  blue_thermal.BlueThermalPrinter printer = blue_thermal.BlueThermalPrinter.instance;
+  List<blue_thermal.BluetoothDevice> devicesList = [];
+  blue_thermal.BluetoothDevice? selectedDevice;
   String? total_park_in;
   String? total_park_out;
   String? total_income;
@@ -48,6 +47,7 @@ class _BluetoothPageState extends State<BluetoothPageSummary> {
   @override
   void initState() {
     super.initState();
+    checkBluetoothOnInit();
     initPrinter();
     total_park_in = widget.total_park_in;
     total_park_out = widget.total_park_out;
@@ -66,7 +66,7 @@ class _BluetoothPageState extends State<BluetoothPageSummary> {
 
   Future<void> getDevices() async {
     try {
-      List<BluetoothDevice> devices = await printer.getBondedDevices();
+      List<blue_thermal.BluetoothDevice> devices = await printer.getBondedDevices();
       setState(() {
         devicesList = devices;
       });
@@ -75,7 +75,7 @@ class _BluetoothPageState extends State<BluetoothPageSummary> {
     }
   }
 
-  void connectToDevice(BluetoothDevice device) async {
+  void connectToDevice(blue_thermal.BluetoothDevice device) async {
     try {
       bool? connected = await printer.connect(device);
       if (connected == true) {
@@ -96,6 +96,18 @@ class _BluetoothPageState extends State<BluetoothPageSummary> {
       } else {
         print('Failed to connect to ${device.name}: $e');
       }
+    }
+  }
+
+   Future<bool> isBluetoothEnabled() async {
+    var adapterState = await FlutterBluePlus.adapterState.first;
+    return adapterState == blue_plus.BluetoothAdapterState.on;
+  }
+
+  void checkBluetoothOnInit() async {
+    bool isBluetoothOn = await isBluetoothEnabled();
+    if (!isBluetoothOn) {
+      alertBluetooth("Please enable Bluetooth!", "Bluetooth in your device is turned off", context); 
     }
   }
 

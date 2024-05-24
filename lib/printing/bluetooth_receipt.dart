@@ -3,13 +3,15 @@ import 'dart:io';
 
 import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter/material.dart';
-import 'package:blue_thermal_printer/blue_thermal_printer.dart';
+import 'package:blue_thermal_printer/blue_thermal_printer.dart' as blue_thermal;
 import 'package:flutter/services.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:parking_kori/view/pages/alert_bluetooth.dart';
 import 'package:parking_kori/view/pages/main_page.dart';
 import 'package:parking_kori/view/styles.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' as blue_plus;
 
 class BluetoothPageReceipt extends StatefulWidget {
   final String? bookingNumber;
@@ -19,17 +21,18 @@ class BluetoothPageReceipt extends StatefulWidget {
 }
 
 class _BluetoothPageState extends State<BluetoothPageReceipt> {
-  BlueThermalPrinter printer = BlueThermalPrinter.instance;
-  List<BluetoothDevice> devicesList = [];
-  BluetoothDevice? selectedDevice;
+  blue_thermal.BlueThermalPrinter printer = blue_thermal.BlueThermalPrinter.instance;
+  List<blue_thermal.BluetoothDevice> devicesList = [];
+  blue_thermal.BluetoothDevice? selectedDevice;
   String? bookingNumber;
 
   @override
   void initState() {
     super.initState();
+    checkBluetoothOnInit();
     initPrinter();
     bookingNumber = widget.bookingNumber;
-    checkBluetoothOnInit();
+    
   }
 
   void initPrinter() async {
@@ -42,7 +45,7 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
 
   Future<void> getDevices() async {
     try {
-      List<BluetoothDevice> devices = await printer.getBondedDevices();
+      List<blue_thermal.BluetoothDevice> devices = await printer.getBondedDevices();
       setState(() {
         devicesList = devices;
       });
@@ -51,8 +54,7 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
     }
   }
 
- void connectToDevice(BluetoothDevice device) async {
-  // await bluetoothOnCheck();
+  void connectToDevice(blue_thermal.BluetoothDevice device) async {
     try {
       bool? connected = await printer.connect(device);
       if (connected == true) {
@@ -77,7 +79,6 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
   }
 
   Future<void> printReceipt() async {
-    // await bluetoothOnCheck();
     if (bookingNumber == null) {
       print('Booking number is null');
       return;
@@ -135,31 +136,20 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
     }
   }
 
-  Future<bool> isDeviceBluetoothEnabled() async {
-  var status = await Permission.bluetooth.status;
-  return status == PermissionStatus.granted;
-}
- void checkBluetoothOnInit() async {
-    bool isBluetoothEnabled = await isDeviceBluetoothEnabled();
-    if (!isBluetoothEnabled) {
-      showBluetoothToast();
+  Future<bool> isBluetoothEnabled() async {
+    var adapterState = await FlutterBluePlus.adapterState.first;
+    return adapterState == blue_plus.BluetoothAdapterState.on;
+  }
+
+  void checkBluetoothOnInit() async {
+    bool isBluetoothOn = await isBluetoothEnabled();
+    if (!isBluetoothOn) {
+      alertBluetooth("Please enable Bluetooth!", "Bluetooth in your device is turned off", context); 
     }
   }
- void showBluetoothToast() {
-  
-    Fluttertoast.showToast(
-      msg: "Please enable Bluetooth!",
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.TOP,
-      timeInSecForIosWeb: 1,
-      backgroundColor: myred,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
-  }
+
   Widget actionButton(
       BuildContext context, String text, VoidCallback action, double size) {
-        // bluetoothOnCheck();
     return Container(
       width: get_screenWidth(context) * size,
       constraints: BoxConstraints(minWidth: get_screenWidth(context) * 0.3),
@@ -189,7 +179,6 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
 
   void confirmationDialog(String title, String description,
       BuildContext context, VoidCallback onConfirm) {
-    // Create button
     Widget yesButton = TextButton(
       child: Text(
         "Yes",
@@ -199,8 +188,8 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
          Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => MainPage()),
-        );// Close the dialog
-        onConfirm(); // Call the printReceipt function
+        );
+        onConfirm();
           Fluttertoast.showToast(
           msg: "Vehicle Add Successful!",
           toastLength: Toast.LENGTH_SHORT,
@@ -222,11 +211,10 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => MainPage()),
-        ); // Close the dialog
+        );
       },
     );
 
-    // Create AlertDialog
     AlertDialog alert = AlertDialog(
       backgroundColor: myred,
       title: Column(
@@ -245,7 +233,6 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
       ],
     );
 
-    // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -262,13 +249,12 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).pop(); // Go back to the previous screen
+            Navigator.of(context).pop();
           },
         ),
       ),
       body: Column(
         children: [
-          
           actionButton(
             context,
             'Scan for Devices',
@@ -295,7 +281,7 @@ class _BluetoothPageState extends State<BluetoothPageReceipt> {
                 'Print Confirmation',
                 'Do you want to print?',
                 context,
-                printReceipt, // No arguments are passed here
+                printReceipt,
               ),
               0.8,
             ),
