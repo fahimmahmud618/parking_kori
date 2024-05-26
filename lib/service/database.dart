@@ -6,9 +6,21 @@ import 'dart:io';
 import 'package:cache_manager/core/read_cache_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+
+
+
+//add vehicle
+//report summary
+//device info
+//get vehicle numbers
+//park in data
+//park out data
+//profile
+
 class DatabaseHelper {
   static const int _version = 1;
   static const String _dbName = 'parking_kori.db';
+  static const String booking_table_name = 'Booking';
   List<Booking> BookingList = [];
   String? baseUrl = dotenv.env['BASE_URL'];
 
@@ -24,17 +36,17 @@ class DatabaseHelper {
     );
   }
 
-  static Future<int> addVehicle(Booking car) async {
+  static Future<int> addVehicle(Booking booking) async {
     print("add local vehicle");
     final db = await _getDB();
-    return await db.insert("Booking", car.toJson(),
+    return await db.insert(booking_table_name, booking.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   static Future<int> parkOut(Booking car) async {
     final db = await _getDB();
     return await db.delete(
-      "Booking",
+      booking_table_name,
       where: 'booking_id= ?',
       whereArgs: [car.booking_id],
     );
@@ -43,7 +55,7 @@ class DatabaseHelper {
   static Future<List<Booking>?> getAllCars() async {
     final db = await _getDB();
 
-    final List<Map<String, dynamic>> maps = await db.query("Booking");
+    final List<Map<String, dynamic>> maps = await db.query(booking_table_name);
 
     if (maps.isEmpty) {
       return null;

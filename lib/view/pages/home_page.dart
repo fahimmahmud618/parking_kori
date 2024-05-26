@@ -286,33 +286,7 @@ class _HomePageState extends State<HomePage> {
               SizedBox(
                 height: get_screenWidth(context) * 0.005,
               ),
-              // Padding(
-              //   padding: const EdgeInsets.only(right: 8),
-              //   child: Row(
-              //     children: [
-              //       Expanded(
-              //         flex: 10,
-              //         child: Container(
-              //           padding: EdgeInsets.symmetric(
-              //               horizontal: get_screenWidth(context) * 0.1),
-              //           child: InputWIthIconImage3(
-              //               context,
-              //               editLogo,
-              //               registration_number,
-              //               "Registration Number",
-              //               "Enter Registration Number Here",
-              //               false,
-              //           ),
-              //         ),
-              //       ),
-              //       Expanded(flex: 1, child: Icon(
-              //               Icons.arrow_circle_right_sharp,
-              //               color: myred,
-              //               size: 30,
-              //             ),),
-              //     ],
-              //   ),
-              // ),
+              
               Text(
                 "Park out with Registration Number",
                 style: boldTextStyle(context, myBlack),
